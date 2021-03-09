@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding/components/default_button.dart';
 import 'package:flutter_onboarding/constants.dart';
+import 'package:flutter_onboarding/screens/login/login_screen.dart';
 import 'package:flutter_onboarding/size_config.dart';
 
 import '../components/splash_content.dart';
@@ -29,6 +30,7 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+    PageController _pageController = PageController(initialPage: currentPage, keepPage: false);
     return SafeArea(
       child: SizedBox(
           width: double.infinity,
@@ -43,6 +45,7 @@ class _BodyState extends State<Body> {
                         });
                       },
                       itemCount: splashData.length,
+                      controller: _pageController,
                       itemBuilder: (context, index) => SplashContent(
                             image: splashData[index]["image"],
                             text: splashData[index]["text"],
@@ -62,7 +65,15 @@ class _BodyState extends State<Body> {
                       Spacer(flex: 1),
                       DefaultButton(
                         text: "Continue",
-                        press: () {},
+                        press: () {
+                          setState(() {
+                            if(currentPage < 2){
+                              _pageController.jumpToPage(++currentPage);
+                            } else {
+                              Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (Route<dynamic> route) => false);
+                            }
+                          });
+                        },
                       ),
                       Spacer(),
                     ],
