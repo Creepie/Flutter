@@ -6,13 +6,19 @@ import 'package:flutter_onboarding/size_config.dart';
 
 import '../components/splash_content.dart';
 
+///a StatefulWidget can change over time
+/// for example when a counter number should be shown on the display
 class Body extends StatefulWidget {
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
+  ///this number tell us the current page of the onBoarding Screens
   int currentPage = 0;
+
+  ///this List saves the different data for the onBoarding Screens
+  /// like the text and which image should be shown
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to MYFLEXBOX, Screen 1",
@@ -28,24 +34,45 @@ class _BodyState extends State<Body> {
     },
   ];
 
+  ///the build method is to create the Widget and all widgets under this one
+  ///(with the method setState() we can recall the build method (after button tab for example)
   @override
   Widget build(BuildContext context) {
+    ///init a PageController > can control the shown page in the ViewPager (if button clicked)
     PageController _pageController = PageController(initialPage: currentPage, keepPage: false);
+    /// A widget that insets its child by sufficient padding to avoid intrusions by the operating system.
+    /// For example, this will indent the child by enough to avoid the status bar at the top of the screen.
+    /// https://stackoverflow.com/questions/49227667/using-safearea-in-flutter/52767639
     return SafeArea(
+      ///A box with a specified size.
+      ///If given a child, this widget forces it to have a specific width and/or height.
       child: SizedBox(
+        ///double.infinity mean "I want to be as big as my parent allows"
+        ///https://stackoverflow.com/questions/54489513/whats-the-difference-between-double-infinity-and-mediaquery
           width: double.infinity,
+          ///Column is a widget that displays its children in a vertical array.
           child: Column(
+            ///multiple widgets on the same height in the widget tree (have the same parent)
             children: <Widget>[
+              ///Expanded is a widget that expands a child of a Row, Column, or Flex so that the child fills the available space.
               Expanded(
+                ///flex is a number of relationship of screenSpace to the other widgets with the same height in the widget tree
                   flex: 3,
+                  ///in this example the PageView has 3:5 space for his own (sum of flex = 5)
                   child: PageView.builder(
+                    ///onPageChanged gets called if user swipe left / right
                       onPageChanged: (value) {
+                        ///set state method recall the build method to update the UI
                         setState(() {
                           currentPage = value;
                         });
                       },
+                      ///number of screens in the PageView
                       itemCount: splashData.length,
+                      ///is to can control the PageView outside of this widget (button click)
                       controller: _pageController,
+                      ///creates the UI in the PageView > with the text/ image of the List above
+                      /// SplashContent is a Widget class (screens/splash/splash_content.dart)
                       itemBuilder: (context, index) => SplashContent(
                             image: splashData[index]["image"],
                             text: splashData[index]["text"],
