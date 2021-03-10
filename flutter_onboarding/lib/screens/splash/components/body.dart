@@ -79,29 +79,41 @@ class _BodyState extends State<Body> {
                           ))),
               Expanded(
                 flex: 1,
+                ///add a Padding between the Widgets
+                ///A widget that insets its child by the given padding.
                 child: Padding(
+                  ///X pixel margin above and below, no horizontal margins:
                   padding: EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
                   child: Column(
                     children: <Widget>[
                       Spacer(),
+                      ///create a Row with the onBoarding dot in it
                       Row(
+                        ///set the alignment to center
                         mainAxisAlignment: MainAxisAlignment.center,
+                        ///Generates a list with splashData.length values (3) > for each build a Dot Widget.
                         children: List.generate(
                             splashData.length, (index) => buildDot(index: index)),
                       ),
+                      ///add a Spacer with flex 1 > Space has 1:5 of the screen (between Dot and Button)
                       Spacer(flex: 1),
+                      ///create a Default Button (components/default_button.dart)
                       DefaultButton(
                         text: "Continue",
                         press: () {
+                          ///call the build method if button is pressed
                           setState(() {
+                            ///if currentPage < 2 swipe to the next onBoarding Screen
                             if(currentPage < 2){
                               _pageController.jumpToPage(++currentPage);
+                              ///else (>2) > navigate to the login route (onBoarding done)
                             } else {
                               Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (Route<dynamic> route) => false);
                             }
                           });
                         },
                       ),
+                      ///add a Spacer
                       Spacer(),
                     ],
                   ),
@@ -112,12 +124,19 @@ class _BodyState extends State<Body> {
     );
   }
 
+  ///this method creates a AnimatedContainer Dot for to show which Screen of
+  ///the onBoarding process are showed at the moment
   AnimatedContainer buildDot({int index}) {
     return AnimatedContainer(
+      ///set the duration to the constant duration from the constants.dart
       duration: kAnimationDuration,
+      ///set a margin
       margin: EdgeInsets.only(right: 5),
+      ///set a height
       height: 6,
+      ///if we are on current on this page make a wider dot > else also 6 (same as height)
       width: currentPage == index ? 20 : 6,
+      ///decorate the Dot (add radius and the color (if current page primaryColor > else gray)
       decoration: BoxDecoration(
         color: currentPage == index ? kPrimaryColor : Color(0xFFD8D8D8D),
         borderRadius: BorderRadius.circular(3),

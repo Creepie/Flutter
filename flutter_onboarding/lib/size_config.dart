@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+///this class is for the height and width calculation
 class SizeConfig {
   static MediaQueryData _mediaQueryData;
   static double screenWidth;
