@@ -15,15 +15,15 @@ class CustomData extends StatefulWidget {
 class _CustomDataState extends State<CustomData> {
   final referenceDatabase = FirebaseDatabase.instance;
 
-  final movieName = 'Movie Title';
-  final movieController = TextEditingController();
+  final user = 'User';
+  final editTextController = TextEditingController();
 
-  DatabaseReference _moviesRef;
+  DatabaseReference userDb;
 
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
-    _moviesRef = database.reference().child('Movies');
+    userDb = database.reference().child('Users');
     super.initState();
   }
 
@@ -32,59 +32,61 @@ class _CustomDataState extends State<CustomData> {
     final ref = referenceDatabase.reference();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movies that i love'),
+        title: Text('PersonList'),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Center(
               child: Container(
-                color: Colors.green,
+                color: Colors.grey,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Column(
                   children: [
-                    Text(
-                      movieName,
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    Container(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Text(
+                        "Usertable",
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    TextField(
-                      controller: movieController,
-                      textAlign: TextAlign.center,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent,
+                        borderRadius:  BorderRadius.circular(32),
+                      ),
+                      margin: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: editTextController,
+                        decoration: InputDecoration(
+                          hintStyle: TextStyle(fontSize: 17),
+                          hintText: 'Enter your name',
+                          suffixIcon: Icon(Icons.search),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(20),
+                        ),
+                      ),
                     ),
                     TextButton(
                         style: TextButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            primary: Colors.grey),
+                            backgroundColor: Colors.red,
+                            primary: Colors.white),
                         onPressed: () {
-                          ref
-                              .child('Movies')
+                          Person person = new Person(editTextController.text, true);
+                          ref.child('Users')
                               .push()
-                              .child(movieName)
-                              .set(movieController.text)
+                              .child(user)
+                              .set(person.toJson())
                               .asStream();
-                          movieController.clear();
+                          editTextController.clear();
                         },
-                        child: Text('Save Movie')),
+                        child: Text('add User')),
                     Flexible(
-                        child: new FirebaseAnimatedList(
-                            shrinkWrap: true,
-                            query: _moviesRef,
-                            itemBuilder: (BuildContext context,
-                                DataSnapshot snapshot,
-                                Animation<double> animation,
-                                int index) {
-                              return new ListTile(
-                                trailing: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () =>
-                                      _moviesRef.child(snapshot.key).remove(),
-                                ),
-                                title: new Text(snapshot.value['Movie Title']),
-                              );
-                            }))
+                        child: firebaseList()
+                    )
                   ],
                 ),
               ),
@@ -92,6 +94,49 @@ class _CustomDataState extends State<CustomData> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget firebaseList(){
+    return new FirebaseAnimatedList(
+        shrinkWrap: true,
+        query: userDb,
+        itemBuilder: (BuildContext context,
+            DataSnapshot snapshot,
+            Animation<double> animation,
+            int index) {
+          Person person = Person.fromJson(snapshot.value['User']);
+          return new ListTile(
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () =>
+                    userDb.child(snapshot.key).remove(),
+              ),
+              title: new Text("Name: ${person.name}"),
+              subtitle: new Text("isGay: ${person.isGay}")
+          );
+        });
+  }
+}
+
+
+class Person{
+  final String name;
+  final bool isGay;
+
+  Person(this.name, this.isGay);
+  Person.json({this.name, this.isGay});
+
+  Map<String, dynamic> toJson() =>
+      {
+        'name': name,
+        'isGay': isGay,
+      };
+
+  factory Person.fromJson(Map<dynamic, dynamic> json) {
+    return Person.json(
+      name: json['name'] as String,
+      isGay: json['isGay'] as bool,
     );
   }
 }
