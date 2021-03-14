@@ -20,8 +20,14 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -34,6 +40,28 @@
       <option name="presentableId" value="Default" />
       <updated>1613574729854</updated>
     </task>
+    <task id="LOCAL-00001" summary="profile UI added">
+      <created>1615725719463</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1615725719463</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="profile UI added" />
+    <option name="LAST_COMMIT_MESSAGE" value="profile UI added" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="281" y="43" key="CommitChangelistDialog2" timestamp="1615725719294">
+      <screen x="0" y="23" width="1440" height="877" />
+    </state>
+    <state x="281" y="43" key="CommitChangelistDialog2/0.23.1440.877@0.23.1440.877" timestamp="1615725719294" />
+    <state x="323" y="206" key="Vcs.Push.Dialog.v2" timestamp="1615725721619">
+      <screen x="0" y="23" width="1440" height="877" />
+    </state>
+    <state x="323" y="206" key="Vcs.Push.Dialog.v2/0.23.1440.877@0.23.1440.877" timestamp="1615725721619" />
   </component>
 </project>

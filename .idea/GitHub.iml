@@ -7,6 +7,8 @@
       <excludeFolder url="file://$MODULE_DIR$/flutter_database_ex/build" />
       <excludeFolder url="file://$MODULE_DIR$/flutter_onboarding/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/flutter_onboarding/build" />
+      <excludeFolder url="file://$MODULE_DIR$/flutter_profile/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/flutter_profile/build" />
       <excludeFolder url="file://$MODULE_DIR$/startup_namer/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/startup_namer/build" />
     </content>
