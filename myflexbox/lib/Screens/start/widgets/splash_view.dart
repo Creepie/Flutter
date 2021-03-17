@@ -9,9 +9,8 @@ class SplashView extends StatelessWidget {
         color: kPrimaryColor,
         child: Center(
         child: Image.asset(
-          'assets/images/logo-min.png',
-          height: 100,
-          width: 100,
+          'assets/images/logo.png',
+          width: double.infinity,
         ),
       ),
       )
