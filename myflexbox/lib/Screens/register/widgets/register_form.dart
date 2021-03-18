@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/cubits/register/register_cubit.dart';
 import 'package:myflexbox/cubits/register/register_state.dart';
 
+//Register Form Widget
 class RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
@@ -34,21 +35,28 @@ class RegisterForm extends StatelessWidget {
   }
 }
 
+//Username Form Field
 class UsernameFormField extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
       return TextFormField(
-        autocorrect: false,
-        textCapitalization: TextCapitalization.none,
-        enableSuggestions: false,
+        // OnChangedListener
         onChanged: (String username) {
+          //the changedUserName method of the RegisterCubit is called
           var registerCubit = context.read<RegisterCubit>();
           registerCubit.changedUsername(username);
         },
+        // Style Attributes
+        autocorrect: false,
+        textCapitalization: TextCapitalization.none,
+        enableSuggestions: false,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "Username",
+          // The error string is obtained from the username object that is stored
+          // in the registerState
+          //  Depending on the State, different Colors are used
           errorText: state.username.error,
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -75,17 +83,23 @@ class EmailFormField extends StatelessWidget {
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
       return TextFormField(
+        // OnChangedListener
+        onChanged: (String email) {
+          //the changedEmail method of the RegisterCubit is called
+          var loginCubit = context.read<RegisterCubit>();
+          loginCubit.changedEmail(email);
+        },
+        // Style Attributes
         autocorrect: false,
         textCapitalization: TextCapitalization.none,
         enableSuggestions: false,
         keyboardType: TextInputType.emailAddress,
-        onChanged: (String email) {
-          var loginCubit = context.read<RegisterCubit>();
-          loginCubit.changedEmail(email);
-        },
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "E-Mail",
+          // The error string is obtained from the email object that is stored
+          // in the registerState
+          //  Depending on the State, different Colors are used
           errorText: state.email.error,
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -111,17 +125,23 @@ class PasswordFormField extends StatelessWidget {
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
       return TextFormField(
+        // OnChangedListener
+        onChanged: (String email) {
+          //the changedPassword method of the RegisterCubit is called
+          var registerCubit = context.read<RegisterCubit>();
+          registerCubit.changedPassword(email);
+        },
+        // Style Attributes
         textCapitalization: TextCapitalization.none,
         autocorrect: false,
         enableSuggestions: false,
         obscureText: true,
-        onChanged: (String email) {
-          var registerCubit = context.read<RegisterCubit>();
-          registerCubit.changedPassword(email);
-        },
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "Password",
+          // The error string is obtained from the error object that is stored
+          // in the registerState
+          //  Depending on the State, different Colors are used
           errorText: state.password.error,
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -146,13 +166,15 @@ class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
+      //Here, it is checked, whether all fields are filled and there is no error
       bool canSubmit = state.email.error == null
           && state.password.error == null
           && state.password.text != null
           && state.email.text != null
-          && state.username.error != null
+          && state.username.error == null
           && state.username.text != null;
       if (state is RegisterLoadingState) {
+        // While loading, a progress-indicator is displayed
         return CircularProgressIndicator();
       } else {
         return FlatButton(
@@ -165,6 +187,8 @@ class LoginButton extends StatelessWidget {
           ),
           color: canSubmit? Colors.blue: Colors.black12 ,
           onPressed: () {
+            //Depending on the canSubmit bool, the press leads to different
+            // method calls of the registerCubit
             FocusScope.of(context).unfocus();
             var registerCubit = context.read<RegisterCubit>();
             if (canSubmit) {
@@ -191,7 +215,7 @@ class RegisterButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          var registerCubit = context.read<RegisterCubit>();
+          // The Register Route is popped from the navigation stack
           Navigator.pop(buildContext);
         },
       );

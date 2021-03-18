@@ -116,9 +116,12 @@ class _OnBoardingBodyState extends State<OnBoardingBody> {
                       Spacer(flex: 1),
 
                       ///create a Default Button (components/default_button.dart)
+                      // BLocBuilder is used here, to get the AuthCubit, and
+                      // the userRepository (which is stored in the authCubit),
+                      // to pass it as arguments to the Login Route.
                       BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, state) {
-                        //get the AuthCubit and the userRepository and pass it to the route
+                        //get the AuthCubit and the userRepository
                         var authCubit = context.read<AuthCubit>();
                         var arguments = {
                           "authCubit": authCubit,
@@ -135,6 +138,7 @@ class _OnBoardingBodyState extends State<OnBoardingBody> {
 
                                 ///else (>2) > navigate to the login route (onBoarding done)
                               } else {
+                                // pass arguments to the route
                                 Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     AppRouter.LoginViewRoute,

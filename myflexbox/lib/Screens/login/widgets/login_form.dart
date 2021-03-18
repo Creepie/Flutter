@@ -4,6 +4,7 @@ import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/cubits/login/login_cubit.dart';
 import 'package:myflexbox/cubits/login/login_state.dart';
 
+//Login Form Widget
 class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
@@ -30,23 +31,29 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-
+// Email input field
 class EmailFormField extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
       return TextFormField(
+        // OnChangedListener
+        onChanged: (String email) {
+          //the changedEmail Method of the loginCubit is called
+          var loginCubit = context.read<LoginCubit>();
+          loginCubit.changedEmail(email);
+        },
+        // Style Attributes
         autocorrect: false,
         textCapitalization: TextCapitalization.none,
         enableSuggestions: false,
         keyboardType: TextInputType.emailAddress,
-        onChanged: (String email) {
-          var loginCubit = context.read<LoginCubit>();
-          loginCubit.changedEmail(email);
-        },
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "E-Mail",
+          // The error string is obtained from the email object that is stored
+          // in the loginState
+          //  Depending on the State, different Colors are used
           errorText: state.email.error,
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -67,22 +74,28 @@ class EmailFormField extends StatelessWidget {
   }
 }
 
+// Password input field
 class PasswordFormField extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
       return TextFormField(
-        textCapitalization: TextCapitalization.none,
-        autocorrect: false,
-        enableSuggestions: false,
-        obscureText: true,
+        // OnChangedListener
         onChanged: (String email) {
           var loginCubit = context.read<LoginCubit>();
           loginCubit.changedPassword(email);
         },
+        // Style Attributes
+        textCapitalization: TextCapitalization.none,
+        autocorrect: false,
+        enableSuggestions: false,
+        obscureText: true,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "Password",
+          // The error string is obtained from the password object that is stored
+          // in the loginState
+          //  Depending on the State, different Colors are used
           errorText: state.password.error,
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -103,15 +116,18 @@ class PasswordFormField extends StatelessWidget {
   }
 }
 
+//Login Button
 class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
+      //Here, it is checked, whether all fields are filled and there is no error
       bool canSubmit = state.email.error == null
           && state.password.error == null
           && state.password.text != null
           && state.email.text != null;
       if (state is LoadingLoginState) {
+        // While loading, a progress-indicator is displayed
         return CircularProgressIndicator();
       } else {
         return FlatButton(
@@ -124,7 +140,9 @@ class LoginButton extends StatelessWidget {
           ),
           color: canSubmit? Colors.blue: Colors.black12 ,
           onPressed: () {
-            FocusScope.of(context).unfocus();
+            //Depending on the canSubmit bool, the press leads to different
+            // method calls of the loginCubit
+            FocusScope.of(context).unfocus(); //Hide Keyboard
             var loginCubit = context.read<LoginCubit>();
             if (canSubmit) {
               loginCubit.login();
@@ -138,6 +156,7 @@ class LoginButton extends StatelessWidget {
   }
 }
 
+// Register Button
 class RegisterButton extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
@@ -150,6 +169,8 @@ class RegisterButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
+          // The Register Route is pushed, and the userRepository is
+          // passed as argument.
           var loginCubit = context.read<LoginCubit>();
           var arguments = {"userRepository": loginCubit.userRepository};
           Navigator.pushNamed(buildContext, AppRouter.RegisterViewRoute,

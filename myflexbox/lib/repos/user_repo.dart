@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'models/user.dart';
 
+// Handles the communication with the database, concerning the user.
 class UserRepository {
 
   //Check if LogIn Data is correct and return Token, null otherwise

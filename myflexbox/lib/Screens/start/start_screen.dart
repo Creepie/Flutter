@@ -5,6 +5,10 @@ import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/cubits/auth/auth_state.dart';
 
+// This Widget is the root of the initial Route.
+// Here, the SplashView is shown, while the AuthCubit checks if the user
+// is already logged in or not (authenticate() method called in main.dart).
+// Depending on the result, the according route is pushed.
 class StartPage extends StatelessWidget {
 
   @override
@@ -30,6 +34,8 @@ class StartPage extends StatelessWidget {
           },
           //builder: returns the widget, depending on the state
           builder: (BuildContext context, AuthState state) {
+            //state is either loading ot uninitialized (starting state of the
+            // auth cubit)
             if (state is AuthUninitialized) {
               return SplashView();
             }else if (state is AuthLoading) {

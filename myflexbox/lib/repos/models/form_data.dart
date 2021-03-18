@@ -1,3 +1,6 @@
+//Email FormData class
+//Stores the email text and the error.
+//Has a function for validation which sets the error, when its called
 class Email {
   String text;
   String error;
@@ -16,6 +19,9 @@ class Email {
   }
 }
 
+//Password FormData class
+//Stores the password text and the error.
+//Has a function for validation which sets the error, when its called
 class Password {
   String text;
   String error;
@@ -33,6 +39,9 @@ class Password {
   }
 }
 
+//Username FormData class
+//Stores the username text and the error.
+//Has a function for validation which sets the error, when its called
 class Username {
   String text;
   String error;
