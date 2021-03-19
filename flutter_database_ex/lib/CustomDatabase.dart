@@ -16,17 +16,22 @@ class CustomData extends StatefulWidget {
 class _CustomDataState extends State<CustomData> {
   ///add a Controller to can access the input text of the textField
   final editTextController = TextEditingController();
+  final searchTextController = TextEditingController();
   ///add a global userDb variable
   DatabaseReference userDb;
+  var query;
+  String name = "";
+  var _key;
 
 
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
     userDb = database.reference().child('Users');
-
+    query = userDb;
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,19 +60,22 @@ class _CustomDataState extends State<CustomData> {
                       ),
                     ),
                     ///add a input TextField Widget where the user can type in a name
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent,
-                        borderRadius:  BorderRadius.circular(32),
-                      ),
-                      child: TextField(
-                        controller: editTextController,
-                        decoration: InputDecoration(
-                          hintStyle: TextStyle(fontSize: 17),
-                          hintText: 'Enter your name',
-                          suffixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(20),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius:  BorderRadius.circular(32),
+                        ),
+                        child: TextField(
+                          controller: editTextController,
+                          decoration: InputDecoration(
+                            hintStyle: TextStyle(fontSize: 17),
+                            hintText: 'Enter your name',
+                            suffixIcon: Icon(Icons.add),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(20),
+                          ),
                         ),
                       ),
                     ),
@@ -86,6 +94,42 @@ class _CustomDataState extends State<CustomData> {
                         },
                         ///give the button an Text
                         child: Text('add User')),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius:  BorderRadius.circular(32),
+                        ),
+                        child: TextField(
+                          controller: searchTextController,
+                          decoration: InputDecoration(
+                            hintStyle: TextStyle(fontSize: 17),
+                            hintText: 'Search for User',
+                            suffixIcon: Icon(Icons.search),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(20),
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            primary: Colors.white),
+                        onPressed: () {
+                          setState(() {
+                            name = searchTextController.text;
+                            if(searchTextController.text.isNotEmpty){
+                              query = userDb.orderByChild("name").equalTo(name);
+                            } else {
+                              query = userDb;
+                            }
+                            _key = Key(DateTime.now().millisecondsSinceEpoch.toString());
+                          });
+                        },
+                        ///give the button an Text
+                        child: Text('Search for User in db')),
                     Flexible(
                         child: firebaseList()
                     )
@@ -107,7 +151,11 @@ class _CustomDataState extends State<CustomData> {
       /// has unbounded constraints in the scrollDirection, then shrinkWrap must be true.
         shrinkWrap: true,
         ///add the firebase query
-        query: userDb,
+
+        query: query,
+        key: _key,
+        sort: (DataSnapshot a, DataSnapshot b) =>
+            b.key.compareTo(a.key),
         ///Called, as needed, to build list item widgets.
         ///List items are only built when they're scrolled into view.
         itemBuilder: (BuildContext context,
