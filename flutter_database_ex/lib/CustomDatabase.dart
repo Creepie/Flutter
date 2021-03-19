@@ -19,10 +19,12 @@ class _CustomDataState extends State<CustomData> {
   ///add a global userDb variable
   DatabaseReference userDb;
 
+
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
     userDb = database.reference().child('Users');
+
     super.initState();
   }
 
@@ -78,9 +80,7 @@ class _CustomDataState extends State<CustomData> {
                           ///create a Person
                           Person person = new Person(editTextController.text, true);
                           ///push it to Firebase db
-                          userDb.push()
-                              .child('User')
-                              .set(person.toJson());
+                          userDb.push().set(person.toJson());
                           ///clear the input text field
                           editTextController.clear();
                         },
@@ -115,7 +115,7 @@ class _CustomDataState extends State<CustomData> {
             Animation<double> animation,
             int index) {
           ///convert the db result to an person object
-          Person person = Person.fromJson(snapshot.value['User']);
+          Person person = Person.fromJson(snapshot.value);
           ///A single fixed-height row that typically contains some text as well as a leading or trailing icon.
           return new ListTile(
               trailing: IconButton(
