@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/repos/models/form_data.dart';
-import 'package:myflexbox/repos/models/user.dart';
 import 'package:myflexbox/repos/user_repo.dart';
 import 'login_state.dart';
 
@@ -19,7 +18,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   // Gets the email and the password from the current state.
   // Emits the LoadingState.
-  // Calls a method from the userRepository trying to log in.
+  // Calls the login method from the authCubit trying to log in.
   // If successful, the AuthState is changed via the authCubit (the login_screen
   // has a listener and pushes the HomeViewRoute)
   // If unsuccessful, the error is stored in the password or email object, and
@@ -28,16 +27,23 @@ class LoginCubit extends Cubit<LoginState> {
     String emailText = state.email.text;
     String passwordText = state.password.text;
     emit(LoadingLoginState());
-    String token = await userRepository.authenticate(username: emailText, password: passwordText);
-    if(token != null) {
-      User user = await userRepository.getUser(token);
-      authCubit.successfulLogin(user);
-      return null;
-    } else {
-      emit(LoginFailure(
-        email: Email(error: null, text: emailText),
-        password: Password(error: "Passwort incorrect", text: passwordText),
-      ));
+
+    List error = await authCubit.loginWithEmail(emailText, passwordText);
+    if(error != null) {
+      ErrorType errorType = error[0];
+      String errorText = error[1];
+      if(errorType == ErrorType.EmailError)  {
+        emit(LoginFailure(
+          email: Email(error: errorText, text: emailText),
+          password: Password(error: null, text: passwordText),
+        ));
+      } else {
+        emit(LoginFailure(
+          email: Email(error: null, text: emailText),
+          password: Password(error: errorText, text: passwordText),
+        ));
+      }
+
     }
   }
 

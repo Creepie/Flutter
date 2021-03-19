@@ -175,28 +175,37 @@ class LoginButton extends StatelessWidget {
           && state.username.text != null;
       if (state is RegisterLoadingState) {
         // While loading, a progress-indicator is displayed
-        return CircularProgressIndicator();
-      } else {
-        return FlatButton(
-          padding: EdgeInsets.only(left: 100, right: 100),
-          child: Text(
-            "register",
-            style: TextStyle(
-                color: canSubmit? Colors.white: Colors.blue ,
-            ),
+        return SizedBox(
+          child: CircularProgressIndicator(
+            strokeWidth: 4,
           ),
-          color: canSubmit? Colors.blue: Colors.black12 ,
-          onPressed: () {
-            //Depending on the canSubmit bool, the press leads to different
-            // method calls of the registerCubit
-            FocusScope.of(context).unfocus();
-            var registerCubit = context.read<RegisterCubit>();
-            if (canSubmit) {
-              registerCubit.register();
-            } else {
-              registerCubit.invalidInput();
-            }
-          },
+          height: 30.0,
+          width: 30.0,
+
+        );;
+      } else {
+        return SizedBox(
+          width: 250,
+          child: FlatButton(
+            child: Text(
+              "register",
+              style: TextStyle(
+                  color: canSubmit? Colors.white: Colors.blue ,
+              ),
+            ),
+            color: canSubmit? Colors.blue: Colors.black12 ,
+            onPressed: () {
+              //Depending on the canSubmit bool, the press leads to different
+              // method calls of the registerCubit
+              FocusScope.of(context).unfocus();
+              var registerCubit = context.read<RegisterCubit>();
+              if (canSubmit) {
+                registerCubit.register();
+              } else {
+                registerCubit.invalidInput();
+              }
+            },
+          ),
         );
       }
     });

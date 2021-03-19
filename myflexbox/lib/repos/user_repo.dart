@@ -20,9 +20,9 @@ class UserRepository {
     return null;
 }
 
-  Future<User> getUser(String token) async {
+  Future<DBUser> getUser(String token) async {
     await Future.delayed(Duration(seconds: 2));
-    return User("mail", "name", token);
+    return DBUser("mail", "name", token, "");
   }
 
   Future<bool> logIn() async {

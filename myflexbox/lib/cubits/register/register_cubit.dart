@@ -1,22 +1,22 @@
 import 'package:bloc/bloc.dart';
+import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/repos/models/form_data.dart';
-import 'package:myflexbox/repos/user_repo.dart';
 import 'register_state.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
-  final UserRepository userRepository;
+  final AuthCubit authCubit;
 
   // The userRepository is passed in the constructor.
   // The initial state is emitted with empty password, email, and username
   // objects.
-  RegisterCubit({this.userRepository})
+  RegisterCubit({this.authCubit})
       : super(RegisterInitial(
             email: Email(), password: Password(), username: Username()));
 
   //Register method, is called when the form is submitted by the user
   // The email, username and password are fetched from the current state.
   // The Register LoadingState is emitted
-  // A method from the userRepository is called to register the user
+  // A method from the authCubit is called to register the user
   // If successful, the RegisterSuccess State is emitted
   // Otherwise the Failure is emitted with the according error set.
   Future<void> register() async {
@@ -24,18 +24,33 @@ class RegisterCubit extends Cubit<RegisterState> {
     String passwordText = state.password.text;
     String usernameText = state.username.text;
     emit(RegisterLoadingState());
-    String error = await userRepository.register(username: usernameText, password: passwordText);
+
+    List error = await authCubit.registerWithEmail(
+        emailText, passwordText, usernameText);
     if (error == null) {
       emit(RegisterSuccess(
           email: Email(error: null, text: emailText),
           password: Password(error: null, text: passwordText),
           username: Username(error: null, text: usernameText)));
     } else {
-      emit(RegisterFailure(
-        email: Email(error: "Email bereits in Verwendung", text: emailText),
-        password: Password(error: null, text: passwordText),
-        username: Username(error: null, text: usernameText),
-      ));
+      ErrorType errorType = error[0];
+      String errorText = error[1];
+      if (errorType == ErrorType.EmailError) {
+        emit(RegisterFailure(
+            email: Email(error: errorText, text: emailText),
+            password: Password(error: null, text: passwordText),
+            username: Username(error: null, text: usernameText)));
+      } else if (errorType == ErrorType.PasswordError) {
+        emit(RegisterFailure(
+            email: Email(error: null, text: emailText),
+            password: Password(error: errorText, text: passwordText),
+            username: Username(error: null, text: usernameText)));
+      } else {
+        emit(RegisterFailure(
+            email: Email(error: null, text: emailText),
+            password: Password(error: null, text: passwordText),
+            username: Username(error: errorText, text: usernameText)));
+      }
     }
   }
 

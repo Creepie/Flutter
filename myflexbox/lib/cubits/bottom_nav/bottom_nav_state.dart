@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+//Bottom Navigation States, store the pageIndex.
 abstract class BottomNavState extends Equatable {
   final int pageIndex = 0;
   @override

@@ -1,3 +1,5 @@
+enum ErrorType{PasswordError, EmailError}
+
 //Email FormData class
 //Stores the email text and the error.
 //Has a function for validation which sets the error, when its called

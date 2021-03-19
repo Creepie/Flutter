@@ -2,11 +2,12 @@ import 'package:bloc/bloc.dart';
 
 import 'bottom_nav_state.dart';
 
-
+// Cubit, that handles the Bottom navigation
 class BottomNavCubit extends Cubit<BottomNavState> {
 
   BottomNavCubit() : super(CurrentLockersNavState());
 
+  //On changeState, the respective State is loaded
   void changePage(int newPageIndex) async {
     switch (newPageIndex) {
       case 0:
@@ -22,9 +23,5 @@ class BottomNavCubit extends Cubit<BottomNavState> {
         emit(ProfileNavState());
         break;
     }
-  }
-
-  void changeDetected(int newPageIndex) {
-
   }
 }

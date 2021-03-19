@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myflexbox/Screens/home_screen.dart';
+import 'file:///C:/Users/paulp/AndroidStudioProjects/Flutter/myflexbox/lib/Screens/home/home_screen.dart';
 import 'package:myflexbox/Screens/login/login_screen.dart';
 import 'package:myflexbox/Screens/onboarding/onboarding_screen.dart';
 import 'package:myflexbox/Screens/register/register_screen.dart';
@@ -50,11 +50,11 @@ class AppRouter {
       // The userRepository is passed to the new RegisterCubit.
       case RegisterViewRoute:
         var arguments = settings.arguments as Map;
-        UserRepository userRepository = arguments["userRepository"];
+        AuthCubit authCubit = arguments["authCubit"];
         return MaterialPageRoute(
             builder: (context) => BlocProvider(
                 create: (context) =>
-                    RegisterCubit(userRepository: userRepository),
+                    RegisterCubit(authCubit: authCubit),
                 child: RegisterPage()));
 
       // HomeViewRoute, is wrapped with a BlocProvider for the BottomNavCubit,

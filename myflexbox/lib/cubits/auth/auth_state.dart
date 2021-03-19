@@ -15,7 +15,7 @@ class AuthUninitialized extends AuthState {}
 // User is logged in
 // Here the user is saved, and is available in the entire app.
 class AuthAuthenticated extends AuthState {
-  final User user;
+  final DBUser user;
 
   AuthAuthenticated(this.user);
 }

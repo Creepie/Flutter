@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/config/app_router.dart';
+import 'package:myflexbox/cubits/auth/auth_cubit.dart';
+import 'package:myflexbox/cubits/auth/auth_state.dart';
 import 'package:myflexbox/cubits/login/login_cubit.dart';
 import 'package:myflexbox/cubits/login/login_state.dart';
 
@@ -25,6 +27,7 @@ class LoginForm extends StatelessWidget {
           width: 40,
         ),
         LoginButton(),
+        GoogleLoginButton(),
         RegisterButton(),
       ],
     );
@@ -128,28 +131,37 @@ class LoginButton extends StatelessWidget {
           && state.email.text != null;
       if (state is LoadingLoginState) {
         // While loading, a progress-indicator is displayed
-        return CircularProgressIndicator();
-      } else {
-        return FlatButton(
-          padding: EdgeInsets.only(left: 100, right: 100),
-          child: Text(
-            "login",
-            style: TextStyle(
-              color: canSubmit? Colors.white: Colors.blue,
-            ),
+        return SizedBox(
+          child: CircularProgressIndicator(
+            strokeWidth: 4,
           ),
-          color: canSubmit? Colors.blue: Colors.black12 ,
-          onPressed: () {
-            //Depending on the canSubmit bool, the press leads to different
-            // method calls of the loginCubit
-            FocusScope.of(context).unfocus(); //Hide Keyboard
-            var loginCubit = context.read<LoginCubit>();
-            if (canSubmit) {
-              loginCubit.login();
-            } else {
-              loginCubit.invalidInput();
-            }
-          },
+          height: 30.0,
+          width: 30.0,
+
+        );
+      } else {
+        return SizedBox(
+          width: 250,
+          child: FlatButton(
+            child: Text(
+              "login",
+              style: TextStyle(
+                color: canSubmit? Colors.white: Colors.blue,
+              ),
+            ),
+            color: canSubmit? Colors.blue: Colors.black12 ,
+            onPressed: () {
+              //Depending on the canSubmit bool, the press leads to different
+              // method calls of the loginCubit
+              FocusScope.of(context).unfocus(); //Hide Keyboard
+              var loginCubit = context.read<LoginCubit>();
+              if (canSubmit) {
+                loginCubit.login();
+              } else {
+                loginCubit.invalidInput();
+              }
+            },
+          ),
         );
       }
     });
@@ -172,11 +184,50 @@ class RegisterButton extends StatelessWidget {
           // The Register Route is pushed, and the userRepository is
           // passed as argument.
           var loginCubit = context.read<LoginCubit>();
-          var arguments = {"userRepository": loginCubit.userRepository};
+          var arguments = {"authCubit": loginCubit.authCubit};
           Navigator.pushNamed(buildContext, AppRouter.RegisterViewRoute,
               arguments: arguments);
         },
       );
     });
   }
+}
+
+class GoogleLoginButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext buildContext) {
+    return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
+        return SizedBox(
+          width: 250,
+          child: FlatButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Sign in with Google",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                  width: 10,
+                ),
+                Image.asset("assets/images/google-icon.png", width: 20, height: 20,),
+
+              ],
+            ),
+            color: Colors.blue,
+            onPressed: () {
+              //Depending on the canSubmit bool, the press leads to different
+              // method calls of the loginCubit
+              FocusScope.of(context).unfocus(); //Hide Keyboard
+              var authCubit = context.read<AuthCubit>();
+              authCubit.signInWithGoogle();
+            },
+          ),
+        );
+    });
+  }
+
 }
