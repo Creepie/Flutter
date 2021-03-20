@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'file:///C:/Users/paulp/AndroidStudioProjects/Flutter/myflexbox/lib/Screens/home/home_screen.dart';
+import 'package:myflexbox/Screens/home/home_screen.dart';
 import 'package:myflexbox/Screens/login/login_screen.dart';
 import 'package:myflexbox/Screens/onboarding/onboarding_screen.dart';
 import 'package:myflexbox/Screens/register/register_screen.dart';

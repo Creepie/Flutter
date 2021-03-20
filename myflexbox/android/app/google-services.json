@@ -52,6 +52,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "315641758845-7kru8nq5bdv1rb42o8r5ua513v2716m0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myflexbox",
+            "certificate_hash": "24655e6d27c728d40f90e94583e3760b082f593f"
+          }
+        },
+        {
           "client_id": "315641758845-jljl0el711h7kl4in86geams5dpts9jr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
