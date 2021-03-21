@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
+
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:share/share.dart';
 
@@ -18,15 +18,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -44,21 +35,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ///this controller is to get the input number for direct whatsapp share
   final controller = TextEditingController();
   String text = '';
   String subject = '';
+  ///in the index path are all picture paths saved for sharing
   List<String> imagePaths = [];
+  ///add a ImagePicker
+  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
     text = 'check out my website https://youtube.com';
     subject = "Look what I made!";
-    //imagePaths.add("assets/images/test.png");
+
+    ///atm its not working to share the test.png in the assets folder
+    //imagePaths.add("sharing/assets/images/test.png");
 
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
@@ -69,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                ///add the controller to the text field for later access of the text
                 controller: controller,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
@@ -79,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
+              ///this button opens the general share sheet and shares a text
               child: TextButton(
                onPressed: () => _onShareWithEmptyOrigin(context),
                child: Text("ShareSheet"),
@@ -86,27 +83,53 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
+              ///this button opens the camera > after that you can share this pic via ShareSheet
               child: TextButton(
-                child: Text("Share from Pictures"),
+                child: Text("Share from Camera"),
                 onPressed: () async {
-                  FilePickerResult result = await FilePicker.platform.pickFiles();
+                  final result = await picker.getImage(source: ImageSource.camera);
                   if (result != null) {
-                    print(result.files.single.path);
-                    Share.shareFiles(["${result.files.single.path}"], text: "Images");
+                    imagePaths.add(result.path);
+                    _onShare(context);
                   }
                 },
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
+              ///this button should share the test.png file from the assets folder > not possible atm
               child: TextButton(
                 child: Text("Share image from app"),
                 onPressed: () => _onShare(context),
               ),
-            )
+            ),
+            const Padding(padding: EdgeInsets.only(top: 12.0)),
+            ///here you can add into you imagePaths pics from your gallery
+            ListTile(
+              leading: Icon(Icons.add),
+              title: Text("Add image"),
+              onTap: () async {
+                final pickedFile = await picker.getImage(source: ImageSource.gallery,);
+                if (pickedFile != null) {
+                    imagePaths.add(pickedFile.path);
+                }
+              },
+            ),
+            const Padding(padding: EdgeInsets.only(top: 12.0)),
+            Builder(
+              builder: (BuildContext context) {
+                ///this Button shares all Images in the imagePaths and open the shareSheet
+                return ElevatedButton(
+                  child: const Text('Share pictures'),
+                  onPressed: text.isEmpty && imagePaths.isEmpty ? null : () => _onShare(context),
+                );
+              },
+            ),
           ],
         ),
       ),
+      ///this Button opens Whatsapp with the text input number directly and shares a Hello as text
+      ///if input number is empty only Whatsapp gets open and you can chose the person
       floatingActionButton: FloatingActionButton(
         onPressed: () async =>
             await launch("https://wa.me/${controller.text}?text=Hello"),
@@ -116,14 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ///this method opens the Share Sheet
   _onShare(BuildContext context) async {
-    // A builder is used to retrieve the context immediately
-    // surrounding the ElevatedButton.
-    //
-    // The context's `findRenderObject` returns the first
-    // RenderObject in its descendent tree when it's not
-    // a RenderObjectWidget. The ElevatedButton's RenderObject
-    // has its position and size after it's built.
+
     final RenderBox box = context.findRenderObject() as RenderBox;
 
     if (imagePaths.isNotEmpty) {
@@ -137,7 +155,8 @@ class _MyHomePageState extends State<MyHomePage> {
           sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
     }
   }
-  
+
+  ///this method opens the share Sheet but only with text to share
   _onShareWithEmptyOrigin(BuildContext context) async {
     await Share.share("text");
   }
