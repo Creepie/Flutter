@@ -14,16 +14,21 @@ class CustomData extends StatefulWidget {
 }
 
 class _CustomDataState extends State<CustomData> {
-  ///add a Controller to can access the input text of the textField
+  ///add a Controller to can access the input text of adding
   final editTextController = TextEditingController();
+  ///add a Controller to can access the input text for the search
   final searchTextController = TextEditingController();
   ///add a global userDb variable
   DatabaseReference userDb;
+  ///add a global query variable for searching in the db
   var query;
+  ///the name is used to chance the name of the db search like Stefan, ...
   String name = "";
+  ///the key is used that the firebase db knows to reloads again with another query
   var _key;
 
 
+  ///in the init the userDb and the query gets initialized
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
@@ -39,6 +44,7 @@ class _CustomDataState extends State<CustomData> {
       appBar: AppBar(
         title: Text('PersonList'),
       ),
+      ///A box in which a single widget can be scrolled.
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -113,24 +119,31 @@ class _CustomDataState extends State<CustomData> {
                         ),
                       ),
                     ),
+                    ///add a button where the user can reload the db search
                     TextButton(
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.red,
                             primary: Colors.white),
                         onPressed: () {
+                          ///reload the build method
                           setState(() {
+                            ///save the name of the input field in the name variable
                             name = searchTextController.text;
                             if(searchTextController.text.isNotEmpty){
+                              ///search for the specific name in the db
                               query = userDb.orderByChild("name").equalTo(name);
                             } else {
+                              ///load the whole user table if no input in the search field
                               query = userDb;
                             }
+                            ///give the key a unique dataset > for example the actual date
                             _key = Key(DateTime.now().millisecondsSinceEpoch.toString());
                           });
                         },
                         ///give the button an Text
                         child: Text('Search for User in db')),
                     Flexible(
+                      ///add the firebase Animated List
                         child: firebaseList()
                     )
                   ],
@@ -151,9 +164,10 @@ class _CustomDataState extends State<CustomData> {
       /// has unbounded constraints in the scrollDirection, then shrinkWrap must be true.
         shrinkWrap: true,
         ///add the firebase query
-
         query: query,
+        ///add the key > only with a different key the firebase will reload the data
         key: _key,
+        ///how to sort the list
         sort: (DataSnapshot a, DataSnapshot b) =>
             b.key.compareTo(a.key),
         ///Called, as needed, to build list item widgets.
