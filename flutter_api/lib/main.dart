@@ -95,22 +95,20 @@ Future<void> fetchData() async {
   );
 
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    var test =  Locker.fromJson(jsonDecode(response.body));
+
+    var list = json.decode(response.body)['lockers']
+        .map((data) => Locker.fromJson(data))
+        .toList();
+
     print(response.toString());
+
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load album');
+    throw Exception('Failed to load lockers');
   }
-  final responseJson = jsonDecode(response.body);
-
-  var lockers = Locker.fromJson(responseJson);
-
-
-
 }
+
 
 class Locker {
   final int lockerId;
@@ -144,22 +142,22 @@ class Locker {
       this.access,
       this.manufacturer});
 
-  factory Locker.fromJson(Map<dynamic, dynamic> json){
+  factory Locker.fromJson(Map<String, dynamic> json){
     return Locker(
-      lockerId: json['lockerId'],
-      externalId: json['externalId'],
-      name: json['name'],
-      streetName: json['streetName'],
-      streetNumber: json['streetNumber'],
-      postcode: json['postcode'],
-      city: json['city'],
-      country: json['country'],
-      countryCode: json['countryCode'],
-      longitude: json['longitude'],
-      latitude: json['latitude'],
-      state: json['state'],
-      access: json['access'],
-      manufacturer: json['manufacturer'],
+      lockerId: json['lockerId'] as int,
+      externalId: json['externalId'] as String,
+      name: json['name'] as String,
+      streetName: json['streetName'] as String,
+      streetNumber: json['streetNumber'] as String,
+      postcode: json['postcode'] as String,
+      city: json['city'] as String,
+      country: json['country'] as String,
+      countryCode: json['countryCode'] as String,
+      longitude: json['longitude'] as double,
+      latitude: json['latitude'] as double,
+      state: json['state'] as String,
+      access: json['access'] as String,
+      manufacturer: json['manufacturer'] as String,
     );
   }
 
