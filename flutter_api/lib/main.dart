@@ -95,11 +95,12 @@ Future<void> fetchData() async {
   );
 
   if (response.statusCode == 200) {
-
-    var list = json.decode(response.body)['lockers']
+    List<Locker> list = json
+        .decode(response.body)['lockers']
         .map((data) => Locker.fromJson(data))
-        .toList();
+        .toList().cast<Locker>();
 
+    var test1 = list[0].compartments[0].length;
     print(response.toString());
 
   } else {
@@ -108,7 +109,6 @@ Future<void> fetchData() async {
     throw Exception('Failed to load lockers');
   }
 }
-
 
 class Locker {
   final int lockerId;
@@ -125,8 +125,10 @@ class Locker {
   final String state;
   final String access;
   final String manufacturer;
+  final List<Compartment> compartments;
 
-  Locker({
+  Locker(
+      {this.compartments,
       this.lockerId,
       this.externalId,
       this.name,
@@ -142,7 +144,8 @@ class Locker {
       this.access,
       this.manufacturer});
 
-  factory Locker.fromJson(Map<String, dynamic> json){
+  factory Locker.fromJson(Map<String, dynamic> json) {
+    var list = json['compartments'].map((data) => Compartment.fromJson(data)).toList().cast<Compartment>();
     return Locker(
       lockerId: json['lockerId'] as int,
       externalId: json['externalId'] as String,
@@ -158,7 +161,38 @@ class Locker {
       state: json['state'] as String,
       access: json['access'] as String,
       manufacturer: json['manufacturer'] as String,
+      compartments: list as List<Compartment>,
     );
   }
+}
 
+class Compartment {
+  final int compartmentId;
+  final String number;
+  final String size;
+  final double length;
+  final double height;
+  final double depth;
+  final String type;
+
+  Compartment(
+      {this.compartmentId,
+      this.number,
+      this.size,
+      this.length,
+      this.height,
+      this.depth,
+      this.type});
+
+  factory Compartment.fromJson(Map<String, dynamic> json) {
+    return Compartment(
+      compartmentId: json['compartmentId'] as int,
+      number: json['number'] as String,
+      size: json['size'] as String,
+      length: json['length'] as double,
+      height: json['height'] as double,
+      depth: json['depth'] as double,
+      type: json['type'] as String,
+    );
+  }
 }
