@@ -22,14 +22,12 @@ class RentLockerRepository {
           .decode(response.body)['lockers']
           .map((data) => Locker.fromJson(data))
           .toList().cast<Locker>();
-
       return list;
-
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
-
+      return null;
     }
-    return null;
+
   }
 }
