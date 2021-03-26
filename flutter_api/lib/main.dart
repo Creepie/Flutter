@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:convert' as convert;
+import 'package:http/http.dart' as http;
+
 
 void main() {
   runApp(MyApp());
@@ -56,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: fetchData,
+        onPressed: getFilteredLockers,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -64,33 +66,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<void> _incrementCounter() async {
-  // This example uses the Google Books API to search for books about http.
-  // https://developers.google.com/books/docs/overview
-  var url =
-      Uri.https('www.googleapis.com', '/books/v1/volumes', {'q': '{http}'});
+final String baseUrl = "https://dev-myflxbx-rest.azurewebsites.net";
+final String apiKey = "Basic 77+977+90IcGI++/vVQhWjDvv73vv70R77+9Nh/vv70yVTIoe++/vRDvv71WVwBd77+9";
 
-  // Await the http get response, then decode the json-formatted response.
-  var response = await http.get(url);
-  if (response.statusCode == 200) {
-    var jsonResponse = convert.jsonDecode(response.body);
-    var itemCount = jsonResponse['totalItems'];
-    print('Number of books about http: $itemCount.');
-  } else {
-    print('Request failed with status: ${response.statusCode}.');
-  }
-}
+///GET without Params
 
 Future<void> fetchData() async {
-  var url = Uri.https(
-      'dev-myflxbx-rest.azurewebsites.net', '/api/1/lockers', {'q': '{https}'});
-  final response = await http.get(
-    url,
-    headers: {
-      HttpHeaders.authorizationHeader:
-          "Basic 77+977+90IcGI++/vVQhWjDvv73vv70R77+9Nh/vv70yVTIoe++/vRDvv71WVwBd77+9"
-    },
-  );
+
+  var url = '$baseUrl/api/1/lockers';
+
+  final response = await http.get(url, headers: {HttpHeaders.authorizationHeader: apiKey},);
 
   if (response.statusCode == 200) {
     List<Locker> list = json
@@ -104,7 +89,55 @@ Future<void> fetchData() async {
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load lockers');
+    print(response.toString());
+  }
+}
+
+///GET with params
+
+Future<List<Locker>> getFilteredLockers() async {
+  final String startTime = "2018-12-24T08%3A00%3A00%2B00%3A00";
+  final String endTime = "2018-12-24T16%3A00%3A00%2B00%3A00";
+
+  var url = '$baseUrl/api/1/compartments?startTime=$startTime&endTime=$endTime';
+
+  var response = await http.get(url, headers: {HttpHeaders.authorizationHeader: apiKey},);
+
+  if (response.statusCode == 200) {
+    List<Locker> list = json
+        .decode(response.body)['lockers']
+        .map((data) => Locker.fromJson(data))
+        .toList().cast<Locker>();
+    return list;
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    print(response.toString());
+    return null;
+  }
+}
+
+///POST in construction
+
+Future<List<Locker>> bookCompartment() async {
+  final String startTime = "2018-12-24T08%3A00%3A00%2B00%3A00";
+  final String endTime = "2018-12-24T16%3A00%3A00%2B00%3A00";
+
+  var url = '$baseUrl/api/1/compartments?startTime=$startTime&endTime=$endTime';
+
+  var response = await http.get(url, headers: {HttpHeaders.authorizationHeader: apiKey},);
+
+  if (response.statusCode == 200) {
+    List<Locker> list = json
+        .decode(response.body)['lockers']
+        .map((data) => Locker.fromJson(data))
+        .toList().cast<Locker>();
+    return list;
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    print(response.toString());
+    return null;
   }
 }
 
