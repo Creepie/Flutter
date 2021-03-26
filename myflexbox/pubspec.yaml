@@ -36,10 +36,10 @@ dependencies:
   flutter_svg: ^0.20.0-nullsafety.3
   intl: ^0.17.0
   syncfusion_flutter_datepicker: ^18.4.49-beta
-  http: ^0.13.1
-  uuid: ^3.0.2
   location: 4.1.1
   geocoder: ^0.2.1
+  basic_utils: 3.0.0-nullsafety.0
+
 
 
 dev_dependencies:

@@ -9,7 +9,13 @@ class RentLockerListView extends StatelessWidget {
     return BlocBuilder<RentLockerCubit, RentLockerState>(
         builder: (context, state) {
           return Center(
-            child: Text("ListView"),
+            child: FlatButton(
+                child: Text("clcik me"),
+              onPressed: () {
+                  var lockerCubit = context.read<RentLockerCubit>();
+                  lockerCubit.fetchResults();
+              },
+            )
           );
         }
     );

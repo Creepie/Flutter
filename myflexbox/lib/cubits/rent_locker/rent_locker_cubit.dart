@@ -99,5 +99,8 @@ class RentLockerCubit extends Cubit<RentLockerState> {
     }
   }
 
-  Future<void> fetchResults() async {}
+  Future<void> fetchResults() async {
+    //_rentLockerRepository.getLockers();
+    _rentLockerRepository.getFilteredLockers("s", "2018-12-24T08%3A00%3A00%2B00%3A00", "2018-12-25T16%3A00%3A00%2B00%3A00", state.location.lat, state.location.long);
+  }
 }
