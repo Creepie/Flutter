@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: getFilteredLockers,
+        onPressed: bookCompartment,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -83,7 +83,8 @@ Future<void> fetchData() async {
         .map((data) => Locker.fromJson(data))
         .toList().cast<Locker>();
 
-    var test1 = list[0].compartments[0].length;
+    var compartmentId = list[1].compartments[3].compartmentId;
+    var lockerId = list[1].lockerId;
     print(response.toString());
 
   } else {
@@ -96,8 +97,8 @@ Future<void> fetchData() async {
 ///GET with params
 
 Future<List<Locker>> getFilteredLockers() async {
-  final String startTime = "2018-12-24T08%3A00%3A00%2B00%3A00";
-  final String endTime = "2018-12-24T16%3A00%3A00%2B00%3A00";
+  final String startTime = "2021-04-01T08%3A00%3A00%2B00%3A00";
+  final String endTime = "2021-04-05T16%3A00%3A00%2B00%3A00";
 
   var url = '$baseUrl/api/1/compartments?startTime=$startTime&endTime=$endTime';
 
@@ -108,6 +109,9 @@ Future<List<Locker>> getFilteredLockers() async {
         .decode(response.body)['lockers']
         .map((data) => Locker.fromJson(data))
         .toList().cast<Locker>();
+
+    var compartmentId = list[1].compartments[3].compartmentId;
+    var lockerId = list[1].lockerId;
     return list;
   } else {
     // If the server did not return a 200 OK response,
@@ -120,25 +124,48 @@ Future<List<Locker>> getFilteredLockers() async {
 ///POST in construction
 
 Future<List<Locker>> bookCompartment() async {
-  final String startTime = "2018-12-24T08%3A00%3A00%2B00%3A00";
-  final String endTime = "2018-12-24T16%3A00%3A00%2B00%3A00";
+  final String startTime = "2021-04-01T08:00:00+00:00";
+  final String endTime = "2021-04-02T08:00:00+00:00";
 
-  var url = '$baseUrl/api/1/compartments?startTime=$startTime&endTime=$endTime';
+  var url = '$baseUrl/api/1/booking';
 
-  var response = await http.get(url, headers: {HttpHeaders.authorizationHeader: apiKey},);
+  var booking = BookingRequest(21426, 21444, startTime, endTime);
 
-  if (response.statusCode == 200) {
-    List<Locker> list = json
-        .decode(response.body)['lockers']
-        .map((data) => Locker.fromJson(data))
-        .toList().cast<Locker>();
-    return list;
+  var response = await http.post(url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        HttpHeaders.authorizationHeader: apiKey
+      },
+    body: jsonEncode(booking));
+
+  if (response.statusCode == 201) {
+
+    print(response.toString());
+    return null;
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
     print(response.toString());
     return null;
   }
+}
+
+class BookingRequest {
+  final int lockerId;
+  final int compartmentId;
+  final String startTime;
+  final String endTime;
+
+  BookingRequest(this.lockerId, this.compartmentId, this.startTime, this.endTime);
+
+  Map<String, dynamic> toJson() =>
+      {
+        'lockerId': lockerId,
+        'compartmentId': compartmentId,
+        'startTime': startTime,
+        'endTime' : endTime
+      };
+
 }
 
 class Locker {
