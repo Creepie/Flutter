@@ -21,7 +21,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthLoading());
       await Future.delayed(Duration(seconds: 1));
       //get user with FirebaseAuth.instance.currentUser
-      String firebaseUser = null;
+      String firebaseUser = "";
       if(firebaseUser != null) {
         //get token with fireBaseUser.getIdToken(refresh: true)
         //get user name from firebase

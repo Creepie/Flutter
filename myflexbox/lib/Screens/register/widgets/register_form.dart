@@ -182,7 +182,7 @@ class LoginButton extends StatelessWidget {
           height: 30.0,
           width: 30.0,
 
-        );;
+        );
       } else {
         return SizedBox(
           width: 250,

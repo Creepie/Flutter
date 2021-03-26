@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_state.dart';
+import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 
 
 // Custom AppBar
@@ -13,7 +14,10 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         builder: (context, state) {
           if(state is ProfileNavState) {
             return ProfileAppBar();
-          } else {
+          } else if(state is AddLockerNavState) {
+            return RentLockerAppBar();
+          }
+          else {
             return DefaultAppBar();
           }
         }
@@ -52,6 +56,23 @@ class ProfileAppBar extends StatelessWidget {
         title: Text(
           "Profile",
           style: TextStyle(color: Colors.black),
+        ));
+  }
+}
+
+
+//RentLocker App Bar
+class RentLockerAppBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+        brightness: Brightness.light,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        title: Text(
+          "Locker reservieren",
+          style: TextStyle(color: Colors.black54),
         ));
   }
 }

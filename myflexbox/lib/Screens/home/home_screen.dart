@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return MultiBlocProvider(
                 providers: [
                   BlocProvider<RentLockerCubit>(
-                    create: (context) => RentLockerCubit(RentLockerRepository()),
+                    create: (context) => RentLockerCubit(RentLockerRepository())..getCurrentLocation(),
                   ),
                 ],
               child: PageView(

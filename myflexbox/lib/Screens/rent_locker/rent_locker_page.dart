@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_filter_view.dart';
+import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_filter_form.dart';
+import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart';
 import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_map_view.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
@@ -10,15 +11,14 @@ class RentLockerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<RentLockerCubit, RentLockerState>(
           builder: (context, state) {
-            if(state is FilterRentLockerState) {
-              return RentLockerFilterView();
-            } else if (state is MapRentLockerState) {
-              return RentLockerMapView();
-            }else {
-              return Center(
-                child: Text("No Screen"),
-              );
-            }
+            return Column(
+              children: [
+                FilterForm(),
+                state is FilterRentLockerState?
+                  RentLockerListView()
+                : RentLockerMapView()
+              ],
+            );
           },
     );
   }

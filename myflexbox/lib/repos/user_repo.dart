@@ -17,7 +17,7 @@ class UserRepository {
   //Return Token if the user is logged in, null otherwise
   Future<String> hasToken() async {
     await Future.delayed(Duration(seconds: 3));
-    return null;
+    return "";
 }
 
   Future<DBUser> getUser(String token) async {
