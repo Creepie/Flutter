@@ -2,17 +2,17 @@
 
 class Booking {
   final int status;
-  final int bookingId;
-  final String parcelNumber;
-  final String externalId;
+  final int bookingId; //can be used for api getBooking as param
+  final String parcelNumber; //can be used for text message
+  final String externalId; //firebase auth user id
   final int lockerId;
   final int compartmentId;
   final double compartmentLength;
   final double compartmentHeight;
   final double compartmentDepth;
-  final String deliveryCode;
-  final String collectingCode;
-  final String state;
+  final String deliveryCode; //code to store (can be reused after 15min of storing without state changing)
+  final String collectingCode; //code for collecting
+  final String state; //which state of booking (COLLECTED, ...)
   final String startTimeSystem;
   final String startTime;
   final String endTime;

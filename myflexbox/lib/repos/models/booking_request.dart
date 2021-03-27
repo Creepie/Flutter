@@ -5,7 +5,7 @@ class BookingRequest {
   final int compartmentId;
   final String startTime;
   final String endTime;
-  final String externalId;
+  final String externalId; //firebase auth user id
   final String parcelNumber; //can be used for text message
 
   BookingRequest(this.lockerId, this.compartmentId, this.startTime,
