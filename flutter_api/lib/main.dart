@@ -163,7 +163,7 @@ class BookingRequest {
   final String endTime;
   final String externalId;
   final String parcelNumber; //can be used for text message
-
+b
   BookingRequest(this.lockerId, this.compartmentId, this.startTime,
       this.endTime, this.externalId, this.parcelNumber);
 
