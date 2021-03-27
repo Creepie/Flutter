@@ -38,9 +38,9 @@ class RentLockerRepository {
   ///param [lat] and [long] represent the location of the request > the returned list sorts the locker (nearest first)
   ///param [size] is the minimum size of the locker > the returned list only have compartments with >= [size]
   ///param [startTime] and [endTime] is the reservation duration for a specific compartment
+  ///the [startTime] and [endTime] is in ISO 8601 time format (UTC) > example: 2021-04-01T08%3A00%3A00%2B00%3A00
   ///returns a list of [Locker] depending of the given params
   Future<List<Locker>> getFilteredLockers(String size, String startTime, String endTime, double lat, double long) async {
-    //StartTime example = 2021-04-01T08%3A00%3A00%2B00%3A00
     var url = '$baseUrl/api/1/compartments?site=$size&startTime=$startTime&endTime=$endTime&limit=10&latitude=$lat&longitude=$long';
     var response = await http.get(Uri.parse(url),
       headers: {HttpHeaders.authorizationHeader: apiKey},);
