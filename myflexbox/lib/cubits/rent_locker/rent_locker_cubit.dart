@@ -35,7 +35,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
             myLocation: MyLocationData.clone(state.myLocation),
             lockerList: state.lockerList),
       );
-      await Future.delayed(Duration(milliseconds: 800));
+      await Future.delayed(Duration(milliseconds: 900));
       updateCameraLocation();
     } else {
       emit(FilterRentLockerState(
