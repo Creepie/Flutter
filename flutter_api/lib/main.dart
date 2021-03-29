@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:convert' as convert;
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -56,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: fetchData,
+        onPressed: bookCompartment,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -64,47 +65,176 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<void> _incrementCounter() async {
-  // This example uses the Google Books API to search for books about http.
-  // https://developers.google.com/books/docs/overview
-  var url =
-      Uri.https('www.googleapis.com', '/books/v1/volumes', {'q': '{http}'});
+final String baseUrl = "https://dev-myflxbx-rest.azurewebsites.net";
+final String apiKey =
+    "Basic 77+977+90IcGI++/vVQhWjDvv73vv70R77+9Nh/vv70yVTIoe++/vRDvv71WVwBd77+9";
 
-  // Await the http get response, then decode the json-formatted response.
-  var response = await http.get(url);
-  if (response.statusCode == 200) {
-    var jsonResponse = convert.jsonDecode(response.body);
-    var itemCount = jsonResponse['totalItems'];
-    print('Number of books about http: $itemCount.');
-  } else {
-    print('Request failed with status: ${response.statusCode}.');
-  }
-}
+///GET without Params
 
 Future<void> fetchData() async {
-  var url = Uri.https(
-      'dev-myflxbx-rest.azurewebsites.net', '/api/1/lockers', {'q': '{https}'});
+  var url = '$baseUrl/api/1/lockers';
+
   final response = await http.get(
     url,
-    headers: {
-      HttpHeaders.authorizationHeader:
-          "Basic 77+977+90IcGI++/vVQhWjDvv73vv70R77+9Nh/vv70yVTIoe++/vRDvv71WVwBd77+9"
-    },
+    headers: {HttpHeaders.authorizationHeader: apiKey},
   );
 
   if (response.statusCode == 200) {
     List<Locker> list = json
         .decode(response.body)['lockers']
         .map((data) => Locker.fromJson(data))
-        .toList().cast<Locker>();
+        .toList()
+        .cast<Locker>();
 
-    var test1 = list[0].compartments[0].length;
+    var compartmentId = list[1].compartments[3].compartmentId;
+    var lockerId = list[1].lockerId;
     print(response.toString());
-
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load lockers');
+    print(response.toString());
+  }
+}
+
+///GET with params
+
+Future<List<Locker>> getFilteredLockers() async {
+  final String startTime = "2021-04-01T08%3A00%3A00%2B00%3A00";
+  final String endTime = "2021-04-05T16%3A00%3A00%2B00%3A00";
+
+  var url = '$baseUrl/api/1/compartments?startTime=$startTime&endTime=$endTime';
+
+  var response = await http.get(
+    url,
+    headers: {HttpHeaders.authorizationHeader: apiKey},
+  );
+
+  if (response.statusCode == 200) {
+    List<Locker> list = json
+        .decode(response.body)['lockers']
+        .map((data) => Locker.fromJson(data))
+        .toList()
+        .cast<Locker>();
+
+    var compartmentId = list[1].compartments[3].compartmentId;
+    var lockerId = list[1].lockerId;
+    return list;
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    print(response.toString());
+    return null;
+  }
+}
+
+///POST in construction
+
+Future<List<Locker>> bookCompartment() async {
+  final String startTime = "2021-04-01T08:00:00+00:00";
+  final String endTime = "2021-04-02T08:00:00+00:00";
+
+  var url = '$baseUrl/api/1/booking';
+
+  var booking = BookingRequest(21426, 21444, startTime, endTime, "User1", "Willhaben Iphone 8");
+
+  var response = await http.post(url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        HttpHeaders.authorizationHeader: apiKey
+      },
+      body: jsonEncode(booking));
+
+  if (response.statusCode == 200) {
+    Booking booking = Booking.fromJson(jsonDecode(response.body));
+    print(response.body.toString());
+    return null;
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    print(response.toString());
+    return null;
+  }
+}
+
+class BookingRequest {
+  final int lockerId;
+  final int compartmentId;
+  final String startTime;
+  final String endTime;
+  final String externalId;
+  final String parcelNumber; //can be used for text message
+b
+  BookingRequest(this.lockerId, this.compartmentId, this.startTime,
+      this.endTime, this.externalId, this.parcelNumber);
+
+  Map<String, dynamic> toJson() => {
+        'lockerId': lockerId,
+        'compartmentId': compartmentId,
+        'startTime': startTime,
+        'endTime': endTime,
+        'externalId': externalId,
+        'parcelNumber': parcelNumber,
+      };
+}
+
+class Booking {
+  final int status;
+  final int bookingId;
+  final String parcelNumber;
+  final String externalId;
+  final int lockerId;
+  final int compartmentId;
+  final double compartmentLength;
+  final double compartmentHeight;
+  final double compartmentDepth;
+  final String deliveryCode;
+  final String collectingCode;
+  final String state;
+  final String startTimeSystem;
+  final String startTime;
+  final String endTime;
+  final String endTimeSystem;
+  final String message;
+
+  Booking(
+      {this.status,
+      this.bookingId,
+      this.parcelNumber,
+      this.externalId,
+      this.lockerId,
+      this.compartmentId,
+      this.compartmentLength,
+      this.compartmentHeight,
+      this.compartmentDepth,
+      this.deliveryCode,
+      this.collectingCode,
+      this.state,
+      this.startTimeSystem,
+      this.startTime,
+      this.endTime,
+      this.endTimeSystem,
+      this.message});
+
+  factory Booking.fromJson(Map<String, dynamic> json) {
+    return Booking(
+      status: json['status'] as int,
+      bookingId: json['bookingId'] as int,
+      parcelNumber: json['parcelNumber'] as String,
+      externalId: json['externalId'] as String,
+      lockerId: json['lockerId'] as int,
+      compartmentId: json['compartmentId'] as int,
+      compartmentLength: json['compartmentLength'] as double,
+      compartmentHeight: json['compartmentHeight'] as double,
+      compartmentDepth: json['compartmentDepth'] as double,
+      deliveryCode: json['deliveryCode'] as String,
+      collectingCode: json['collectingCode'] as String,
+      state: json['state'] as String,
+      startTimeSystem: json['startTimeSystem'] as String,
+      startTime: json['startTime'] as String,
+      endTime: json['endTime'] as String,
+      endTimeSystem: json['endTimeSystem'] as String,
+      message: json['message'] as String,
+    );
   }
 }
 
@@ -143,7 +273,10 @@ class Locker {
       this.manufacturer});
 
   factory Locker.fromJson(Map<String, dynamic> json) {
-    var list = json['compartments'].map((data) => Compartment.fromJson(data)).toList().cast<Compartment>();
+    var list = json['compartments']
+        .map((data) => Compartment.fromJson(data))
+        .toList()
+        .cast<Compartment>();
     return Locker(
       lockerId: json['lockerId'] as int,
       externalId: json['externalId'] as String,
