@@ -22,6 +22,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
               long: 13.04687978865836,
               description: "Salzburg, Österreich",
             ),
+            myLocation: MyLocationData(),
             lockerList: []));
 
   Future<void> switchScreen() async {
@@ -151,16 +152,32 @@ class RentLockerCubit extends Cubit<RentLockerState> {
       }
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
-        emit(FilterRentLockerState(
-            boxSize: state.boxSize,
-            startDate: state.startDate,
-            endDate: state.endDate,
-            location: MyLocationData(
-              lat: state.chosenLocation.lat,
-              long: state.chosenLocation.long,
-              description: state.chosenLocation.description,
-            ),
-            lockerList: state.lockerList));
+        if(state is FilterRentLockerState) {
+          emit(FilterRentLockerState(
+              boxSize: state.boxSize,
+              startDate: state.startDate,
+              endDate: state.endDate,
+              location: MyLocationData(
+                lat: state.chosenLocation.lat,
+                long: state.chosenLocation.long,
+                description: state.chosenLocation.description,
+              ),
+              myLocation: MyLocationData(),
+              lockerList: state.lockerList));
+        } else {
+          emit(MapRentLockerState(
+              boxSize: state.boxSize,
+              startDate: state.startDate,
+              endDate: state.endDate,
+              location: MyLocationData(
+                lat: state.chosenLocation.lat,
+                long: state.chosenLocation.long,
+                description: state.chosenLocation.description,
+              ),
+              myLocation: MyLocationData(),
+              lockerList: state.lockerList));
+        }
+
       }
     }
     fetchResults();

@@ -38,7 +38,7 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
       markers.clear();
       circles.clear();
       //set myLocation marker
-      if (state.myLocation != null) {
+      if (state.myLocation.description != null) {
         var newMarker = Marker(
             markerId: MarkerId("myPosition"),
             position: LatLng(state.myLocation.lat, state.myLocation.long),
