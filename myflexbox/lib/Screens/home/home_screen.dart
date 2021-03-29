@@ -7,6 +7,7 @@ import 'package:myflexbox/Screens/rent_locker/rent_locker_page.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_state.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
+import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/rent_locker_repository.dart';
 
 import '../current_lockers/current_locker_page.dart';
@@ -74,6 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 controller: _pageController,
                 children: pages,
+                physics: state is AddLockerNavState
+                    ? NeverScrollableScrollPhysics()
+                    : ScrollPhysics(),
               ));
         }),
     );

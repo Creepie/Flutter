@@ -41,7 +41,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<List> loginWithEmail(String email, String password) async {
       try {
         await Future.delayed(Duration(seconds: 1));
-        //Get user with firebaseUser = auth.signInWithEmailAndPassword()
+        //Get user with firebaseUser = Auth.signInWithEmailAndPassword()
         //throw Exception();
 
         emit(AuthAuthenticated(DBUser("", "", "", "")));
@@ -78,6 +78,8 @@ class AuthCubit extends Cubit<AuthState> {
       //Create user with firebaseUser = auth.createUserWithEmailAndPassword()
       //Create a user in the users table in firebase
       //throw Exception();
+      //repo.createUser();
+      //user wieder ausloggen
       return null;
     } catch(e) {
       return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete
@@ -105,10 +107,8 @@ class AuthCubit extends Cubit<AuthState> {
 
     // Once signed in, return the UserCredential
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    //emit(AuthAuthenticated(user))
   }
 
-  Future<List> checkEmailDublication() {
-    //check if the mail is already in use
-  }
 
 }

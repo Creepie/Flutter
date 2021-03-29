@@ -18,8 +18,14 @@ class FilterForm extends StatelessWidget {
         builder: (context, state) {
       return Container(
         padding: EdgeInsets.only(
-            left: width * 0.05, right: width * 0.05, top: 20, bottom: 40),
-        color: Colors.black12,
+            left: width * 0.05, right: width * 0.05, top: 20, bottom: 20),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.04),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          )
+        ),
         child: Column(
           children: [
             Row(
@@ -29,7 +35,14 @@ class FilterForm extends StatelessWidget {
                 SizedBox(
                     width: width * 0.15,
                     child: IconButton(
-                      icon: Icon(Icons.map),
+                      icon: state is FilterRentLockerState
+                          ? Icon(Icons.map)
+                          : Icon(Icons.list),
+                      color: Colors.grey,
+                      onPressed: () {
+                        var rentLockerCubit = context.read<RentLockerCubit>();
+                        rentLockerCubit.switchScreen();
+                      },
                     )),
               ],
             ),
@@ -87,13 +100,12 @@ class FilterForm extends StatelessWidget {
 }
 
 class LockerSearchBar extends StatelessWidget {
-
   void showLocationSearch(BuildContext context, BuildContext buildContext,
       RentLockerState state) async {
     final Suggestion result = await showSearch(
       context: buildContext,
       delegate: AddressSearch(),
-      query: state.location.description,
+      query: state.chosenLocation.description,
     );
     if (result != null) {
       final location = await GooglePlacesRepo()
@@ -120,9 +132,9 @@ class LockerSearchBar extends StatelessWidget {
                   padding: EdgeInsets.only(left: 20, top: 15, bottom: 15),
                   width: width * 0.55,
                   child: Text(
-                    state.location.description == null
+                    state.chosenLocation.description == null
                         ? "Adresse eingeben"
-                        : state.location.description,
+                        : state.chosenLocation.description,
                     style: TextStyle(
                       color: Colors.black54,
                       fontSize: 17,

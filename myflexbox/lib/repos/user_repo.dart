@@ -30,7 +30,7 @@ class UserRepository {
     return true;
   }
 
-  Future<String> register({String username, String password}) async {
+  Future<String> createUser({String username, String password}) async {
     await Future.delayed(Duration(seconds: 2));
     return null;
   }

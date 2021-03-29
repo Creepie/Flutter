@@ -8,9 +8,10 @@ abstract class RentLockerState extends Equatable {
   final BoxSize boxSize;
   final DateTime startDate;
   final DateTime endDate;
-  final MyLocationData location;
+  final MyLocationData chosenLocation;
+  final MyLocationData myLocation;
 
-  const RentLockerState({this.boxSize, this.startDate, this.endDate, this.location});
+  const RentLockerState({this.boxSize, this.startDate, this.endDate, this.chosenLocation, this.myLocation});
 
   @override
   List<Object> get props => [];
@@ -23,18 +24,20 @@ class LoadingRentLockerState extends RentLockerState {
 
 class FilterRentLockerState extends RentLockerState {
   @override
-  List<Object> get props => [boxSize, startDate, endDate, location];
+  List<Object> get props => [boxSize, startDate, endDate, chosenLocation, myLocation];
 
   FilterRentLockerState({
     DateTime startDate,
     DateTime endDate,
     BoxSize boxSize,
-    MyLocationData location
+    MyLocationData location,
+    MyLocationData myLocation,
   }): super(
     boxSize: boxSize,
     startDate: startDate,
     endDate: endDate,
-    location: location,
+    chosenLocation: location,
+    myLocation: location,
   );
 }
 
@@ -42,18 +45,20 @@ class FilterRentLockerState extends RentLockerState {
 class MapRentLockerState extends RentLockerState {
 
   @override
-  List<Object> get props => [boxSize, startDate, endDate, location];
+  List<Object> get props => [boxSize, startDate, endDate, chosenLocation, myLocation];
 
   MapRentLockerState({
     DateTime startDate,
     DateTime endDate,
     BoxSize boxSize,
-    MyLocationData location
+    MyLocationData location,
+    MyLocationData myLocation,
   }): super(
     boxSize: boxSize,
     startDate: startDate,
     endDate: endDate,
-    location: location,
+    chosenLocation: location,
+    myLocation: myLocation
   );
 }
 
