@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myflexbox/Screens/profile/widgets/profile_menu.dart';
 import 'package:myflexbox/Screens/profile/widgets/profile_pic.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:myflexbox/config/app_router.dart';
 
 /// is a stateless widget, it doesn't change over time
 /// menu stays always the same
@@ -22,7 +24,13 @@ class ProfileBody extends StatelessWidget {
           ProfileMenu(
             text: "Favoriten",
             icon: "assets/icons/Heart_Icon.svg",
-            press: () => {},
+            press: () async => {
+
+            if (await Permission.contacts.request().isGranted) {
+              Navigator.pushNamed(context, AppRouter.ContactViewRoute)
+            }
+
+            },
           ),
           ProfileMenu(
             text: "Passwort ändern",
