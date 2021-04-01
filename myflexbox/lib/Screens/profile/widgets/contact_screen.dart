@@ -2,18 +2,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/size_config.dart';
-
-/*
-void main() {
-  runApp(MyApp());
-}
-
- */
-
-/// Tutorial
-/// https://www.youtube.com/watch?v=NBIF-Wt_ZFQ
-/// Add, Delete, Update
-/// https://www.youtube.com/watch?v=qC90U1rdgHQ
+import 'package:myflexbox/config/constants.dart';
 
 
 class ContactScreen extends StatelessWidget {
@@ -28,57 +17,24 @@ class ContactScreen extends StatelessWidget {
     /// It provides APIs for showing drawers, snack bars and bottom sheets.
     /// In a Scaffold you can add for example a button navigation bar
     return Scaffold(
-
-      appBar: AppBar(
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 0,
-          leading: IconButton(icon: Icon(Icons.arrow_back),
-            color: Colors.black54,
-            onPressed: () => Navigator.pushNamed(context, AppRouter.ProfileViewRoute)),
-          title: Text(
-            "Kontakte",
-            style: TextStyle(color: Colors.black54),
-          )
-
-      ),
       ///Body() is a Widget class which can be found at screens/splash/components
-      body: MyHomePage(title: 'test'),
+      body: Contacts(),
     );
 
-
-    /*
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Contacts',
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-      ),
-      home: MyHomePage(title: 'Flutter Contacts'),
-    );
-  }
-
-   */
   }
 }
 
 
-class MyHomePage extends StatefulWidget {
-
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-
-
+class Contacts extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ContactsState createState() => _ContactsState();
 }
 
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ContactsState extends State<Contacts> {
+
+
+
   /// List for all contacts
   List<Contact> contacts = [];
   /// list for sontacts after searcing
@@ -87,7 +43,6 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController searchController = new TextEditingController();
 
   /// List for favorites
-  //final _savedContacts = Set<Contact>();
   List<Contact> _savedContacts = [];
 
   /// import all the contacts
@@ -115,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // save contacts on phone in a list
     List<Contact> _contacts = (await ContactsService.getContacts()).toList();
 
+    /// sort the favorites and put them at the front
     var test = _savedContacts;
     test.sort((a, b) => a.displayName.compareTo(b.displayName));
     test += _contacts;
@@ -122,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
     /// rebuild the List after flutter has the contacts
     /// populates the list
     setState(() {
+      /// remove duplicates
       contacts = test.toSet().toList();
       //contacts = _contacts;
     });
@@ -172,7 +129,25 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
+
+   // const kPrimaryColor = Color(0xFFD20A10);
+
+
     return Scaffold(
+      appBar: AppBar(
+          brightness: Brightness.light,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          elevation: 0,
+         iconTheme: IconThemeData(
+           color: Colors.black54
+         ),
+          title: Text(
+            "Kontakte",
+            style: TextStyle(color: Colors.black54),
+          ),
+        ),
+
 
       /// add Button
       floatingActionButton: FloatingActionButton(
@@ -214,6 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     labelText: 'Search',
                     border: new OutlineInputBorder(
                         borderSide: new BorderSide(
+
                             color: Theme.of(context).primaryColor
                         )
                     ),
@@ -240,26 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       /// displays the user name and the phone number
                       return ListTile(
-                        /// shows contact details
-                        /// also allows to edit and delete contact
-
-                        /*
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) => ContactDetails(
-                                  contact,
-                                  onContactDelete: (Contact _contact){
-                                    getAllContacts();
-                                    Navigator.of(context).pop();
-                                  },
-                                  onContactUpdate: (Contact _contact) {
-                                    getAllContacts();
-                                  },
-                                )));
-                          },
-
-                         */
-
                           title: Text(contact.displayName),
                           subtitle: Text(
                             // when user has more phone numbers takes the first one
@@ -271,7 +227,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           CircleAvatar(
                             backgroundImage: MemoryImage(contact.avatar),
                           ) :
-                          CircleAvatar(child: Text(contact.initials()),),
+                          CircleAvatar(
+                            child: Text(contact.initials(),
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
+                            backgroundColor:  Theme.of(context).primaryColor,),
+
+                          // firebase durchsuchen ob nummer in der app registriert ist
+                          // ansonsten person icon -> einladung schicken
 
                           trailing: new IconButton(icon: Icon(alreadySaved ? Icons.favorite:
                           Icons.favorite_border, color: alreadySaved ? Colors.red: null,),
