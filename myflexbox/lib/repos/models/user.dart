@@ -4,7 +4,7 @@ class DBUser {
   String email;
   String name;
   String token;
-  UserCredential firebaseUser;
+  User firebaseUser;
 
   DBUser(this.email, this.name, this.token, this.firebaseUser);
 }

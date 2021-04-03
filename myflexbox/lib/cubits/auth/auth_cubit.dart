@@ -28,9 +28,8 @@ class AuthCubit extends Cubit<AuthState> {
       if(firebaseUser != null) {
         //get token with fireBaseUser.getIdToken(refresh: true)
         //get user name from firebase
-        UserCredential credential = null;
         var idToken = await firebaseUser.getIdToken(true);
-        DBUser user = DBUser("email", "name", idToken, credential);
+        DBUser user = DBUser("email", "name", idToken, firebaseUser);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
@@ -46,24 +45,15 @@ class AuthCubit extends Cubit<AuthState> {
   Future<List> loginWithEmail(String email, String password) async {
       try {
         await Future.delayed(Duration(seconds: 1));
-        var firebaseUserCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-        var userToken = await firebaseUserCredential.user.getIdToken(true);
+        var firebaseUser = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)).user;
+        var userToken = await firebaseUser.getIdToken(true);
         //throw Exception();
-        if(!firebaseUserCredential.user.emailVerified) {
+        if(!firebaseUser.emailVerified) {
           return [ErrorType.EmailError, "Email nicht verifiziert"];
         } else {
-          emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUserCredential)));
+          emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUser)));
         }
 
-        /*
-        if(fireBaseUser != null) {
-          //get token with token = fireBaseUser.getIdToken(refresh: true)
-          //get username from firebase
-          User user = User("email", "name", "token", "firebaseUser");
-          emit(AuthAuthenticated(user));
-          return null;
-        }
-         */
       } catch(e) {
         return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete that
         switch(e.code) {
@@ -84,12 +74,7 @@ class AuthCubit extends Cubit<AuthState> {
   // Catches Exceptions thrown by firebase and returns error messages
   Future<List> registerWithEmail(String email, String password, String username) async {
     try {
-      await Future.delayed(Duration(seconds: 1));
-      //Create user with firebaseUser = auth.createUserWithEmailAndPassword()
-      //Create a user in the users table in firebase
-      //throw Exception();
-      //repo.createUser();
-      //user wieder ausloggen
+
       var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       user.user.sendEmailVerification();
       // Todo -> create DBUser and save to database
