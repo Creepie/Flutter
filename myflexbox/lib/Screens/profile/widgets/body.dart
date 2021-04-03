@@ -16,30 +16,29 @@ class ProfileBody extends StatelessWidget {
     return SingleChildScrollView(
       /// specifies offsets in terms of visual edges
       padding: EdgeInsets.symmetric(vertical: 20),
+
       /// a widget that displays its children in a vertical array
       child: Column(
         children: [
           BlocBuilder<AuthCubit, AuthState>(
             builder: (cubitContext, state) {
-              return Text(
-                  (state as AuthAuthenticated).user.email
-              );
+              return Text(state is AuthAuthenticated ? state.user.email : "");
             },
           ),
+
           /// is a widget class
           ProfilePic(),
+
           /// a box with a specified size
           SizedBox(height: 20),
+
           /// different menu points
           ProfileMenu(
             text: "Favoriten",
             icon: "assets/icons/Heart_Icon.svg",
             press: () async => {
-
-            if (await Permission.contacts.request().isGranted) {
-              Navigator.pushNamed(context, AppRouter.ContactViewRoute)
-            }
-
+              if (await Permission.contacts.request().isGranted)
+                {Navigator.pushNamed(context, AppRouter.ContactViewRoute)}
             },
           ),
           ProfileMenu(
@@ -67,10 +66,16 @@ class ProfileBody extends StatelessWidget {
               return ProfileMenu(
                 text: "Log Out",
                 icon: "assets/icons/Log_out.svg",
-                press: () {
+                press: () async {
                   var authCubit = cubitContext.read<AuthCubit>();
-                  authCubit.logout();
-                  Navigator.pushNamedAndRemoveUntil(context, AppRouter.LoginViewRoute, (route) => false);
+                  await authCubit.logout();
+                  var arguments = {
+                    "authCubit": authCubit,
+                    "userRepository": authCubit.userRepository
+                  };
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, AppRouter.LoginViewRoute, (route) => false,
+                      arguments: arguments);
                 },
               );
             },
@@ -80,20 +85,3 @@ class ProfileBody extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
