@@ -28,8 +28,9 @@ class AuthCubit extends Cubit<AuthState> {
       if(firebaseUser != null) {
         //get token with fireBaseUser.getIdToken(refresh: true)
         //get user name from firebase
+
         var idToken = await firebaseUser.getIdToken(true);
-        DBUser user = DBUser("email", "name", idToken, firebaseUser);
+        DBUser user = DBUser("email", "name", idToken, firebaseUser.uid);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
@@ -51,7 +52,8 @@ class AuthCubit extends Cubit<AuthState> {
         if(!firebaseUser.emailVerified) {
           return [ErrorType.EmailError, "Email nicht verifiziert"];
         } else {
-          emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUser)));
+          var user = await userRepository.getUserInDB(firebaseUser.uid);
+          emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUser.uid)));
         }
 
       } catch(e) {
@@ -77,8 +79,13 @@ class AuthCubit extends Cubit<AuthState> {
 
       var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       user.user.sendEmailVerification();
-      // Todo -> create DBUser and save to database
-      return null;
+      var token = user.user.getIdToken(true);
+      var success = await userRepository.addUserInDB(DBUser(email,username,token.toString(),user.user.uid));
+      if(success){
+        return null;
+      } else {
+        return [ErrorType.EmailError, "Es gab ein Problem mit der Datenbank"];
+      }
     } catch(e) {
       return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete
       switch(e.code) {

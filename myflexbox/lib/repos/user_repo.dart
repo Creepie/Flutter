@@ -1,9 +1,44 @@
+import 'dart:async';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'models/user.dart';
 
 // Handles the communication with the database, concerning the user.
 class UserRepository {
+  FirebaseDatabase database;
+  DatabaseReference userDb;
+
+  UserRepository(){
+    database = FirebaseDatabase();
+    userDb = database.reference().child('Users');
+  }
+
+
+
+
+  Future<bool> addUserInDB(DBUser user) async {
+    var test = await userDb.child(user.uid).set(user.toJson());
+    return Future.value(true);
+  }
+
+  Future<DBUser> getUserInDB(String uid) async {
+    Completer<DBUser> completer = new Completer<DBUser>();
+    
+    FirebaseDatabase.instance
+        .reference()
+        .child("Users")
+        .orderByChild("uid")
+        .equalTo(uid)
+        .once()
+        .then((DataSnapshot snapshot) {
+      var user = new DBUser.fromJson(snapshot.value);
+      completer.complete(user);
+    });
+    return completer.future;
+  }
+
 
   //Check if LogIn Data is correct and return Token, null otherwise
   Future<String> authenticate({
