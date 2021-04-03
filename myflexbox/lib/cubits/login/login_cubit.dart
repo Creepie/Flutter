@@ -24,6 +24,7 @@ class LoginCubit extends Cubit<LoginState> {
   // If unsuccessful, the error is stored in the password or email object, and
   // a failure state is emitted.
   Future<void> login() async {
+    print("try login");
     String emailText = state.email.text;
     String passwordText = state.password.text;
     emit(LoadingLoginState());
@@ -82,6 +83,7 @@ class LoginCubit extends Cubit<LoginState> {
   // remains the same)
   // A LoginFailure State is emitted with the new email and password.
   void invalidInput() {
+    print("invalid input");
     Email email = Email.clone(state.email);
     if(email.text == null) {
       email.error = "Email is required";

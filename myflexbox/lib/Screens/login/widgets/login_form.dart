@@ -129,6 +129,11 @@ class LoginButton extends StatelessWidget {
           && state.password.error == null
           && state.password.text != null
           && state.email.text != null;
+      if(canSubmit) {
+        print("everything is fine");
+      } else {
+        print("cannot submit");
+      }
       if (state is LoadingLoginState) {
         // While loading, a progress-indicator is displayed
         return SizedBox(

@@ -48,10 +48,13 @@ class AuthCubit extends Cubit<AuthState> {
         await Future.delayed(Duration(seconds: 1));
         var firebaseUserCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
         var userToken = await firebaseUserCredential.user.getIdToken(true);
-
         //throw Exception();
+        if(!firebaseUserCredential.user.emailVerified) {
+          return [ErrorType.EmailError, "Email nicht verifiziert"];
+        } else {
+          emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUserCredential)));
+        }
 
-        emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUserCredential)));
         /*
         if(fireBaseUser != null) {
           //get token with token = fireBaseUser.getIdToken(refresh: true)
@@ -88,6 +91,7 @@ class AuthCubit extends Cubit<AuthState> {
       //repo.createUser();
       //user wieder ausloggen
       var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      user.user.sendEmailVerification();
       // Todo -> create DBUser and save to database
       return null;
     } catch(e) {
