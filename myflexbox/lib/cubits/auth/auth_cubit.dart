@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:myflexbox/repos/models/form_data.dart';
 import 'package:myflexbox/repos/models/user.dart';
 import 'package:myflexbox/repos/user_repo.dart';
@@ -10,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 // Is available in all widgets of the app
 class AuthCubit extends Cubit<AuthState> {
   final UserRepository userRepository;
+ // final FirebaseAuth _firebaseAuth;
 
   // UserRepository is passed in the constructor
   AuthCubit(this.userRepository) : super(AuthUninitialized());
@@ -18,14 +20,17 @@ class AuthCubit extends Cubit<AuthState> {
   // Emits the AuthLoading State at the start.
   // Emits a different state depending on the result.
   Future<void> authenticate() async {
+      await Firebase.initializeApp();
       emit(AuthLoading());
-      await Future.delayed(Duration(seconds: 1));
       //get user with FirebaseAuth.instance.currentUser
-      String firebaseUser = null;
+      var firebaseUser = await FirebaseAuth.instance.currentUser;
+
       if(firebaseUser != null) {
         //get token with fireBaseUser.getIdToken(refresh: true)
         //get user name from firebase
-        DBUser user = DBUser("email", "name", "token", "fireBaseUser");
+        UserCredential credential = null;
+        var idToken = await firebaseUser.getIdToken(true);
+        DBUser user = DBUser("email", "name", idToken, credential);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
@@ -41,10 +46,12 @@ class AuthCubit extends Cubit<AuthState> {
   Future<List> loginWithEmail(String email, String password) async {
       try {
         await Future.delayed(Duration(seconds: 1));
-        //Get user with firebaseUser = Auth.signInWithEmailAndPassword()
+        var firebaseUserCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+        var userToken = await firebaseUserCredential.user.getIdToken(true);
+
         //throw Exception();
 
-        emit(AuthAuthenticated(DBUser("", "", "", "")));
+        emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUserCredential)));
         /*
         if(fireBaseUser != null) {
           //get token with token = fireBaseUser.getIdToken(refresh: true)
@@ -80,6 +87,8 @@ class AuthCubit extends Cubit<AuthState> {
       //throw Exception();
       //repo.createUser();
       //user wieder ausloggen
+      var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      // Todo -> create DBUser and save to database
       return null;
     } catch(e) {
       return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete
@@ -110,5 +119,9 @@ class AuthCubit extends Cubit<AuthState> {
     //emit(AuthAuthenticated(user))
   }
 
+  void logout() async {
+    FirebaseAuth.instance.signOut();
+
+}
 
 }

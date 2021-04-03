@@ -60,6 +60,14 @@
           }
         },
         {
+          "client_id": "315641758845-7hopmgsu3iaq2ut5a093euvtdc0912sc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myflexbox",
+            "certificate_hash": "62b782ec04c6d539c6ad4642a348e2acf0465ccd"
+          }
+        },
+        {
           "client_id": "315641758845-7kru8nq5bdv1rb42o8r5ua513v2716m0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
