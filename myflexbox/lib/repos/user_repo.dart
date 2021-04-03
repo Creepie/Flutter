@@ -10,33 +10,29 @@ class UserRepository {
   FirebaseDatabase database;
   DatabaseReference userDb;
 
+  ///Constructor of the UserRepository
+  ///here the database reference is set
   UserRepository(){
     database = FirebaseDatabase();
     userDb = database.reference().child('Users');
   }
 
-
-
-
-  Future<bool> addUserInDB(DBUser user) async {
+  ///this method adds a new entry into the Users table on the firebase database
+  ///param [user] is the user which get stored in the db
+  Future<bool> addUserToDB(DBUser user) async {
     var test = await userDb.child(user.uid).set(user.toJson());
     return Future.value(true);
   }
 
-  Future<DBUser> getUserInDB(String uid) async {
-    Completer<DBUser> completer = new Completer<DBUser>();
-    
-    FirebaseDatabase.instance
-        .reference()
-        .child("Users")
-        .orderByChild("uid")
-        .equalTo(uid)
-        .once()
-        .then((DataSnapshot snapshot) {
-      var user = new DBUser.fromJson(snapshot.value);
-      completer.complete(user);
-    });
-    return completer.future;
+  ///this method gets a user from the firebase db after he start the app
+  ///param [uid] is the unique firebase identifier of the user
+  ///returns [DBUser] object
+  Future<DBUser> getUserFromDB(String uid) async {
+    DataSnapshot user = await userDb
+        .child(uid)
+        .once();
+    return Future.value(DBUser.fromJson(user.value));
+    }
   }
 
 
@@ -69,4 +65,3 @@ class UserRepository {
     await Future.delayed(Duration(seconds: 2));
     return null;
   }
-}

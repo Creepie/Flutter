@@ -28,9 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
       if(firebaseUser != null) {
         //get token with fireBaseUser.getIdToken(refresh: true)
         //get user name from firebase
-
-        var idToken = await firebaseUser.getIdToken(true);
-        DBUser user = DBUser("email", "name", idToken, firebaseUser.uid);
+        var user = await userRepository.getUserFromDB(firebaseUser.uid);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
@@ -47,13 +45,12 @@ class AuthCubit extends Cubit<AuthState> {
       try {
         await Future.delayed(Duration(seconds: 1));
         var firebaseUser = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)).user;
-        var userToken = await firebaseUser.getIdToken(true);
         //throw Exception();
         if(!firebaseUser.emailVerified) {
           return [ErrorType.EmailError, "Email nicht verifiziert"];
         } else {
-          var user = await userRepository.getUserInDB(firebaseUser.uid);
-          emit(AuthAuthenticated(DBUser(email, "", userToken, firebaseUser.uid)));
+          var user = await userRepository.getUserFromDB(firebaseUser.uid);
+          emit(AuthAuthenticated(user));
         }
 
       } catch(e) {
@@ -80,7 +77,7 @@ class AuthCubit extends Cubit<AuthState> {
       var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       user.user.sendEmailVerification();
       var token = user.user.getIdToken(true);
-      var success = await userRepository.addUserInDB(DBUser(email,username,token.toString(),user.user.uid));
+      var success = await userRepository.addUserToDB(DBUser(email,username,token.toString(),user.user.uid));
       if(success){
         return null;
       } else {

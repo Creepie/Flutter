@@ -23,7 +23,7 @@ class _CustomDataState extends State<CustomData> {
   ///add a global query variable for searching in the db
   var query;
   ///the name is used to chance the name of the db search like Stefan, ...
-  String name = "";
+  String uid = "";
   ///the key is used that the firebase db knows to reloads again with another query
   var _key;
 
@@ -92,7 +92,7 @@ class _CustomDataState extends State<CustomData> {
                             primary: Colors.white),
                         onPressed: () {
                           ///create a Person
-                          Person person = new Person(editTextController.text, true);
+                          Person person = new Person("marioTest", "marioeberth@gmail.com", "1", "123" );
                           ///push it to Firebase db
                           userDb.push().set(person.toJson());
                           ///clear the input text field
@@ -128,10 +128,10 @@ class _CustomDataState extends State<CustomData> {
                           ///reload the build method
                           setState(() {
                             ///save the name of the input field in the name variable
-                            name = searchTextController.text;
+                            uid = searchTextController.text;
                             if(searchTextController.text.isNotEmpty){
                               ///search for the specific name in the db
-                              query = userDb.orderByChild("name").equalTo(name);
+                              query = userDb.orderByChild("uid").equalTo(uid);
                             } else {
                               ///load the whole user table if no input in the search field
                               query = userDb;
@@ -187,7 +187,7 @@ class _CustomDataState extends State<CustomData> {
                     userDb.child(snapshot.key).remove(),
               ),
               title: new Text("Name: ${person.name}"),
-              subtitle: new Text("isGay: ${person.isGay}")
+              subtitle: new Text("uid: ${person.uid}")
           );
         });
   }
@@ -195,29 +195,35 @@ class _CustomDataState extends State<CustomData> {
 
 ///Person object
 class Person{
+  final String email;
   final String name;
-  final bool isGay;
+  final String token;
+  final String uid;
 
   ///normal constructor
-  Person(this.name, this.isGay);
+  Person(this.name, this.email, this.token, this.uid);
   ///constructor for parsing from a json
   ///is used in factory below
-  Person.json({this.name, this.isGay});
+  Person.json({this.email, this.token, this.uid, this.name });
 
   ///from object to json
   ///is used to push the data up to the db
   Map<String, dynamic> toJson() =>
       {
+        'email': email,
         'name': name,
-        'isGay': isGay,
+        'token': token,
+        'uid': uid
       };
 
   ///from json to object
   ///is used to parse the data from json to object
   factory Person.fromJson(Map<dynamic, dynamic> json) {
     return Person.json(
+      email: json['email'] as String,
       name: json['name'] as String,
-      isGay: json['isGay'] as bool,
+      token: json['token'] as String,
+      uid: json['uid'] as String
     );
   }
 }
