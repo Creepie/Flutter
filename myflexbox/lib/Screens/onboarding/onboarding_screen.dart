@@ -3,6 +3,7 @@ import 'package:myflexbox/Screens/onboarding/widgets/body.dart';
 import 'package:myflexbox/config/size_config.dart';
 
 
+
 class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

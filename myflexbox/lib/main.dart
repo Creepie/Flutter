@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/repos/user_repo.dart';
 import 'config/app_router.dart';
 import 'cubits/auth/auth_cubit.dart';
+import 'package:myflexbox/config/constants.dart';
+
 
 // Entry Point for the application. The MyApp Widget is started here
 void main() {
@@ -31,6 +33,9 @@ class MyApp extends StatelessWidget {
       // This method checks whether the user is already logged in or not.
       create: (context) => AuthCubit(UserRepository())..authenticate(),
       child: MaterialApp(
+        theme: ThemeData(
+          primaryColor: kPrimaryColor
+        ),
         title: 'MYFLEXBOX',
         onGenerateRoute: _appRouter.generateRoute,
       ),

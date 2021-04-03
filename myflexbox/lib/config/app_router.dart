@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/Screens/home/home_screen.dart';
 import 'package:myflexbox/Screens/login/login_screen.dart';
 import 'package:myflexbox/Screens/onboarding/onboarding_screen.dart';
+import 'package:myflexbox/Screens/profile/profile_page.dart';
 import 'package:myflexbox/Screens/register/register_screen.dart';
 import 'package:myflexbox/Screens/start/start_screen.dart';
 import 'package:myflexbox/cubits/auth/auth_cubit.dart';
@@ -10,6 +11,7 @@ import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/login/login_cubit.dart';
 import 'package:myflexbox/cubits/register/register_cubit.dart';
 import 'package:myflexbox/repos/user_repo.dart';
+import 'package:myflexbox/Screens/profile/widgets/contact_screen.dart';
 
 // Responsible for routing in the App.
 // Each available Route has a static stringValue.
@@ -21,6 +23,8 @@ class AppRouter {
   static const String HomeViewRoute = 'home';
   static const String RegisterViewRoute = 'register';
   static const String OnBoardingRoute = 'onboarding';
+  static const String ContactViewRoute = 'contact';
+  static const String ProfileViewRoute = 'profile';
 
   // Depending on the name of the route, a different MaterialPageRoute
   // is returned from the switch statement, and pushed to the navigation stack
@@ -68,6 +72,12 @@ class AppRouter {
       // OnBoardingRoute
       case OnBoardingRoute:
         return MaterialPageRoute(builder: (context) => OnboardingScreen());
+
+      case ContactViewRoute:
+        return MaterialPageRoute(builder: (context) => ContactScreen());
+
+      case ProfileViewRoute:
+        return MaterialPageRoute(builder: (context) => ProfilePage());
 
       default:
         return MaterialPageRoute(builder: (context) => StartPage());

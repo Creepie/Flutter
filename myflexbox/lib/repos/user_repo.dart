@@ -22,7 +22,7 @@ class UserRepository {
 
   Future<DBUser> getUser(String token) async {
     await Future.delayed(Duration(seconds: 2));
-    return DBUser("mail", "name", token, "");
+    return DBUser("mail", "name", token, null);
   }
 
   Future<bool> logIn() async {
