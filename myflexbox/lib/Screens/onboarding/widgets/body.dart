@@ -7,6 +7,7 @@ import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/cubits/auth/auth_state.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 ///a StatefulWidget can change over time
 /// for example when a counter number should be shown on the display
@@ -131,19 +132,19 @@ class _OnBoardingBodyState extends State<OnBoardingBody> {
                           text: "Continue",
                           press: () {
                             ///call the build method if button is pressed
-                            setState(() {
+                            setState(() async {
                               ///if currentPage < 2 swipe to the next onBoarding Screen
                               if (currentPage < 2) {
                                 _pageController.animateToPage(++currentPage, duration: Duration(milliseconds: 500), curve: Curves.easeOut);
 
                                 ///else (>2) > navigate to the login route (onBoarding done)
-                              } else {
-                                // pass arguments to the route
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    AppRouter.LoginViewRoute,
-                                    (Route<dynamic> route) => false,
-                                    arguments: arguments);
+                              } else if (await Permission.contacts.request().isGranted){
+                                  // pass arguments to the route
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, AppRouter.LoginViewRoute, (Route<dynamic> route) => false, arguments: arguments);
+                                } else {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context, AppRouter.LoginViewRoute, (Route<dynamic> route) => false, arguments: arguments);
                               }
                             });
                           },

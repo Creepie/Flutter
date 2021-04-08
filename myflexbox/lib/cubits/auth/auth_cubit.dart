@@ -80,7 +80,9 @@ class AuthCubit extends Cubit<AuthState> {
       List<String> testList = [];
       testList.add("User1");
       testList.add("User2");
-      var success = await userRepository.addUserToDB(DBUser(email,username,"123",user.user.uid, testList));
+      var userDb = DBUser(email,username,"+43 664 2101738",user.user.uid, testList);
+      var success = await userRepository.addUserToDB(userDb);
+      userRepository.addFavouritesToUser(userDb);
       if(success){
         return null;
       } else {

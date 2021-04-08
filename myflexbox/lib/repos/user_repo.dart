@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,33 @@ class UserRepository {
   ///this method adds a new entry into the Users table on the firebase database
   ///param [user] is the user which get stored in the db
   Future<bool> addUserToDB(DBUser user) async {
-    var test1 = user.toJson();
     var test = await userDb.child(user.uid).set(user.toJson());
     return Future.value(true);
+  }
+
+  ///this method checks the phonebook and search for each [Contact] in it in the userDB
+  ///if a
+  Future<bool> addFavouritesToUser(DBUser user) async {
+    var userNew = user;
+    int count = 0;
+    List<Contact> _contacts = (await ContactsService.getContacts()).toList();
+
+    for(int i=0; i<_contacts.length; i++ ){
+      DataSnapshot contact = await userDb.orderByChild('number').equalTo(_contacts[i].displayName).once();
+
+      if(contact.value != null){
+        Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
+          var user = DBUser.fromJson(values);
+          userNew.favourites.add(user.uid);
+          count++;
+        });
+      }
+
+    }
+    if(count > 0){
+      var test = await userDb.child(userNew.uid).set(user.toJson());
+    }
+    return true;
   }
 
   ///this method gets a user from the firebase db after he start the app
