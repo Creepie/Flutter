@@ -42,5 +42,16 @@ class GetLockerBooking{
     }
   }
 
+  ///this method deletes one [Booking] with a given bookingId
+  Future<bool> deleteBooking(String bookingId) async {
+    var url = '$baseUrl/api/1/booking?bookingId=${bookingId}';
+    final response = await http.delete(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
+
+    if (response.statusCode == 200){
+      return true;
+    } else {
+      return false;
+    }
+  }
 
 }
