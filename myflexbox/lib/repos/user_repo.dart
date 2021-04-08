@@ -20,6 +20,7 @@ class UserRepository {
   ///this method adds a new entry into the Users table on the firebase database
   ///param [user] is the user which get stored in the db
   Future<bool> addUserToDB(DBUser user) async {
+    var test1 = user.toJson();
     var test = await userDb.child(user.uid).set(user.toJson());
     return Future.value(true);
   }
@@ -53,7 +54,7 @@ class UserRepository {
 
   Future<DBUser> getUser(String token) async {
     await Future.delayed(Duration(seconds: 2));
-    return DBUser("mail", "name", token, null);
+    return DBUser("mail", "name", token, null, null);
   }
 
   Future<bool> logIn() async {

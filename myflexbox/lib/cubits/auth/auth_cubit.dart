@@ -77,13 +77,17 @@ class AuthCubit extends Cubit<AuthState> {
       var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       user.user.sendEmailVerification();
       var token = user.user.getIdToken(true);
-      var success = await userRepository.addUserToDB(DBUser(email,username,token.toString(),user.user.uid));
+      List<String> testList = [];
+      testList.add("User1");
+      testList.add("User2");
+      var success = await userRepository.addUserToDB(DBUser(email,username,"123",user.user.uid, testList));
       if(success){
         return null;
       } else {
         return [ErrorType.EmailError, "Es gab ein Problem mit der Datenbank"];
       }
     } catch(e) {
+      print(e.toString());
       return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete
       switch(e.code) {
         case "":
