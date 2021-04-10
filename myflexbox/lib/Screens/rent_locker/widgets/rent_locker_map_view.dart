@@ -146,6 +146,8 @@ class LockerLocationModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+
     return Container(
       height: 170,
       padding: EdgeInsets.all(20),
@@ -156,10 +158,13 @@ class LockerLocationModal extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "${locker.streetName} ${locker.streetNumber}",
-                style: TextStyle(
-                  fontSize: 18,
+              SizedBox(
+                width: width * 0.5,
+                child: Text(
+                  "${locker.streetName} ${locker.streetNumber}",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
               ),
               FlatButton(

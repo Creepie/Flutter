@@ -47,6 +47,8 @@ class LockerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+
     return BlocBuilder<RentLockerCubit, RentLockerState>(
       builder: (context, state) {
         return Card(
@@ -59,10 +61,13 @@ class LockerTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "${locker.streetName} ${locker.streetNumber}",
-                      style: TextStyle(
-                        fontSize: 18,
+                    SizedBox(
+                      width: width * 0.7,
+                      child: Text(
+                        "${locker.streetName} ${locker.streetNumber}",
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                     IconButton(
