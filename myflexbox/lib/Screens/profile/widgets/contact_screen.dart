@@ -2,6 +2,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/config/constants.dart';
@@ -114,6 +115,7 @@ class _ContactsState extends State<Contacts> {
     }
   }
 
+  /// get favorites list that is saved in db
   Future<List<Contact>> getFavouriteUsers() async {
     var myUserId = FirebaseAuth.instance.currentUser.uid;
     DBUser myUser = await getUserFromDB(myUserId);
@@ -192,6 +194,76 @@ class _ContactsState extends State<Contacts> {
   }
 
 
+  /// Dialog for inviting a contact
+  popUpDialog() {
+    Widget cancelButton = FlatButton(
+      child: Text('Cancel'),
+      onPressed: (){
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget deleteButton = FlatButton(
+      color: Colors.red,
+      child: Text('Add'),
+      onPressed: () async {
+        /// TO DO:
+        /// send Invite for App
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text('Add User'),
+      content: Text('Invite friend when he is not using the MyFlexBox App'),
+      actions: <Widget>[
+
+        Row(mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(width: 280,
+              child: InternationalPhoneNumberInput(
+                onInputChanged: (phoneNumber) {
+
+                 // phone number was not found in db -> user doesnt use app
+                 // send an invite to this person
+                  if(getDBContact(phoneNumber.toString()) == null){
+
+                  } else {
+                    // reload the contact list after user is found
+                    getAllContacts();
+                  }
+
+                },
+                errorMessage: "test",
+                spaceBetweenSelectorAndTextField: 5,
+                locale: "AT",
+                autoFocus: false,
+                autoFocusSearch: false,
+                autoValidateMode: AutovalidateMode.always,
+                countries: ["AT", "DE"],
+                ignoreBlank: false,
+                inputBorder: OutlineInputBorder(),
+                selectorConfig: SelectorConfig(
+                  setSelectorButtonAsPrefixIcon: true,
+                ),
+              ))
+          ],
+        ),
+
+        Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+          SizedBox(width: 100,child: cancelButton),
+          SizedBox(width: 100,child: deleteButton)
+        ],)
+
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -221,6 +293,7 @@ class _ContactsState extends State<Contacts> {
         child: Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
+          popUpDialog();
          getFavouriteUsers();
         },
       ),
