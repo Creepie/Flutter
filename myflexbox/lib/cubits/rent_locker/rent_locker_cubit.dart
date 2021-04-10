@@ -37,6 +37,11 @@ class RentLockerCubit extends Cubit<RentLockerState> {
             myLocation: MapsLocationData.clone(state.myLocation),
             lockerList: state.lockerList),
       );
+      //wait until the mapsController is initialized, then update Camera
+      while (mapsController == null) {
+        await Future.delayed(Duration.zero);
+      }
+      updateCameraLocation();
     } else {
       emit(FilterRentLockerState(
           boxSize: state.boxSize,
@@ -45,6 +50,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
           location: MapsLocationData.clone(state.chosenLocation),
           myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
+      mapsController = null;
     }
   }
 
@@ -225,11 +231,28 @@ class RentLockerCubit extends Cubit<RentLockerState> {
     }
   }
 
+  void showLockerOnMap(LatLng latLng) async {
+    emit(MapRentLockerState(
+        boxSize: state.boxSize,
+        startDate: state.startDate,
+        endDate: state.endDate,
+        location: MapsLocationData.clone(state.chosenLocation),
+        myLocation: MapsLocationData.clone(state.myLocation),
+        lockerList: state.lockerList));
+    while (mapsController == null) {
+      await Future.delayed(Duration.zero);
+    }
+    mapsController.animateCamera(CameraUpdate.newCameraPosition(
+        new CameraPosition(
+            target: latLng,
+            tilt: 0,
+            zoom: 12.4746)));
+  }
+
   Future<void> updateCameraLocation() async {
-    if (state.lockerList.length == 0 || mapsController == null) {
+    if (mapsController == null) {
       return;
     }
-
     //The location is not an exact location -> city, bundesland...
     if (!state.chosenLocation.isExactLocation || state.lockerList.length == 0) {
       mapsController.animateCamera(CameraUpdate.newCameraPosition(

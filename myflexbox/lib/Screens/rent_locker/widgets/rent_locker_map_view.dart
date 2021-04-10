@@ -1,10 +1,10 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:myflexbox/repos/models/locker.dart';
 
 class RentLockerMapView extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildContext) {
     return BlocBuilder<RentLockerCubit, RentLockerState>(
         builder: (context, state) {
       markers.clear();
@@ -80,6 +80,23 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
             draggable: false,
             zIndex: 2,
             flat: true,
+            consumeTapEvents: true,
+            onTap: () {
+              showModalBottomSheet(
+                  context: buildContext,
+                  barrierColor: Colors.black.withOpacity(0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
+                  ),
+                  builder: (BuildContext buildContext) {
+                    var rentLockerCubit = context.read<RentLockerCubit>();
+                    return BlocProvider.value(
+                      value: rentLockerCubit,
+                      child: LockerLocationModal(locker: locker),
+                    );
+                  });
+            },
             anchor: Offset(0.5, 0.5),
             icon: flexboxMarker != null
                 ? flexboxMarker
@@ -96,8 +113,8 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
               mapType: MapType.normal,
               //first Camera Position
               initialCameraPosition: CameraPosition(
-                target:
-                    LatLng(state.chosenLocation.lat, state.chosenLocation.long),
+                target: LatLng(
+                    state.chosenLocation.lat, state.chosenLocation.long),
                 zoom: 10.4746,
               ),
               //add all markers
@@ -108,8 +125,8 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
               onMapCreated: (GoogleMapController controller) async {
                 var rentLockerCubit = context.read<RentLockerCubit>();
                 rentLockerCubit.mapsController = controller;
-                await Future.delayed(Duration(milliseconds: 700));
-                rentLockerCubit.updateCameraLocation();
+                //await Future.delayed(Duration(milliseconds: 700));
+                //rentLockerCubit.updateCameraLocation();
               },
             ),
             state is MapRentLockerLoadingState
@@ -122,10 +139,101 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
   }
 }
 
+class LockerLocationModal extends StatelessWidget {
+  final Locker locker;
+
+  LockerLocationModal({this.locker});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 170,
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "${locker.streetName} ${locker.streetNumber}",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              FlatButton(
+                  color: Colors.red,
+                  onPressed: () {},
+                  child: Text(
+                    "buchen",
+                    style: TextStyle(color: Colors.white),
+                  ))
+            ],
+          ),
+          Text(
+            "${locker.postcode} ${locker.city}",
+            style: TextStyle(color: Colors.black54),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              Text(
+                "Entfernung",
+                style: TextStyle(color: Colors.black54),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text("-- km"),
+            ],
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Row(
+            children: [
+              Text(
+                "Freie Fächer",
+                style: TextStyle(color: Colors.black54),
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              Text("S:"),
+              Icon(
+                Icons.clear,
+                size: 20,
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              Text("M:"),
+              Icon(
+                Icons.clear,
+                size: 20,
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              Text("L:"),
+              Icon(
+                Icons.check,
+                size: 20,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class MapLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print("loading");
     return Positioned(
       top: 20,
       right: 0,
@@ -134,7 +242,7 @@ class MapLoadingIndicator extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(15)),
-            color: Colors.grey[800],
+            color: Colors.grey[400],
           ),
           height: 30,
           width: 130,
@@ -154,8 +262,7 @@ class MapLoadingIndicator extends StatelessWidget {
                   width: 10,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor:
-                        new AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
                   ))
             ],
           ),

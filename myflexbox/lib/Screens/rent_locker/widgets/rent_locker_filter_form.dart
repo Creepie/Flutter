@@ -285,6 +285,9 @@ class BoxPickerModal extends StatelessWidget {
     return Container(
         height: 340,
         padding: EdgeInsets.only(top: 20, bottom: 0, left: 0, right: 0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30), topRight: Radius.circular(30))),
         child: Column(
           children: [
             Text(
