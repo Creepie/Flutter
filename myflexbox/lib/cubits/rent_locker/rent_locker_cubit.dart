@@ -41,6 +41,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
       while (mapsController == null) {
         await Future.delayed(Duration.zero);
       }
+      await Future.delayed(Duration(milliseconds: 700));
       updateCameraLocation();
     } else {
       emit(FilterRentLockerState(
