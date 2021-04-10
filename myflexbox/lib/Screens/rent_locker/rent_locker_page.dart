@@ -10,16 +10,17 @@ class RentLockerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RentLockerCubit, RentLockerState>(
-          builder: (context, state) {
-            return Column(
-              children: [
-                FilterForm(),
-                state is FilterRentLockerState?
-                  RentLockerListView()
+      builder: (context, state) {
+        return Column(
+          children: [
+            FilterForm(),
+            state is FilterRentLockerState ||
+                    state is FilterRentLockerLoadingState
+                ? RentLockerListView()
                 : RentLockerMapView()
-              ],
-            );
-          },
+          ],
+        );
+      },
     );
   }
 }

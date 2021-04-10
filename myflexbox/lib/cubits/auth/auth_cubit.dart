@@ -11,7 +11,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 // Is available in all widgets of the app
 class AuthCubit extends Cubit<AuthState> {
   final UserRepository userRepository;
- // final FirebaseAuth _firebaseAuth;
+
+  // final FirebaseAuth _firebaseAuth;
 
   // UserRepository is passed in the constructor
   AuthCubit(this.userRepository) : super(AuthUninitialized());
@@ -20,19 +21,19 @@ class AuthCubit extends Cubit<AuthState> {
   // Emits the AuthLoading State at the start.
   // Emits a different state depending on the result.
   Future<void> authenticate() async {
-      await Firebase.initializeApp();
-      emit(AuthLoading());
-      //get user with FirebaseAuth.instance.currentUser
-      var firebaseUser = await FirebaseAuth.instance.currentUser;
+    await Firebase.initializeApp();
+    emit(AuthLoading());
+    //get user with FirebaseAuth.instance.currentUser
+    var firebaseUser = await FirebaseAuth.instance.currentUser;
 
-      if(firebaseUser != null) {
-        //get token with fireBaseUser.getIdToken(refresh: true)
-        //get user name from firebase
-        var user = await userRepository.getUserFromDB(firebaseUser.uid);
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(AuthUnauthenticated());
-      }
+    if (firebaseUser != null) {
+      //get token with fireBaseUser.getIdToken(refresh: true)
+      //get user name from firebase
+      var user = await userRepository.getUserFromDB(firebaseUser.uid);
+      emit(AuthAuthenticated(user));
+    } else {
+      emit(AuthUnauthenticated());
+    }
   }
 
   // Tries login with email and password
@@ -42,27 +43,31 @@ class AuthCubit extends Cubit<AuthState> {
   // If unsuccessful:
   // Catches Exceptions thrown by firebase and returns error messages
   Future<List> loginWithEmail(String email, String password) async {
-      try {
-        await Future.delayed(Duration(seconds: 1));
-        var firebaseUser = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)).user;
-        //throw Exception();
-        if(!firebaseUser.emailVerified) {
-          return [ErrorType.EmailError, "Email nicht verifiziert"];
-        } else {
-          var user = await userRepository.getUserFromDB(firebaseUser.uid);
-          emit(AuthAuthenticated(user));
-        }
-
-      } catch(e) {
-        return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete that
-        switch(e.code) {
-          case "ERROR_WRONG_PASSWORD":
-            return [ErrorType.PasswordError,"Passwort ist falsch"];
-          default:
-            print("here");
-            return [ErrorType.EmailError, "Es gab ein Problem beim Login"];
-        }
+    try {
+      await Future.delayed(Duration(seconds: 1));
+      var firebaseUser = (await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: email, password: password))
+          .user;
+      //throw Exception();
+      if (!firebaseUser.emailVerified) {
+        return [ErrorType.EmailError, "Email nicht verifiziert"];
+      } else {
+        var user = await userRepository.getUserFromDB(firebaseUser.uid);
+        emit(AuthAuthenticated(user));
       }
+    } catch (e) {
+      return [
+        ErrorType.EmailError,
+        "Es gab ein Problem beim Login"
+      ]; //delete that
+      switch (e.code) {
+        case "ERROR_WRONG_PASSWORD":
+          return [ErrorType.PasswordError, "Passwort ist falsch"];
+        default:
+          print("here");
+          return [ErrorType.EmailError, "Es gab ein Problem beim Login"];
+      }
+    }
   }
 
   // Tries registration with email and password
@@ -71,29 +76,31 @@ class AuthCubit extends Cubit<AuthState> {
   // return null
   // If unsuccessful:
   // Catches Exceptions thrown by firebase and returns error messages
-  Future<List> registerWithEmail(String email, String password, String username) async {
+  Future<List> registerWithEmail(
+      String email, String password, String username, String telephone) async {
     try {
-
-      var user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      var user = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
       user.user.sendEmailVerification();
       var token = user.user.getIdToken(true);
       List<String> testList = [];
       testList.add("User1");
       testList.add("User2");
-      var userDb = DBUser(email,username,"+43 664 2101738",user.user.uid, testList);
+      var userDb =
+          DBUser(email, username, "+43 664 2101738", user.user.uid, testList);
       var success = await userRepository.addUserToDB(userDb);
       userRepository.addFavouritesToUser(userDb);
-      if(success){
+      if (success) {
         return null;
       } else {
         return [ErrorType.EmailError, "Es gab ein Problem mit der Datenbank"];
       }
-    } catch(e) {
+    } catch (e) {
       print(e.toString());
       return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete
-      switch(e.code) {
+      switch (e.code) {
         case "":
-          return [ErrorType.EmailError,"Email ist nicht zugelassen"];
+          return [ErrorType.EmailError, "Email ist nicht zugelassen"];
         default:
           return [ErrorType.EmailError, "Es gab ein Problem beim registrieren"];
       }
@@ -105,7 +112,8 @@ class AuthCubit extends Cubit<AuthState> {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
@@ -114,7 +122,8 @@ class AuthCubit extends Cubit<AuthState> {
     );
 
     // Once signed in, return the UserCredential
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
     //emit(AuthAuthenticated(user))
   }
 
@@ -122,6 +131,5 @@ class AuthCubit extends Cubit<AuthState> {
     print("hello");
     await FirebaseAuth.instance.signOut();
     emit(AuthUnauthenticated());
-}
-
+  }
 }

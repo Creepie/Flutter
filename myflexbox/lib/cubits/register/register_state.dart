@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myflexbox/repos/models/form_data.dart';
 
 
@@ -9,7 +10,8 @@ abstract class RegisterState extends Equatable {
   final Email email;
   final Password password;
   final Username username;
-  RegisterState({this.email, this.password, this.username});
+  final Telephone telephone;
+  RegisterState({this.email, this.password, this.username, this.telephone});
 
   //sets the value on which two states are compared. The UI is only rebuild, if
   //two stated are different.
@@ -20,42 +22,66 @@ abstract class RegisterState extends Equatable {
 // Initial State, is emitted at the start, and also if
 // the email, username or password is changed by the user
 class RegisterInitial extends RegisterState {
-  final Email email;
-  final Password password;
-  final Username username;
-  RegisterInitial({this.email, this.password, this.username});
+  RegisterInitial({
+    Email email,
+    Password password,
+    Username username,
+    Telephone telephone
+  }) : super(
+    email: email,
+    password: password,
+    username: username,
+    telephone: telephone
+  );
 
   @override
-  List<Object> get props => [email, password, username];
+  List<Object> get props => [email, password, username, telephone];
 }
 
 // Loading state, is emitted when the user is tried to register
 // email, username and password objects are created, otherwise they would be null which
 // would lead to an error in the form widget
 class RegisterLoadingState extends RegisterState {
-  final Email email = Email();
-  final Password password = Password();
-  final Username username = Username();
+  RegisterLoadingState(): super(
+    email: Email(),
+    password: Password(),
+    username: Username(),
+    telephone: Telephone()
+  );
 }
 
 //State that gets emitted after an unsuccessful register try.
 class RegisterFailure extends RegisterState {
-  final Email email;
-  final Password password;
-  final Username username;
-  RegisterFailure({this.email, this.password, this.username});
+  RegisterFailure({
+    Email email,
+    Password password,
+    Username username,
+    Telephone telephone
+  }) : super(
+      email: email,
+      password: password,
+      username: username,
+      telephone: telephone
+  );
 
   @override
-  List<Object> get props => [email, password, username];
+  List<Object> get props => [email, password, username, telephone];
 }
 
 //State that gets emitted after an successful register try.
 class RegisterSuccess extends RegisterState {
-  final Email email;
-  final Password password;
-  final Username username;
-  RegisterSuccess({this.email, this.password, this.username});
+  RegisterSuccess({
+    Email email,
+    Password password,
+    Username username,
+    Telephone telephone
+  }) : super(
+      email: email,
+      password: password,
+      username: username,
+      telephone: telephone
+  );
 
   @override
-  List<Object> get props => [email, password, username];
+  List<Object> get props => [email, password, username, telephone];
 }

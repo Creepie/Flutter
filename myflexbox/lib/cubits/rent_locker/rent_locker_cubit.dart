@@ -17,14 +17,15 @@ class RentLockerCubit extends Cubit<RentLockerState> {
             boxSize: BoxSize.medium,
             startDate: DateTime.now(),
             endDate: DateTime.now().add(const Duration(days: 1)),
-            location: MyLocationData(
-              lat: 47.804793263105125,
-              long: 13.04687978865836,
-              description: "Salzburg, Österreich",
-            ),
-            myLocation: MyLocationData(),
+            location: MapsLocationData(
+                lat: 47.804793263105125,
+                long: 13.04687978865836,
+                description: "Salzburg, Österreich",
+                isExactLocation: false),
+            myLocation: MapsLocationData(),
             lockerList: []));
 
+  //switch between screens
   Future<void> switchScreen() async {
     if (state is FilterRentLockerState) {
       emit(
@@ -32,31 +33,30 @@ class RentLockerCubit extends Cubit<RentLockerState> {
             boxSize: state.boxSize,
             startDate: state.startDate,
             endDate: state.endDate,
-            location: MyLocationData.clone(state.chosenLocation),
-            myLocation: MyLocationData.clone(state.myLocation),
+            location: MapsLocationData.clone(state.chosenLocation),
+            myLocation: MapsLocationData.clone(state.myLocation),
             lockerList: state.lockerList),
       );
-      await Future.delayed(Duration(milliseconds: 900));
-      updateCameraLocation();
     } else {
       emit(FilterRentLockerState(
           boxSize: state.boxSize,
           startDate: state.startDate,
           endDate: state.endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
   }
 
+  //change Box Size
   void changeBoxSize(BoxSize chosenBoxSize) {
     if (state is FilterRentLockerState) {
       emit(FilterRentLockerState(
           boxSize: chosenBoxSize,
           startDate: state.startDate,
           endDate: state.endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
 
@@ -65,21 +65,22 @@ class RentLockerCubit extends Cubit<RentLockerState> {
           boxSize: chosenBoxSize,
           startDate: state.startDate,
           endDate: state.endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
     fetchResults();
   }
 
+  //change date
   void changeDate(DateTime startDate, DateTime endDate) {
     if (state is FilterRentLockerState) {
       emit(FilterRentLockerState(
           boxSize: state.boxSize,
           startDate: startDate,
           endDate: endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
     if (state is MapRentLockerState) {
@@ -87,21 +88,22 @@ class RentLockerCubit extends Cubit<RentLockerState> {
           boxSize: state.boxSize,
           startDate: startDate,
           endDate: endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
     fetchResults();
   }
 
-  void changeLocation(MyLocationData location) {
+  //change location
+  void changeLocation(MapsLocationData location) {
     if (state is FilterRentLockerState) {
       emit(FilterRentLockerState(
           boxSize: state.boxSize,
           startDate: state.startDate,
           endDate: state.endDate,
           location: location,
-          myLocation: MyLocationData.clone(state.myLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
 
@@ -111,7 +113,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
           startDate: state.startDate,
           endDate: state.endDate,
           location: location,
-          myLocation: MyLocationData.clone(state.myLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: state.lockerList));
     }
     fetchResults();
@@ -127,10 +129,11 @@ class RentLockerCubit extends Cubit<RentLockerState> {
           await Geocoder.local.findAddressesFromCoordinates(coordinates);
       var first = addresses.first;
       var addressLine = first.addressLine.replaceAll("Austria", "Österreich");
-      var myLocation = MyLocationData(
+      var myLocation = MapsLocationData(
           lat: location.latitude,
           long: location.longitude,
-          description: addressLine);
+          description: addressLine,
+          isExactLocation: true);
       if (state is FilterRentLockerState) {
         emit(FilterRentLockerState(
             boxSize: state.boxSize,
@@ -152,38 +155,47 @@ class RentLockerCubit extends Cubit<RentLockerState> {
       }
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
-        if(state is FilterRentLockerState) {
+        if (state is FilterRentLockerState) {
           emit(FilterRentLockerState(
               boxSize: state.boxSize,
               startDate: state.startDate,
               endDate: state.endDate,
-              location: MyLocationData(
-                lat: state.chosenLocation.lat,
-                long: state.chosenLocation.long,
-                description: state.chosenLocation.description,
-              ),
-              myLocation: MyLocationData(),
+              location: MapsLocationData.clone(state.chosenLocation),
+              myLocation: MapsLocationData(),
               lockerList: state.lockerList));
         } else {
           emit(MapRentLockerState(
               boxSize: state.boxSize,
               startDate: state.startDate,
               endDate: state.endDate,
-              location: MyLocationData(
-                lat: state.chosenLocation.lat,
-                long: state.chosenLocation.long,
-                description: state.chosenLocation.description,
-              ),
-              myLocation: MyLocationData(),
+              location: MapsLocationData.clone(state.chosenLocation),
+              myLocation: MapsLocationData(),
               lockerList: state.lockerList));
         }
-
       }
     }
     fetchResults();
   }
 
   Future<void> fetchResults() async {
+    if (state is MapRentLockerState) {
+      emit(MapRentLockerLoadingState(
+          boxSize: state.boxSize,
+          startDate: state.startDate,
+          endDate: state.endDate,
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
+          lockerList: []));
+    } else if (state is FilterRentLockerState) {
+      emit(FilterRentLockerLoadingState(
+          boxSize: state.boxSize,
+          startDate: state.startDate,
+          endDate: state.endDate,
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
+          lockerList: []));
+    }
+
     var lockerList = await _rentLockerRepository.getFilteredLockers(
         "s",
         "2021-04-24T08%3A00%3A00%2B00%3A00",
@@ -191,23 +203,23 @@ class RentLockerCubit extends Cubit<RentLockerState> {
         state.chosenLocation.lat,
         state.chosenLocation.long);
 
-    if (state is FilterRentLockerState) {
+    if (state is FilterRentLockerLoadingState) {
       emit(FilterRentLockerState(
           boxSize: state.boxSize,
           startDate: state.startDate,
           endDate: state.endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: lockerList));
     }
 
-    if (state is MapRentLockerState) {
+    if (state is MapRentLockerLoadingState) {
       emit(MapRentLockerState(
           boxSize: state.boxSize,
           startDate: state.startDate,
           endDate: state.endDate,
-          location: MyLocationData.clone(state.chosenLocation),
-          myLocation: MyLocationData.clone(state.myLocation),
+          location: MapsLocationData.clone(state.chosenLocation),
+          myLocation: MapsLocationData.clone(state.myLocation),
           lockerList: lockerList));
       updateCameraLocation();
     }
@@ -218,15 +230,8 @@ class RentLockerCubit extends Cubit<RentLockerState> {
       return;
     }
 
-    String ld = state.chosenLocation.description;
-    int countOfComma = 0;
-    for (int i = ld.indexOf(",");
-        i >= 0;
-        i = state.chosenLocation.description.indexOf(",", i + 1)) {
-      countOfComma++;
-    }
-
-    if (countOfComma <= 1) {
+    //The location is not an exact location -> city, bundesland...
+    if (!state.chosenLocation.isExactLocation || state.lockerList.length == 0) {
       mapsController.animateCamera(CameraUpdate.newCameraPosition(
           new CameraPosition(
               target:

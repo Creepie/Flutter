@@ -1,4 +1,4 @@
-enum ErrorType{PasswordError, EmailError}
+enum ErrorType{PasswordError, EmailError, UsernameError}
 
 //Email FormData class
 //Stores the email text and the error.
@@ -58,5 +58,18 @@ class Username {
     } else {
       error = null;
     }
+  }
+}
+
+class Telephone {
+  String number;
+  String error;
+
+  Telephone({this.number, this.error});
+
+  Telephone.clone(Telephone telephone): this(number: telephone.number, error: telephone.error);
+
+  void validate() {
+    error = null;
   }
 }

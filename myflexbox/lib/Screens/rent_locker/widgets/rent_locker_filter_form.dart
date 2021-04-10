@@ -20,12 +20,11 @@ class FilterForm extends StatelessWidget {
         padding: EdgeInsets.only(
             left: width * 0.05, right: width * 0.05, top: 20, bottom: 20),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.04),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          )
-        ),
+            color: Colors.black.withOpacity(0.04),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            )),
         child: Column(
           children: [
             Row(
@@ -35,7 +34,8 @@ class FilterForm extends StatelessWidget {
                 SizedBox(
                     width: width * 0.15,
                     child: IconButton(
-                      icon: state is FilterRentLockerState
+                      icon: state is FilterRentLockerState ||
+                              state is FilterRentLockerLoadingState
                           ? Icon(Icons.map)
                           : Icon(Icons.list),
                       color: Colors.grey,
@@ -164,7 +164,9 @@ class LockerSearchBar extends StatelessWidget {
               constraints: BoxConstraints(),
               icon: Icon(
                 Icons.location_on_outlined,
-                color: Colors.blueAccent,
+                color: state.myLocation.description != null
+                    ? Colors.blueAccent
+                    : Colors.grey,
               ),
               onPressed: () {
                 var rentLockerCubit = context.read<RentLockerCubit>();
@@ -230,22 +232,46 @@ class DatePickerModal extends StatelessWidget {
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RentLockerCubit, RentLockerState>(
         builder: (context, state) {
-      return Container(
-        height: 400,
-        padding: EdgeInsets.all(20),
-        child: SfDateRangePicker(
-          selectionMode: DateRangePickerSelectionMode.range,
-          onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-            if (args.value is PickerDateRange) {
-              final DateTime rangeStartDate = args.value.startDate;
-              final DateTime rangeEndDate = args.value.endDate;
-              if (rangeStartDate != null && rangeEndDate != null) {
-                var rentLockerCubit = context.read<RentLockerCubit>();
-                rentLockerCubit.changeDate(rangeStartDate, rangeEndDate);
-              }
-            }
-          },
-        ),
+      return Column(
+        children: [
+          Container(
+            padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: FlatButton(
+                  onPressed: () {
+                    Navigator.pop(buildContext);
+                  },
+                  child: Text(
+                    "done",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                    ),
+                  )),
+            ),
+          ),
+          Container(
+            height: 350,
+            padding: EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
+            child: SfDateRangePicker(
+              selectionMode: DateRangePickerSelectionMode.range,
+              minDate: DateTime.now(),
+              initialSelectedRange:
+                  PickerDateRange(state.startDate, state.endDate),
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                if (args.value is PickerDateRange) {
+                  final DateTime rangeStartDate = args.value.startDate;
+                  final DateTime rangeEndDate = args.value.endDate;
+                  if (rangeStartDate != null && rangeEndDate != null) {
+                    var rentLockerCubit = context.read<RentLockerCubit>();
+                    rentLockerCubit.changeDate(rangeStartDate, rangeEndDate);
+                  }
+                }
+              },
+            ),
+          ),
+        ],
       );
     });
   }
@@ -257,6 +283,7 @@ class BoxPickerModal extends StatelessWidget {
     var width = MediaQuery.of(buildContext).size.width;
 
     return Container(
+        height: 340,
         padding: EdgeInsets.only(top: 20, bottom: 0, left: 0, right: 0),
         child: Column(
           children: [
@@ -353,6 +380,7 @@ class BoxPickerSquare extends StatelessWidget {
           onTap: () {
             var rentLockerCubit = context.read<RentLockerCubit>();
             rentLockerCubit.changeBoxSize(boxSize);
+            Navigator.pop(buildContext);
           },
           child: Container(
             width: width * 0.5,

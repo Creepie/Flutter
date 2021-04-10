@@ -8,8 +8,8 @@ class GooglePlacesRepo {
 
   GooglePlacesRepo();
 
-  static final String androidKey = 'AIzaSyAa1wlxqTxIhb5In_fBqQpjGnaISoh11Co';
-  static final String iosKey = 'AIzaSyAa1wlxqTxIhb5In_fBqQpjGnaISoh11Co';
+  static final String androidKey = 'AIzaSyDYdoUpfz9nP-v_-bwdehX9Qkgg6YDm24w';
+  static final String iosKey = 'AIzaSyDYdoUpfz9nP-v_-bwdehX9Qkgg6YDm24w';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
   Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
@@ -34,7 +34,7 @@ class GooglePlacesRepo {
     }
   }
 
-  Future<MyLocationData> getPlaceDetailFromId(String placeId, String placeDescription) async {
+  Future<MapsLocationData> getPlaceDetailFromId(String placeId, String placeDescription) async {
     final request =
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$apiKey';
     final response = await client.get(Uri.parse(request));
@@ -46,10 +46,24 @@ class GooglePlacesRepo {
         final components =
         result['result']['geometry']['location'] as Map<String, dynamic>;
         // build result
-        final location = MyLocationData();
+        final location = MapsLocationData();
         location.lat = components["lat"];
         location.long = components["lng"];
         location.description = placeDescription;
+
+        //check if its a city or a full address
+        String ld = location.description;
+        int countOfComma = 0;
+        for (int i = ld.indexOf(",");
+        i >= 0;
+        i = location.description.indexOf(",", i + 1)) {
+          countOfComma++;
+        }
+        if(countOfComma  >= 2) {
+          location.isExactLocation = true;
+        } else {
+          location.isExactLocation = false;
+        }
         return location;
       }
       throw Exception(result['error_message']);

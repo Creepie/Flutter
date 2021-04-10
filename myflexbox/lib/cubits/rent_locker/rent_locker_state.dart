@@ -8,8 +8,8 @@ abstract class RentLockerState extends Equatable {
   final BoxSize boxSize;
   final DateTime startDate;
   final DateTime endDate;
-  final MyLocationData chosenLocation;
-  final MyLocationData myLocation;
+  final MapsLocationData chosenLocation;
+  final MapsLocationData myLocation;
   final List<Locker> lockerList;
 
   const RentLockerState({
@@ -25,7 +25,6 @@ abstract class RentLockerState extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadingRentLockerState extends RentLockerState {}
 
 class FilterRentLockerState extends RentLockerState {
   @override
@@ -36,8 +35,8 @@ class FilterRentLockerState extends RentLockerState {
     DateTime startDate,
     DateTime endDate,
     BoxSize boxSize,
-    MyLocationData location,
-    MyLocationData myLocation,
+    MapsLocationData location,
+    MapsLocationData myLocation,
     List<Locker> lockerList,
   }) : super(
             boxSize: boxSize,
@@ -46,6 +45,27 @@ class FilterRentLockerState extends RentLockerState {
             chosenLocation: location,
             myLocation: myLocation,
             lockerList: lockerList);
+}
+
+class FilterRentLockerLoadingState extends RentLockerState {
+  @override
+  List<Object> get props =>
+      [boxSize, startDate, endDate, chosenLocation, myLocation];
+
+  FilterRentLockerLoadingState({
+    DateTime startDate,
+    DateTime endDate,
+    BoxSize boxSize,
+    MapsLocationData location,
+    MapsLocationData myLocation,
+    List<Locker> lockerList,
+  }) : super(
+      boxSize: boxSize,
+      startDate: startDate,
+      endDate: endDate,
+      chosenLocation: location,
+      myLocation: myLocation,
+      lockerList: lockerList);
 }
 
 class MapRentLockerState extends RentLockerState {
@@ -57,8 +77,8 @@ class MapRentLockerState extends RentLockerState {
     DateTime startDate,
     DateTime endDate,
     BoxSize boxSize,
-    MyLocationData location,
-    MyLocationData myLocation,
+    MapsLocationData location,
+    MapsLocationData myLocation,
     List<Locker> lockerList,
   }) : super(
             boxSize: boxSize,
@@ -67,6 +87,27 @@ class MapRentLockerState extends RentLockerState {
             chosenLocation: location,
             myLocation: myLocation,
             lockerList: lockerList);
+}
+
+class MapRentLockerLoadingState extends RentLockerState {
+  @override
+  List<Object> get props =>
+      [boxSize, startDate, endDate, chosenLocation, myLocation];
+
+  MapRentLockerLoadingState({
+    DateTime startDate,
+    DateTime endDate,
+    BoxSize boxSize,
+    MapsLocationData location,
+    MapsLocationData myLocation,
+    List<Locker> lockerList,
+  }) : super(
+      boxSize: boxSize,
+      startDate: startDate,
+      endDate: endDate,
+      chosenLocation: location,
+      myLocation: myLocation,
+      lockerList: lockerList);
 }
 
 class SubmitRentLockerState extends RentLockerState {}

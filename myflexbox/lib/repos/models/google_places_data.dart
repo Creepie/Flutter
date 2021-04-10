@@ -10,16 +10,18 @@ class Suggestion {
   }
 }
 
-class MyLocationData {
+class MapsLocationData {
   double lat;
   double long;
   String description;
+  bool isExactLocation;
 
-  MyLocationData.clone(MyLocationData location)
+  MapsLocationData.clone(MapsLocationData location)
       : this(
             lat: location.lat,
             long: location.long,
-            description: location.description);
+            description: location.description,
+            isExactLocation: location.isExactLocation);
 
-  MyLocationData({this.lat, this.long, this.description});
+  MapsLocationData({this.lat, this.long, this.description, this.isExactLocation});
 }

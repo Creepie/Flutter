@@ -2,35 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/cubits/register/register_cubit.dart';
 import 'package:myflexbox/cubits/register/register_state.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 //Register Form Widget
 class RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Container(width: 250, child: UsernameFormField()),
-        SizedBox(
-          height: 20,
-          width: 40,
-        ),
-        Container(width: 250, child: EmailFormField()),
-        SizedBox(
-          height: 20,
-          width: 40,
-        ),
-        Container(
-          width: 250,
-          child: PasswordFormField(),
-        ),
-        SizedBox(
-          height: 20,
-          width: 40,
-        ),
-        LoginButton(),
-        RegisterButton(),
-      ],
+    return Theme(
+      data: ThemeData(
+        accentColor: Colors.blue,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(width: 250, child: UsernameFormField()),
+          SizedBox(
+            height: 20,
+            width: 40,
+          ),
+          Container(width: 250, child: EmailFormField()),
+          SizedBox(
+            height: 20,
+            width: 40,
+          ),
+          Container(
+            width: 250,
+            child: TelephoneFormField(),
+          ),
+          SizedBox(
+            height: 20,
+            width: 40,
+          ),
+          Container(
+            width: 250,
+            child: PasswordFormField(),
+          ),
+          SizedBox(
+            height: 20,
+            width: 40,
+          ),
+          LoginButton(),
+          RegisterButton(),
+        ],
+      ),
     );
   }
 }
@@ -77,7 +91,6 @@ class UsernameFormField extends StatelessWidget {
   }
 }
 
-
 class EmailFormField extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
@@ -114,6 +127,32 @@ class EmailFormField extends StatelessWidget {
           errorStyle: TextStyle(
             color: state is RegisterFailure ? Colors.red : Colors.grey,
           ),
+        ),
+      );
+    });
+  }
+}
+
+class TelephoneFormField extends StatelessWidget {
+  @override
+  Widget build(BuildContext buildContext) {
+    return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
+      return InternationalPhoneNumberInput(
+        onInputChanged: (phoneNumber) {
+          var registerCubit = context.read<RegisterCubit>();
+          registerCubit.changedPhoneNumber(phoneNumber.toString());
+        },
+        errorMessage: state.telephone.error,
+        spaceBetweenSelectorAndTextField: 5,
+        locale: "AT",
+        autoFocus: false,
+        autoFocusSearch: false,
+        autoValidateMode: AutovalidateMode.always,
+        countries: ["AT", "DE"],
+        ignoreBlank: false,
+        inputBorder: OutlineInputBorder(),
+        selectorConfig: SelectorConfig(
+          setSelectorButtonAsPrefixIcon: true,
         ),
       );
     });
@@ -167,12 +206,14 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
       //Here, it is checked, whether all fields are filled and there is no error
-      bool canSubmit = state.email.error == null
-          && state.password.error == null
-          && state.password.text != null
-          && state.email.text != null
-          && state.username.error == null
-          && state.username.text != null;
+      bool canSubmit = state.email.error == null &&
+          state.password.error == null &&
+          state.password.text != null &&
+          state.email.text != null &&
+          state.username.error == null &&
+          state.username.text != null &&
+          state.telephone.error == null &&
+          state.telephone.number != null;
       if (state is RegisterLoadingState) {
         // While loading, a progress-indicator is displayed
         return SizedBox(
@@ -181,7 +222,6 @@ class LoginButton extends StatelessWidget {
           ),
           height: 30.0,
           width: 30.0,
-
         );
       } else {
         return SizedBox(
@@ -190,10 +230,10 @@ class LoginButton extends StatelessWidget {
             child: Text(
               "register",
               style: TextStyle(
-                  color: canSubmit? Colors.white: Colors.blue ,
+                color: canSubmit ? Colors.white : Colors.blue,
               ),
             ),
-            color: canSubmit? Colors.blue: Colors.black12 ,
+            color: canSubmit ? Colors.blue : Colors.black12,
             onPressed: () {
               //Depending on the canSubmit bool, the press leads to different
               // method calls of the registerCubit

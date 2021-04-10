@@ -10,26 +10,31 @@ import 'package:myflexbox/cubits/login/login_state.dart';
 class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Container(width: 250, child: EmailFormField()),
-        SizedBox(
-          height: 20,
-          width: 40,
-        ),
-        Container(
-          width: 250,
-          child: PasswordFormField(),
-        ),
-        SizedBox(
-          height: 20,
-          width: 40,
-        ),
-        LoginButton(),
-        GoogleLoginButton(),
-        RegisterButton(),
-      ],
+    return Theme(
+      data: ThemeData(
+        accentColor: Colors.blue,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(width: 250, child: EmailFormField()),
+          SizedBox(
+            height: 20,
+            width: 40,
+          ),
+          Container(
+            width: 250,
+            child: PasswordFormField(),
+          ),
+          SizedBox(
+            height: 20,
+            width: 40,
+          ),
+          LoginButton(),
+          GoogleLoginButton(),
+          RegisterButton(),
+        ],
+      ),
     );
   }
 }
@@ -51,6 +56,7 @@ class EmailFormField extends StatelessWidget {
         textCapitalization: TextCapitalization.none,
         enableSuggestions: false,
         keyboardType: TextInputType.emailAddress,
+        autovalidateMode: AutovalidateMode.disabled,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "E-Mail",
@@ -91,6 +97,7 @@ class PasswordFormField extends StatelessWidget {
         // Style Attributes
         textCapitalization: TextCapitalization.none,
         autocorrect: false,
+        autovalidateMode: AutovalidateMode.disabled,
         enableSuggestions: false,
         obscureText: true,
         decoration: InputDecoration(
@@ -125,14 +132,12 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext buildContext) {
     return BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
       //Here, it is checked, whether all fields are filled and there is no error
-      bool canSubmit = state.email.error == null
-          && state.password.error == null
-          && state.password.text != null
-          && state.email.text != null;
-      if(canSubmit) {
-        print("everything is fine");
-      } else {
-        print("cannot submit");
+      bool canSubmit = state.email.error == null &&
+          state.password.error == null &&
+          state.password.text != null &&
+          state.email.text != null;
+      if (state.email.error != null) {
+        print("email error");
       }
       if (state is LoadingLoginState) {
         // While loading, a progress-indicator is displayed
@@ -142,7 +147,6 @@ class LoginButton extends StatelessWidget {
           ),
           height: 30.0,
           width: 30.0,
-
         );
       } else {
         return SizedBox(
@@ -151,10 +155,10 @@ class LoginButton extends StatelessWidget {
             child: Text(
               "login",
               style: TextStyle(
-                color: canSubmit? Colors.white: Colors.blue,
+                color: canSubmit ? Colors.white : Colors.blue,
               ),
             ),
-            color: canSubmit? Colors.blue: Colors.black12 ,
+            color: canSubmit ? Colors.blue : Colors.black12,
             onPressed: () {
               //Depending on the canSubmit bool, the press leads to different
               // method calls of the loginCubit
@@ -202,37 +206,39 @@ class GoogleLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
-        return SizedBox(
-          width: 250,
-          child: FlatButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Sign in with Google",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+      return SizedBox(
+        width: 250,
+        child: FlatButton(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Sign in with Google",
+                style: TextStyle(
+                  color: Colors.white,
                 ),
-                SizedBox(
-                  height: 10,
-                  width: 10,
-                ),
-                Image.asset("assets/images/google-icon.png", width: 20, height: 20,),
-
-              ],
-            ),
-            color: Colors.blue,
-            onPressed: () {
-              //Depending on the canSubmit bool, the press leads to different
-              // method calls of the loginCubit
-              FocusScope.of(context).unfocus(); //Hide Keyboard
-              var authCubit = context.read<AuthCubit>();
-              authCubit.signInWithGoogle();
-            },
+              ),
+              SizedBox(
+                height: 10,
+                width: 10,
+              ),
+              Image.asset(
+                "assets/images/google-icon.png",
+                width: 20,
+                height: 20,
+              ),
+            ],
           ),
-        );
+          color: Colors.blue,
+          onPressed: () {
+            //Depending on the canSubmit bool, the press leads to different
+            // method calls of the loginCubit
+            FocusScope.of(context).unfocus(); //Hide Keyboard
+            var authCubit = context.read<AuthCubit>();
+            authCubit.signInWithGoogle();
+          },
+        ),
+      );
     });
   }
-
 }

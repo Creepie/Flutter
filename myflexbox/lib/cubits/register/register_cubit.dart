@@ -11,7 +11,10 @@ class RegisterCubit extends Cubit<RegisterState> {
   // objects.
   RegisterCubit({this.authCubit})
       : super(RegisterInitial(
-            email: Email(), password: Password(), username: Username()));
+            email: Email(),
+            password: Password(),
+            username: Username(),
+            telephone: Telephone()));
 
   //Register method, is called when the form is submitted by the user
   // The email, username and password are fetched from the current state.
@@ -23,15 +26,17 @@ class RegisterCubit extends Cubit<RegisterState> {
     String emailText = state.email.text;
     String passwordText = state.password.text;
     String usernameText = state.username.text;
+    String telephone = state.telephone.number;
     emit(RegisterLoadingState());
 
     List error = await authCubit.registerWithEmail(
-        emailText, passwordText, usernameText);
+        emailText, passwordText, usernameText, telephone);
     if (error == null) {
       emit(RegisterSuccess(
           email: Email(error: null, text: emailText),
           password: Password(error: null, text: passwordText),
-          username: Username(error: null, text: usernameText)));
+          username: Username(error: null, text: usernameText),
+          telephone: Telephone(error: null, number: telephone)));
     } else {
       ErrorType errorType = error[0];
       String errorText = error[1];
@@ -39,17 +44,26 @@ class RegisterCubit extends Cubit<RegisterState> {
         emit(RegisterFailure(
             email: Email(error: errorText, text: emailText),
             password: Password(error: null, text: passwordText),
-            username: Username(error: null, text: usernameText)));
+            username: Username(error: null, text: usernameText),
+            telephone: Telephone(error: null, number: telephone)));
       } else if (errorType == ErrorType.PasswordError) {
         emit(RegisterFailure(
             email: Email(error: null, text: emailText),
             password: Password(error: errorText, text: passwordText),
-            username: Username(error: null, text: usernameText)));
+            username: Username(error: null, text: usernameText),
+            telephone: Telephone(error: null, number: telephone)));
+      } else if (errorType == ErrorType.UsernameError) {
+        emit(RegisterFailure(
+            email: Email(error: null, text: emailText),
+            password: Password(error: null, text: passwordText),
+            username: Username(error: errorText, text: usernameText),
+            telephone: Telephone(error: null, number: telephone)));
       } else {
         emit(RegisterFailure(
             email: Email(error: null, text: emailText),
             password: Password(error: null, text: passwordText),
-            username: Username(error: errorText, text: usernameText)));
+            username: Username(error: null, text: usernameText),
+            telephone: Telephone(error: errorText, number: telephone)));
       }
     }
   }
@@ -63,9 +77,15 @@ class RegisterCubit extends Cubit<RegisterState> {
     Password password = Password.clone(state.password);
     Email email = Email.clone(state.email);
     Username username = Username.clone(state.username);
+    Telephone telephone = Telephone.clone(state.telephone);
+
     email.text = emailText;
     email.validate();
-    emit(RegisterInitial(email: email, password: password, username: username));
+    emit(RegisterInitial(
+        email: email,
+        password: password,
+        username: username,
+        telephone: telephone));
   }
 
   //Is called when the password is changed.
@@ -77,9 +97,15 @@ class RegisterCubit extends Cubit<RegisterState> {
     Password password = Password.clone(state.password);
     Email email = Email.clone(state.email);
     Username username = Username.clone(state.username);
+    Telephone telephone = Telephone.clone(state.telephone);
+
     password.text = passwordText;
     password.validate();
-    emit(RegisterInitial(email: email, password: password, username: username));
+    emit(RegisterInitial(
+        email: email,
+        password: password,
+        username: username,
+        telephone: telephone));
   }
 
   //Is called when the username is changed.
@@ -91,9 +117,30 @@ class RegisterCubit extends Cubit<RegisterState> {
     Password password = Password.clone(state.password);
     Email email = Email.clone(state.email);
     Username username = Username.clone(state.username);
+    Telephone telephone = Telephone.clone(state.telephone);
+
     username.text = usernameText;
     username.validate();
-    emit(RegisterInitial(email: email, password: password, username: username));
+    emit(RegisterInitial(
+        email: email,
+        password: password,
+        username: username,
+        telephone: telephone));
+  }
+
+  void changedPhoneNumber(String phoneNumber) {
+    Password password = Password.clone(state.password);
+    Email email = Email.clone(state.email);
+    Username username = Username.clone(state.username);
+    Telephone telephone = Telephone.clone(state.telephone);
+
+    telephone.number = phoneNumber;
+    telephone.validate();
+    emit(RegisterInitial(
+        email: email,
+        password: password,
+        username: username,
+        telephone: telephone));
   }
 
   // Is called, if the email, username or password objects have an error or are not filled.
@@ -113,6 +160,15 @@ class RegisterCubit extends Cubit<RegisterState> {
     if (username.text == null) {
       username.error = "Username is required";
     }
-    emit(RegisterFailure(email: email, password: password, username: username));
+    Telephone telephone = Telephone.clone(state.telephone);
+    if (telephone.number == null) {
+      telephone.error = "PhoneNumber is required";
+      print("telephone error");
+    }
+    emit(RegisterFailure(
+        email: email,
+        password: password,
+        username: username,
+        telephone: telephone));
   }
 }
