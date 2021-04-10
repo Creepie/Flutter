@@ -252,8 +252,8 @@ class DatePickerModal extends StatelessWidget {
             ),
           ),
           Container(
-            height: 350,
-            padding: EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
+            height: 335,
+            padding: EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 10),
             child: SfDateRangePicker(
               selectionMode: DateRangePickerSelectionMode.range,
               minDate: DateTime.now(),

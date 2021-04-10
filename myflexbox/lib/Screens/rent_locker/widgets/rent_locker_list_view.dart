@@ -14,7 +14,7 @@ class RentLockerListView extends StatelessWidget {
       if (state is FilterRentLockerLoadingState) {
         return RentLockerListLoadingIndicator();
       } else if (state.lockerList.length == 0) {
-        return Text("No lockers for the search");
+        return Center();
       } else {
         return RentLockerList();
       }
