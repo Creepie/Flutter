@@ -51,14 +51,14 @@ class UserRepository {
     return true;
   }
 
-  ///this method query all favourite [Contact] and saves it into [favouriteContacts] for global usage
+  ///this method query all favourite [DBUser] and saves it into [favouriteContacts] for global usage
   Future<void> getFavouriteUsers(String uid) async {
     DBUser myUser = await getUserFromDB(uid);
 
     for(int i=0; i< myUser.favourites.length; i++ ){
       DBUser user = await getUserFromDB(myUser.favourites[i]);
       if(user != null){
-        favouriteContacts.add(Contact(displayName: user.number, givenName: user.name ));
+        favouriteContacts.add(user);
       }
     }
   }

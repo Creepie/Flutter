@@ -70,6 +70,26 @@ class _ContactsState extends State<Contacts> {
     });
   }
 
+  ///this method is called when user types in a phoneNumber and press the add Button
+  Future<bool> searchContact(String phoneNumber) async {
+
+    var contactFromDB = await getDBContact(phoneNumber);
+    var haveWhatsapp = false;
+
+    if(contactFromDB != null){
+      //adden in saved contacts
+    } else if(haveWhatsapp){
+      //send ShareLink via Whatsapp
+    } else {
+      //send ShareLink via SMS
+    }
+
+    return true;
+  }
+
+
+  ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app
+  ///if user already in app > we return a list of [Contact] > if not return null
   Future<List<Contact>> getDBContact(String phoneNumber) async{
 
     int count = 0;
@@ -89,9 +109,8 @@ class _ContactsState extends State<Contacts> {
         var user = DBUser.fromJson(values);
         if(!myUser.favourites.contains(user.uid)){
           myUser.favourites.add(user.uid);
-          var contact = Contact(displayName: user.number, givenName: user.name);
-          contacts.add(contact);
-          favouriteContacts.add(contact);
+          contacts.add(Contact(displayName: user.number, givenName: user.name));
+          favouriteContacts.add(user);
           count++;
         }
       });
