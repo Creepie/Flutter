@@ -1,8 +1,12 @@
 import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/config/constants.dart';
+import 'package:myflexbox/repos/models/user.dart';
 
 
 class ContactScreen extends StatelessWidget {
@@ -49,7 +53,8 @@ class _ContactsState extends State<Contacts> {
   @override
   void initState() {
     getAllContacts();
-
+    //here you get all favourites from db
+    var contactsDb = favouriteContacts;
     /// look if controller has changed or text inside the search input
     /// has changed -> you nedd a listener
     /// calls function everytime something changes in the searchcontroller text
@@ -64,6 +69,75 @@ class _ContactsState extends State<Contacts> {
       return m[0] == "+" ? "+" : "";
     });
   }
+
+  ///this method is called when user types in a phoneNumber and press the add Button
+  Future<bool> searchContact(String phoneNumber) async {
+
+    var contactFromDB = await getDBContact(phoneNumber);
+    var haveWhatsapp = false;
+
+    if(contactFromDB != null){
+      //adden in saved contacts
+    } else if(haveWhatsapp){
+      //send ShareLink via Whatsapp
+    } else {
+      //send ShareLink via SMS
+    }
+
+    return true;
+  }
+
+
+  ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app
+  ///if user already in app > we return a list of [Contact] > if not return null
+  Future<List<Contact>> getDBContact(String phoneNumber) async{
+
+    int count = 0;
+    List<Contact> contacts = [];
+    FirebaseDatabase database = FirebaseDatabase();
+    DatabaseReference userDb = database.reference().child('Users');
+    var myUserId = FirebaseAuth.instance.currentUser.uid;
+
+    //get my current user from db
+    DBUser myUser = await getUserFromDB(myUserId);
+    //get contacts list from search with the given phoneNumber
+    DataSnapshot contact = await userDb.orderByChild('number').equalTo(phoneNumber).once();
+
+    //if search not null > add all contacts to user favourites db and to list for favourites list
+    if(contact.value != null){
+      Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
+        var user = DBUser.fromJson(values);
+        if(!myUser.favourites.contains(user.uid)){
+          myUser.favourites.add(user.uid);
+          contacts.add(Contact(displayName: user.number, givenName: user.name));
+          favouriteContacts.add(user);
+          count++;
+        }
+      });
+
+      //save updated myUser to db
+      if(count > 0){
+        var test = await userDb.child(myUser.uid).set(myUser.toJson());
+      }
+    }
+    return Future.value(contacts);
+  }
+
+  
+  Future<DBUser> getUserFromDB(String uid) async {
+    FirebaseDatabase database = FirebaseDatabase();
+    DatabaseReference userDb = database.reference().child('Users');
+    DataSnapshot user = await userDb
+        .child(uid)
+        .once();
+    if(user.value != null){
+      return Future.value(DBUser.fromJson(user.value));
+    } else {
+      return Future.value(null);
+    }
+  }
+
+
 
   /// get all contacts that are on the phone
   getAllContacts() async {
@@ -125,6 +199,76 @@ class _ContactsState extends State<Contacts> {
   }
 
 
+  /// Dialog for inviting a contact
+  popUpDialog() {
+    Widget cancelButton = FlatButton(
+      child: Text('Cancel'),
+      onPressed: (){
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget deleteButton = FlatButton(
+      color: Colors.red,
+      child: Text('Add'),
+      onPressed: () async {
+        /// TO DO:
+        /// send Invite for App
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text('Add User'),
+      content: Text('Invite friend when he is not using the MyFlexBox App'),
+      actions: <Widget>[
+
+        Row(mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(width: 280,
+              child: InternationalPhoneNumberInput(
+                onInputChanged: (phoneNumber) {
+
+                 // phone number was not found in db -> user doesnt use app
+                 // send an invite to this person
+                  if(getDBContact(phoneNumber.toString()) == null){
+
+                  } else {
+                    // reload the contact list after user is found
+                    getAllContacts();
+                  }
+
+                },
+                errorMessage: "test",
+                spaceBetweenSelectorAndTextField: 5,
+                locale: "AT",
+                autoFocus: false,
+                autoFocusSearch: false,
+                autoValidateMode: AutovalidateMode.always,
+                countries: ["AT", "DE"],
+                ignoreBlank: false,
+                inputBorder: OutlineInputBorder(),
+                selectorConfig: SelectorConfig(
+                  setSelectorButtonAsPrefixIcon: true,
+                ),
+              ))
+          ],
+        ),
+
+        Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+          SizedBox(width: 100,child: cancelButton),
+          SizedBox(width: 100,child: deleteButton)
+        ],)
+
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,25 +298,7 @@ class _ContactsState extends State<Contacts> {
         child: Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
-          try {
-            Contact contact = await ContactsService.openContactForm();
-
-            // firebase durchsuchen nach telnr.
-            // falls gefunden User in firebase kontakte sichern
-            // zu favoriten
-
-            if(contact != null){
-              getAllContacts();
-            }
-
-          } on FormOperationException catch (e) {
-            switch(e.errorCode) {
-              case FormOperationErrorCode.FORM_OPERATION_CANCELED:
-              case FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN:
-              case FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR:
-                print(e.toString());
-            }
-          }
+          popUpDialog();
         },
       ),
       /// widget that combines common paiinting, positioning and sizing widgets

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:myflexbox/config/constants.dart';
 
 import 'models/user.dart';
 
@@ -50,6 +51,18 @@ class UserRepository {
     return true;
   }
 
+  ///this method query all favourite [DBUser] and saves it into [favouriteContacts] for global usage
+  Future<void> getFavouriteUsers(String uid) async {
+    DBUser myUser = await getUserFromDB(uid);
+
+    for(int i=0; i< myUser.favourites.length; i++ ){
+      DBUser user = await getUserFromDB(myUser.favourites[i]);
+      if(user != null){
+        favouriteContacts.add(user);
+      }
+    }
+  }
+
   ///this method gets a user from the firebase db after he start the app
   ///param [uid] is the unique firebase identifier of the user
   ///returns [DBUser] object
@@ -57,7 +70,11 @@ class UserRepository {
     DataSnapshot user = await userDb
         .child(uid)
         .once();
-    return Future.value(DBUser.fromJson(user.value));
+    if(user.value != null){
+      return Future.value(DBUser.fromJson(user.value));
+    } else {
+      return Future.value(null);
+    }
     }
   }
 

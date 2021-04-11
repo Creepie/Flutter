@@ -1,4 +1,6 @@
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:myflexbox/repos/models/user.dart';
 
 ///here you find all constants which can be used in the whole app
 ///Colors
@@ -14,3 +16,5 @@ const kTextColor = Color(0xFF757575);
 
 ///Duration (for Animations)
 const kAnimationDuration = Duration(microseconds: 200);
+
+List<DBUser> favouriteContacts = [];
