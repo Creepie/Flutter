@@ -30,6 +30,7 @@ class AuthCubit extends Cubit<AuthState> {
       //get token with fireBaseUser.getIdToken(refresh: true)
       //get user name from firebase
       var user = await userRepository.getUserFromDB(firebaseUser.uid);
+      userRepository.getFavouriteUsers(user.uid);
       emit(AuthAuthenticated(user));
     } else {
       emit(AuthUnauthenticated());
@@ -53,6 +54,7 @@ class AuthCubit extends Cubit<AuthState> {
         return [ErrorType.EmailError, "Email nicht verifiziert"];
       } else {
         var user = await userRepository.getUserFromDB(firebaseUser.uid);
+        userRepository.getFavouriteUsers(user.uid);
         emit(AuthAuthenticated(user));
       }
     } catch (e) {

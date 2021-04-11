@@ -53,7 +53,8 @@ class _ContactsState extends State<Contacts> {
   @override
   void initState() {
     getAllContacts();
-
+    //here you get all favourites from db
+    var contactsDb = favouriteContacts;
     /// look if controller has changed or text inside the search input
     /// has changed -> you nedd a listener
     /// calls function everytime something changes in the searchcontroller text
@@ -69,10 +70,10 @@ class _ContactsState extends State<Contacts> {
     });
   }
 
-  Future<List<DBUser>> getDBContact(String phoneNumber) async{
+  Future<List<Contact>> getDBContact(String phoneNumber) async{
 
     int count = 0;
-    List<DBUser> dbContacts = [];
+    List<Contact> contacts = [];
     FirebaseDatabase database = FirebaseDatabase();
     DatabaseReference userDb = database.reference().child('Users');
     var myUserId = FirebaseAuth.instance.currentUser.uid;
@@ -88,7 +89,9 @@ class _ContactsState extends State<Contacts> {
         var user = DBUser.fromJson(values);
         if(!myUser.favourites.contains(user.uid)){
           myUser.favourites.add(user.uid);
-          dbContacts.add(user);
+          var contact = Contact(displayName: user.number, givenName: user.name);
+          contacts.add(contact);
+          favouriteContacts.add(contact);
           count++;
         }
       });
@@ -98,7 +101,7 @@ class _ContactsState extends State<Contacts> {
         var test = await userDb.child(myUser.uid).set(myUser.toJson());
       }
     }
-    return Future.value(dbContacts);
+    return Future.value(contacts);
   }
 
   
@@ -115,23 +118,6 @@ class _ContactsState extends State<Contacts> {
     }
   }
 
-  /// get favorites list that is saved in db
-  Future<List<Contact>> getFavouriteUsers() async {
-    var myUserId = FirebaseAuth.instance.currentUser.uid;
-    DBUser myUser = await getUserFromDB(myUserId);
-
-    List<Contact> users =[];
-
-    for(int i=0; i< myUser.favourites.length; i++ ){
-      DBUser user = await getUserFromDB(myUser.favourites[i]);
-      if(user != null){
-
-        users.add(Contact(displayName: user.number, givenName: user.name ));
-      }
-    }
-
-    return Future.value(users);
-  }
 
 
   /// get all contacts that are on the phone
@@ -294,7 +280,6 @@ class _ContactsState extends State<Contacts> {
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
           popUpDialog();
-         getFavouriteUsers();
         },
       ),
       /// widget that combines common paiinting, positioning and sizing widgets

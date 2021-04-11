@@ -1,3 +1,4 @@
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 
 ///here you find all constants which can be used in the whole app
@@ -14,3 +15,5 @@ const kTextColor = Color(0xFF757575);
 
 ///Duration (for Animations)
 const kAnimationDuration = Duration(microseconds: 200);
+
+List<Contact> favouriteContacts = [];
