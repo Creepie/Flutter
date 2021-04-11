@@ -119,6 +119,7 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
                 zoom: 10.4746,
               ),
               //add all markers
+              //
               //markers: _markers,
               circles: circles,
               markers: markers,
