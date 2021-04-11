@@ -14,7 +14,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
 
   RentLockerCubit(this._rentLockerRepository)
       : super(FilterRentLockerState(
-            boxSize: BoxSize.medium,
+            boxSize: BoxSize.m,
             startDate: DateTime.now(),
             endDate: DateTime.now().add(const Duration(days: 1)),
             location: MapsLocationData(
@@ -185,6 +185,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
   }
 
   Future<void> fetchResults() async {
+    print(state.boxSize.toString().split('.').last);
     if (state is MapRentLockerState) {
       emit(MapRentLockerLoadingState(
           boxSize: state.boxSize,
@@ -203,10 +204,37 @@ class RentLockerCubit extends Cubit<RentLockerState> {
           lockerList: []));
     }
 
+    //"2021-04-24T08%3A00%3A00%2B00%3A00",
+    //"2021-04-25T16%3A00%3A00%2B00%3A00",
+
+    //DATE FUNCTIONS
+    //if the date is today, take the time from now
+    var startDate = DateTime.now();
+    if (state.startDate.day != startDate.day ||
+        state.startDate.month != startDate.month ||
+        state.startDate.year != startDate.year) {
+      startDate = state.startDate;
+    }
+    //set start date to minutes only
+    startDate = DateTime(startDate.year, startDate.month, startDate.day,
+        startDate.hour, startDate.minute);
+    //set end date to minutes only
+    var endDate = DateTime(
+        state.endDate.year, state.endDate.month, state.endDate.day, 23, 59);
+
+    //To Iso8601String
+    var endDateString =
+        (Uri.encodeComponent((endDate.toIso8601String() + "+00:00")))
+            .replaceAll(".000", "");
+    var startDateString =
+        (Uri.encodeComponent((startDate.toIso8601String() + "+00:00")))
+            .replaceAll(".000", "");
+    print(startDateString);
+    print(endDateString);
     var lockerList = await _rentLockerRepository.getFilteredLockers(
-        "s",
-        "2021-04-24T08%3A00%3A00%2B00%3A00",
-        "2021-04-25T16%3A00%3A00%2B00%3A00",
+        state.boxSize.toString().split('.').last,
+        startDateString,
+        endDateString,
         state.chosenLocation.lat,
         state.chosenLocation.long);
 
@@ -244,10 +272,7 @@ class RentLockerCubit extends Cubit<RentLockerState> {
       await Future.delayed(Duration.zero);
     }
     mapsController.animateCamera(CameraUpdate.newCameraPosition(
-        new CameraPosition(
-            target: latLng,
-            tilt: 0,
-            zoom: 12.4746)));
+        new CameraPosition(target: latLng, tilt: 0, zoom: 12.4746)));
   }
 
   Future<void> updateCameraLocation() async {

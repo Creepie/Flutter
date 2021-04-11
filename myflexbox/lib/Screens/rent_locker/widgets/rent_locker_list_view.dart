@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/models/locker.dart';
+import 'package:myflexbox/config/app_router.dart';
 
 class RentLockerListView extends StatelessWidget {
   @override
@@ -31,8 +32,11 @@ class RentLockerList extends StatelessWidget {
           child: ListView.builder(
               itemCount: state.lockerList.length,
               itemBuilder: (context, index) {
+                var position =
+                    LatLng(state.myLocation.lat, state.myLocation.long);
                 return Container(
-                    child: LockerTile(locker: state.lockerList[index]));
+                    child: LockerTile(
+                        locker: state.lockerList[index]));
               }),
         );
       },
@@ -51,96 +55,106 @@ class LockerTile extends StatelessWidget {
 
     return BlocBuilder<RentLockerCubit, RentLockerState>(
       builder: (context, state) {
-        return Card(
-          child: Container(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: width * 0.7,
-                      child: Text(
-                        "${locker.streetName} ${locker.streetNumber}",
-                        style: TextStyle(
-                          fontSize: 18,
+        return GestureDetector(
+          onTap: () {
+            var arguments = {
+              "lockerSize": state.boxSize,
+              "startDate": state.startDate,
+              "endDate": state.endDate,
+              "locker": locker,
+            };
+            Navigator.pushNamed(context, AppRouter.SubmitViewRoute,
+                arguments: arguments);
+          },
+          child: Card(
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: width * 0.7,
+                        child: Text(
+                          "${locker.streetName} ${locker.streetNumber}",
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        var rentLockerCubit = context.read<RentLockerCubit>();
-                        var latLng = LatLng(locker.latitude, locker.longitude);
-                        rentLockerCubit.showLockerOnMap(latLng);
-                      },
-                      icon: Icon(
-                        Icons.map,
-                        color: Colors.grey,
+                      IconButton(
+                        onPressed: () {
+                          var rentLockerCubit = context.read<RentLockerCubit>();
+                          var latLng =
+                              LatLng(locker.latitude, locker.longitude);
+                          rentLockerCubit.showLockerOnMap(latLng);
+                        },
+                        icon: Icon(
+                          Icons.map,
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    "${locker.postcode} ${locker.city}",
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Entfernung",
+                        style: TextStyle(color: Colors.black54),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  "${locker.postcode} ${locker.city}",
-                  style: TextStyle(color: Colors.black54),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Entfernung",
-                      style: TextStyle(color: Colors.black54),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text("-- km"),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Freie Fächer",
-                      style: TextStyle(color: Colors.black54),
-                    ),
-                    SizedBox(
-                      width: 7,
-                    ),
-                    Text("S:"),
-                    Icon(
-                      Icons.clear,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: 7,
-                    ),
-                    Text("M:"),
-                    Icon(
-                      Icons.clear,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: 7,
-                    ),
-                    Text("L:"),
-                    Icon(
-                      Icons.check,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ],
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text("-- km"),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Freie Fächer",
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      SizedBox(
+                        width: 7,
+                      ),
+                      locker.compartments.firstWhere(
+                                  (element) => element.size == "s",
+                                  orElse: () => null) ==
+                              null
+                          ? Text("")
+                          : Text(" S "),
+                      locker.compartments.firstWhere(
+                                  (element) => element.size == "m",
+                                  orElse: () => null) ==
+                              null
+                          ? Text("")
+                          : Text(" M "),
+                      locker.compartments.firstWhere(
+                                  (element) => element.size == "l",
+                                  orElse: () => null) ==
+                              null
+                          ? Text("")
+                          : Text(" L "),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

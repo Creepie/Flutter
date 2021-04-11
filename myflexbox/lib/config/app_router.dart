@@ -10,8 +10,11 @@ import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/login/login_cubit.dart';
 import 'package:myflexbox/cubits/register/register_cubit.dart';
+import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
+import 'package:myflexbox/repos/models/locker.dart';
 import 'package:myflexbox/repos/user_repo.dart';
 import 'package:myflexbox/Screens/profile/widgets/contact_screen.dart';
+import 'package:myflexbox/Screens/submit/submit_page.dart';
 
 // Responsible for routing in the App.
 // Each available Route has a static stringValue.
@@ -25,6 +28,7 @@ class AppRouter {
   static const String OnBoardingRoute = 'onboarding';
   static const String ContactViewRoute = 'contact';
   static const String ProfileViewRoute = 'profile';
+  static const String SubmitViewRoute = 'submit';
 
   // Depending on the name of the route, a different MaterialPageRoute
   // is returned from the switch statement, and pushed to the navigation stack
@@ -78,6 +82,19 @@ class AppRouter {
 
       case ProfileViewRoute:
         return MaterialPageRoute(builder: (context) => ProfilePage());
+
+      case SubmitViewRoute:
+        var arguments = settings.arguments as Map;
+        BoxSize lockerSize = arguments["lockerSize"];
+        DateTime startDate = arguments["startDate"];
+        DateTime endTime = arguments["endDate"];
+        Locker locker = arguments["locker"];
+        return MaterialPageRoute(builder: (context) => SubmitPage(
+          lockerSize: lockerSize,
+          locker: locker,
+          startDate: startDate,
+          endDate: endTime,
+        ));
 
       default:
         return MaterialPageRoute(builder: (context) => StartPage());

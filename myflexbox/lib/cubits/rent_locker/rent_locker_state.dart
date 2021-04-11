@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:myflexbox/repos/models/google_places_data.dart';
 import 'package:myflexbox/repos/models/locker.dart';
 
-enum BoxSize { medium, small, large, xlarge }
+enum BoxSize { m, s, l}
 
 abstract class RentLockerState extends Equatable {
   final BoxSize boxSize;

@@ -80,11 +80,11 @@ class FilterForm extends StatelessWidget {
                             icon: Icon(Icons.inbox),
                             padding: EdgeInsets.zero,
                           ),
-                          Text(state.boxSize == BoxSize.small
+                          Text(state.boxSize == BoxSize.s
                               ? "S"
-                              : state.boxSize == BoxSize.medium
+                              : state.boxSize == BoxSize.m
                                   ? "M"
-                                  : state.boxSize == BoxSize.large
+                                  : state.boxSize == BoxSize.l
                                       ? "L"
                                       : "XL"),
                         ],
@@ -315,14 +315,14 @@ class BoxPickerModal extends StatelessWidget {
                     price: "20",
                     width: width,
                     category: "Fach S",
-                    boxSize: BoxSize.small,
+                    boxSize: BoxSize.s,
                   ),
                   BoxPickerSquare(
                     size: "40x40",
                     price: "20",
                     width: width,
                     category: "Fach M",
-                    boxSize: BoxSize.medium,
+                    boxSize: BoxSize.m,
                   ),
                 ],
               ),
@@ -347,14 +347,7 @@ class BoxPickerModal extends StatelessWidget {
                     price: "20",
                     width: width,
                     category: "Fach L",
-                    boxSize: BoxSize.large,
-                  ),
-                  BoxPickerSquare(
-                    size: "40x40",
-                    price: "20",
-                    width: width,
-                    category: "Fach XL",
-                    boxSize: BoxSize.xlarge,
+                    boxSize: BoxSize.l,
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -93,7 +94,7 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
                     var rentLockerCubit = context.read<RentLockerCubit>();
                     return BlocProvider.value(
                       value: rentLockerCubit,
-                      child: LockerLocationModal(locker: locker),
+                      child: LockerLocationModal(locker: locker, state: state),
                     );
                   });
             },
@@ -141,8 +142,9 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
 
 class LockerLocationModal extends StatelessWidget {
   final Locker locker;
+  final RentLockerState state;
 
-  LockerLocationModal({this.locker});
+  LockerLocationModal({this.locker, this.state});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +171,16 @@ class LockerLocationModal extends StatelessWidget {
               ),
               FlatButton(
                   color: Colors.red,
-                  onPressed: () {},
+                  onPressed: () {
+                    var arguments = {
+                      "lockerSize": state.boxSize,
+                      "startDate": state.startDate,
+                      "endDate": state.endDate,
+                      "locker": locker,
+                    };
+                    Navigator.pushNamed(context, AppRouter.SubmitViewRoute,
+                        arguments: arguments);
+                  },
                   child: Text(
                     "buchen",
                     style: TextStyle(color: Colors.white),
@@ -209,7 +220,12 @@ class LockerLocationModal extends StatelessWidget {
               ),
               Text("S:"),
               Icon(
-                Icons.clear,
+                locker.compartments.firstWhere(
+                        (element) => element.size == "s",
+                    orElse: () => null) ==
+                    null
+                    ? Icons.clear
+                    : Icons.check,
                 size: 20,
               ),
               SizedBox(
@@ -217,7 +233,12 @@ class LockerLocationModal extends StatelessWidget {
               ),
               Text("M:"),
               Icon(
-                Icons.clear,
+                locker.compartments.firstWhere(
+                        (element) => element.size == "m",
+                    orElse: () => null) ==
+                    null
+                    ? Icons.clear
+                    : Icons.check,
                 size: 20,
               ),
               SizedBox(
@@ -225,7 +246,12 @@ class LockerLocationModal extends StatelessWidget {
               ),
               Text("L:"),
               Icon(
-                Icons.check,
+                locker.compartments.firstWhere(
+                        (element) => element.size == "l",
+                    orElse: () => null) ==
+                    null
+                    ? Icons.clear
+                    : Icons.check,
                 size: 20,
               ),
             ],
