@@ -33,17 +33,27 @@ class UserRepository {
     int count = 0;
     List<Contact> _contacts = (await ContactsService.getContacts()).toList();
 
-    for(int i=0; i<_contacts.length; i++ ){
-      DataSnapshot contact = await userDb.orderByChild('number').equalTo(_contacts[i].displayName).once();
+    List<String> numberList = [];
 
-      if(contact.value != null){
-        Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
-          var user = DBUser.fromJson(values);
-          userNew.favourites.add(user.uid);
-          count++;
-        });
+    for(int i=0; i < _contacts.length; i++){
+      var contactNumbers = _contacts[i].phones.toList();
+      for(int j=0; j< _contacts[i].phones.length; j++){
+        numberList.add(contactNumbers[j].value);
       }
+    }
 
+    for(int i=0; i< numberList.length; i++ ){
+      if(numberList[i].isNotEmpty){
+        DataSnapshot contact = await userDb.orderByChild('number').equalTo(numberList[i]).once();
+
+        if(contact.value != null){
+          Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
+            var user = DBUser.fromJson(values);
+            userNew.favourites.add(user.uid);
+            count++;
+          });
+        }
+      }
     }
     if(count > 0){
       var test = await userDb.child(userNew.uid).set(user.toJson());

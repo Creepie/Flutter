@@ -83,7 +83,6 @@ class _ContactsState extends State<Contacts> {
     } else {
       //send ShareLink via SMS
     }
-
     return true;
   }
 
