@@ -15,7 +15,6 @@ class ContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ///init the SizeConfig class for height and weight calc methods
     SizeConfig().init(context);
-
     ///A Scaffold Widget provides a framework which implements the basic material
     /// design visual layout structure of the flutter app.
     /// It provides APIs for showing drawers, snack bars and bottom sheets.
@@ -24,7 +23,6 @@ class ContactScreen extends StatelessWidget {
       ///Body() is a Widget class which can be found at screens/splash/components
       body: Contacts(),
     );
-
   }
 }
 
@@ -36,25 +34,25 @@ class Contacts extends StatefulWidget {
 
 
 class _ContactsState extends State<Contacts> {
-
-
-
   /// List for all contacts
-  List<Contact> contacts = [];
+  List<DBUser> contacts = [];
   /// list for sontacts after searcing
-  List<Contact> contactsFiltered = [];
+  List<DBUser> contactsFiltered = [];
   /// controller for searching
   TextEditingController searchController = new TextEditingController();
 
   /// List for favorites
-  List<Contact> _savedContacts = [];
+  List<DBUser> _savedContacts = [];
 
   /// import all the contacts
   @override
   void initState() {
     getAllContacts();
-    //here you get all favourites from db
-    var contactsDb = favouriteContacts;
+
+    // save the favorites from the db
+    _savedContacts = favouriteContacts;
+
+
     /// look if controller has changed or text inside the search input
     /// has changed -> you nedd a listener
     /// calls function everytime something changes in the searchcontroller text
@@ -71,28 +69,43 @@ class _ContactsState extends State<Contacts> {
   }
 
   ///this method is called when user types in a phoneNumber and press the add Button
-  Future<bool> searchContact(String phoneNumber) async {
+  Future<bool> searchContact(String phoneNumber, bool invite) async {
 
     var contactFromDB = await getDBContact(phoneNumber);
     var haveWhatsapp = false;
 
     if(contactFromDB != null){
       //adden in saved contacts
+      for(int i = 0; i < contactFromDB.length; i++){
+        _savedContacts.add(contactFromDB[i]);
+      }
+
+      getAllContacts();
+      return true;
+
     } else if(haveWhatsapp){
       //send ShareLink via Whatsapp
+      return false;
+
     } else {
       //send ShareLink via SMS
+      return false;
     }
-    return true;
+
+  }
+
+  Future<List<DBUser>> removeDBContact(String phoneNumber) async {
+
+
   }
 
 
   ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app
   ///if user already in app > we return a list of [Contact] > if not return null
-  Future<List<Contact>> getDBContact(String phoneNumber) async{
+  Future<List<DBUser>> getDBContact(String phoneNumber) async{
 
     int count = 0;
-    List<Contact> contacts = [];
+    List<DBUser> contacts = [];
     FirebaseDatabase database = FirebaseDatabase();
     DatabaseReference userDb = database.reference().child('Users');
     var myUserId = FirebaseAuth.instance.currentUser.uid;
@@ -108,7 +121,7 @@ class _ContactsState extends State<Contacts> {
         var user = DBUser.fromJson(values);
         if(!myUser.favourites.contains(user.uid)){
           myUser.favourites.add(user.uid);
-          contacts.add(Contact(displayName: user.number, givenName: user.name));
+          contacts.add(user);
           favouriteContacts.add(user);
           count++;
         }
@@ -119,6 +132,7 @@ class _ContactsState extends State<Contacts> {
         var test = await userDb.child(myUser.uid).set(myUser.toJson());
       }
     }
+
     return Future.value(contacts);
   }
 
@@ -143,23 +157,34 @@ class _ContactsState extends State<Contacts> {
     // save contacts on phone in a list
     List<Contact> _contacts = (await ContactsService.getContacts()).toList();
 
+    List<String> fav = [];
+    List<DBUser> dbList = [];
+
+    for(int i=0; i < _contacts.length; i++){
+      var contactNumbers = _contacts[i].phones.toList();
+      for(int j=0; j< _contacts[i].phones.length; j++){
+        dbList.add(DBUser("", _contacts[i].displayName, contactNumbers[j].value.replaceAll(" ", ""), "", fav));
+      }
+    }
+
+
+
     /// sort the favorites and put them at the front
     var test = _savedContacts;
-    test.sort((a, b) => a.displayName.compareTo(b.displayName));
-    test += _contacts;
+    test.sort((a, b) => a.name.compareTo(b.name));
+    test += dbList;
 
     /// rebuild the List after flutter has the contacts
     /// populates the list
     setState(() {
       /// remove duplicates
       contacts = test.toSet().toList();
-      //contacts = _contacts;
     });
   }
 
   /// filter the contact list after letters and numbers
   filterContacts(){
-    List<Contact> _contacts = [];
+    List<DBUser> _contacts = [];
     _contacts.addAll(contacts);
 
     if(searchController.text.isNotEmpty){
@@ -169,7 +194,7 @@ class _ContactsState extends State<Contacts> {
         String searchTerm = searchController.text.toLowerCase();
         String searchTermFlatten = flattenPhoneNumer(searchTerm);
 
-        String contactName = contact.displayName.toLowerCase();
+        String contactName = contact.name.toLowerCase();
         bool nameMatches = contactName.contains(searchTerm);
 
         // found name
@@ -181,13 +206,15 @@ class _ContactsState extends State<Contacts> {
           return false;
         }
 
-        // found by phone number
-        var phone = contact.phones.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumer(phn.value);
-          return phnFlattened.contains(searchTermFlatten);
-        }, orElse: () => null);
 
-        return phone != null;
+        String phnFlattened = flattenPhoneNumer(contact.number);
+
+        if(phnFlattened.contains(searchTermFlatten)){
+          return phnFlattened.contains(searchTermFlatten);
+        } else {
+          return null;
+        }
+
       });
 
       /// forces UI to rebuild and display filtered list
@@ -200,6 +227,9 @@ class _ContactsState extends State<Contacts> {
 
   /// Dialog for inviting a contact
   popUpDialog() {
+    // for testing
+    var number = "+436648360448";
+
     Widget cancelButton = FlatButton(
       child: Text('Cancel'),
       onPressed: (){
@@ -211,8 +241,10 @@ class _ContactsState extends State<Contacts> {
       color: Colors.red,
       child: Text('Add'),
       onPressed: () async {
-        /// TO DO:
-        /// send Invite for App
+
+        if(number != ""){
+          searchContact(number, true);
+        }
       },
     );
 
@@ -226,15 +258,7 @@ class _ContactsState extends State<Contacts> {
             SizedBox(width: 280,
               child: InternationalPhoneNumberInput(
                 onInputChanged: (phoneNumber) {
-
-                 // phone number was not found in db -> user doesnt use app
-                 // send an invite to this person
-                  if(getDBContact(phoneNumber.toString()) == null){
-
-                  } else {
-                    // reload the contact list after user is found
-                    getAllContacts();
-                  }
+                //  print(phoneNumber.phoneNumber);
 
                 },
                 errorMessage: "test",
@@ -257,7 +281,6 @@ class _ContactsState extends State<Contacts> {
           SizedBox(width: 100,child: cancelButton),
           SizedBox(width: 100,child: deleteButton)
         ],)
-
       ],
     );
 
@@ -272,8 +295,6 @@ class _ContactsState extends State<Contacts> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-
-   // const kPrimaryColor = Color(0xFFD20A10);
 
 
     return Scaffold(
@@ -314,7 +335,6 @@ class _ContactsState extends State<Contacts> {
                     labelText: 'Search',
                     border: new OutlineInputBorder(
                         borderSide: new BorderSide(
-
                             color: Theme.of(context).primaryColor
                         )
                     ),
@@ -333,51 +353,60 @@ class _ContactsState extends State<Contacts> {
                     shrinkWrap: true,
                     // check if user is searching or not
                     itemCount: isSearching == true ? contactsFiltered.length : contacts.length,
-                    itemBuilder: (context, index){
-                      Contact contact = isSearching == true ? contactsFiltered[index] : contacts[index];
+                    itemBuilder: (context, index)  {
 
+                      DBUser contact = isSearching == true ? contactsFiltered[index] : contacts[index];
                       /// check if the user already saved the contact to favorites
                       bool alreadySaved = _savedContacts.contains(contact);
 
+                      /// check if user uses app
+                      bool hasApp = true;//searchContact(contact.phones.elementAt(0).value, false);
+
                       /// displays the user name and the phone number
                       return ListTile(
-                          title: Text(contact.displayName),
+                          title: Text(contact.name),
                           subtitle: Text(
                             // when user has more phone numbers takes the first one
-                              contact.phones.elementAt(0).value
+                            //contact.phones.elementAt(0).value
+                            contact.number
                           ),
                           /// if the user has an image saved for the contact show the image
                           /// else show the initials of the name from the contact
-                          leading: (contact.avatar != null && contact.avatar.length > 0) ?
+                          /// 
+                          leading:
                           CircleAvatar(
-                            backgroundImage: MemoryImage(contact.avatar),
-                          ) :
-                          CircleAvatar(
-                            child: Text(contact.initials(),
+                            child: Text(contact.name.substring(0, 1),
                             style: TextStyle(
                               color: Colors.white,
                             )),
                             backgroundColor:  Theme.of(context).primaryColor,),
 
-                          // firebase durchsuchen ob nummer in der app registriert ist
-                          // ansonsten person icon -> einladung schicken
-
                           trailing: new IconButton(icon: Icon(alreadySaved ? Icons.favorite:
-                          Icons.favorite_border, color: alreadySaved ? Colors.red: null,),
+                          hasApp ? Icons.favorite_border: Icons.person_add, color: alreadySaved ? Colors.red: null,),
                               onPressed: () {
                                 setState(() {
+
+                                  // add to favourites
                                   if(alreadySaved){
-                                    // firebase
+                                    /// remove from firebase
+                                    removeDBContact(contact.number);
 
                                     _savedContacts.remove(contact);
                                     contacts.add(contact);
-
                                     getAllContacts();
-                                  } else {
+
+                                  // add to favorites
+                                  } else if (hasApp && alreadySaved == false) {
+                                    /// add contact to firebase
+                                    getDBContact(contact.number);
+
                                     _savedContacts.add(contact);
                                     contacts.remove(contact);
-
                                     getAllContacts();
+
+                                  // sharesheet
+                                  } else if (hasApp == false) {
+
                                   }
                                 });
                               })
