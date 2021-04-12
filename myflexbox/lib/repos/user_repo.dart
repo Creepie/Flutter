@@ -48,8 +48,7 @@ class UserRepository {
 
         if(contact.value != null){
           Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
-            var user = DBUser.fromJson(values);
-            userNew.favourites.add(user.uid);
+            userNew.favourites.add(key);
             count++;
           });
         }
