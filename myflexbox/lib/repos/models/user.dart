@@ -23,8 +23,8 @@ class DBUser {
 
   factory DBUser.fromJson(Map<dynamic,dynamic> json){
     var favouritesFromJson = json['favourites'];
-    List<String> favouritesList;
-    if(favouritesFromJson != "null"){
+    List<String> favouritesList = [];
+    if(favouritesFromJson != null){
       favouritesList = new List<String>.from(favouritesFromJson);
     }
 
