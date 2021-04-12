@@ -38,7 +38,7 @@ class UserRepository {
     for(int i=0; i < _contacts.length; i++){
       var contactNumbers = _contacts[i].phones.toList();
       for(int j=0; j< _contacts[i].phones.length; j++){
-        numberList.add(contactNumbers[j].value);
+        numberList.add(contactNumbers[j].value.replaceAll(" ", ""));
       }
     }
 
