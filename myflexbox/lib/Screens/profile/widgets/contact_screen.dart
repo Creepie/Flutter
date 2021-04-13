@@ -94,7 +94,7 @@ class _ContactsState extends State<Contacts> {
 
   }
 
-  Future<List<DBUser>> removeDBContact(String phoneNumber) async {
+  Future<List<DBUser>> removeDBContact(DBUser contact) async {
 
 
   }
@@ -389,7 +389,7 @@ class _ContactsState extends State<Contacts> {
                                   // add to favourites
                                   if(alreadySaved){
                                     /// remove from firebase
-                                    removeDBContact(contact.number);
+                                    removeDBContact(contact);
 
                                     _savedContacts.remove(contact);
                                     contacts.add(contact);
