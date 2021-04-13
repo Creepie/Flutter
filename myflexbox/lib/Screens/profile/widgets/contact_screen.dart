@@ -103,15 +103,16 @@ class _ContactsState extends State<Contacts> {
 
     var deleted = myUser.favourites.remove(contact.uid);
 
+    bool isCompleted = false;
+    //check if saving is necessary
     if (deleted) {
-      userDb.child(myUser.uid).set(myUser.toJson()).then((result) {
+      isCompleted = await userDb.child(myUser.uid).set(myUser.toJson()).then((result) {
         return Future.value(true); //successful saved
       }).catchError((error) {
         return Future.value(false); //fail to save
       });
-    } else {
-      return Future.value(false); //if not found and removed in list > should not happen
     }
+    return Future.value(isCompleted);
   }
 
   ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app

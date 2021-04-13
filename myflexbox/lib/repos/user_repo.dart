@@ -14,7 +14,7 @@ class UserRepository {
 
   ///Constructor of the UserRepository
   ///here the database reference is set
-  UserRepository(){
+  UserRepository() {
     database = FirebaseDatabase();
     userDb = database.reference().child('Users');
   }
@@ -35,43 +35,47 @@ class UserRepository {
 
     List<String> numberList = [];
 
-    for(int i=0; i < _contacts.length; i++){
+    for (int i = 0; i < _contacts.length; i++) {
       var contactNumbers = _contacts[i].phones.toList();
-      for(int j=0; j< _contacts[i].phones.length; j++){
+      for (int j = 0; j < _contacts[i].phones.length; j++) {
         numberList.add(contactNumbers[j].value.replaceAll(" ", ""));
       }
     }
 
-    for(int i=0; i< numberList.length; i++ ){
-      if(numberList[i].isNotEmpty){
-        DataSnapshot contact = await userDb.orderByChild('number').equalTo(numberList[i]).once();
+    for (int i = 0; i < numberList.length; i++) {
+      if (numberList[i].isNotEmpty) {
+        DataSnapshot contact =
+            await userDb.orderByChild('number').equalTo(numberList[i]).once();
 
-        if(contact.value != null){
-          Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
+        if (contact.value != null) {
+          Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
             userNew.favourites.add(key);
             count++;
           });
         }
       }
     }
-    if(count > 0){
-      userDb.child(userNew.uid).set(user.toJson()).then((result) {
+
+    bool isComplete = false;
+    if (count > 0) {
+      isComplete =
+          await userDb.child(userNew.uid).set(user.toJson()).then((result) {
         return Future.value(true);
-      }).catchError((error){
+      }).catchError((error) {
         return Future.value(false);
       });
-    } else {
-      return Future.value(false);
     }
+
+    return Future.value(isComplete);
   }
 
   ///this method query all favourite [DBUser] and saves it into [favouriteContacts] for global usage
   Future<void> getFavouriteUsers(String uid) async {
     DBUser myUser = await getUserFromDB(uid);
 
-    for(int i=0; i< myUser.favourites.length; i++ ){
+    for (int i = 0; i < myUser.favourites.length; i++) {
       DBUser user = await getUserFromDB(myUser.favourites[i]);
-      if(user != null){
+      if (user != null) {
         favouriteContacts.add(user);
       }
     }
@@ -82,41 +86,40 @@ class UserRepository {
   ///returns [DBUser] object
   Future<DBUser> getUserFromDB(String uid) async {
     DataSnapshot user = await userDb.child(uid).once();
-    if(user.value != null){
+    if (user.value != null) {
       return Future.value(DBUser.fromJson(user.value));
     } else {
       return Future.value(null);
     }
-    }
   }
-
-
-  //Check if LogIn Data is correct and return Token, null otherwise
-  Future<String> authenticate({
-    @required String username,
-    @required String password,
-  }) async {
-    await Future.delayed(Duration(seconds: 2));
-    return "";
-  }
-
-  //Return Token if the user is logged in, null otherwise
-  Future<String> hasToken() async {
-    await Future.delayed(Duration(seconds: 3));
-    return "";
 }
 
-  Future<DBUser> getUser(String token) async {
-    await Future.delayed(Duration(seconds: 2));
-    return DBUser("mail", "name", token, null, null);
-  }
+//Check if LogIn Data is correct and return Token, null otherwise
+Future<String> authenticate({
+  @required String username,
+  @required String password,
+}) async {
+  await Future.delayed(Duration(seconds: 2));
+  return "";
+}
 
-  Future<bool> logIn() async {
-    await Future.delayed(Duration(seconds: 2));
-    return true;
-  }
+//Return Token if the user is logged in, null otherwise
+Future<String> hasToken() async {
+  await Future.delayed(Duration(seconds: 3));
+  return "";
+}
 
-  Future<String> createUser({String username, String password}) async {
-    await Future.delayed(Duration(seconds: 2));
-    return null;
-  }
+Future<DBUser> getUser(String token) async {
+  await Future.delayed(Duration(seconds: 2));
+  return DBUser("mail", "name", token, null, null);
+}
+
+Future<bool> logIn() async {
+  await Future.delayed(Duration(seconds: 2));
+  return true;
+}
+
+Future<String> createUser({String username, String password}) async {
+  await Future.delayed(Duration(seconds: 2));
+  return null;
+}
