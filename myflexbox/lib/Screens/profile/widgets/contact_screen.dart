@@ -69,6 +69,9 @@ class _ContactsState extends State<Contacts> {
   }
 
   ///this method is called when user types in a phoneNumber and press the add Button
+  ///returns a [bool] which means:
+  ///return true = user was found in db and added > you can update favourite list
+  ///return false = user was not found in db > open share > but cant added to favourite list right now
   Future<bool> searchContact(String phoneNumber, bool invite) async {
 
     var contactFromDB = await getDBContact(phoneNumber);
@@ -94,6 +97,10 @@ class _ContactsState extends State<Contacts> {
 
   }
 
+  ///this method remove a dBContact from the users table which is online at the moment
+  ///returns a [bool] which means:
+  ///return true = user found in the favourite list and successful deleted > you can update favourite list
+  ///return false = user not found or not successful deleted > you cant remove the favourite user
   Future<bool> removeDBContact(DBUser contact) async {
     FirebaseDatabase database = FirebaseDatabase();
     DatabaseReference userDb = database.reference().child('Users');
@@ -147,7 +154,8 @@ class _ContactsState extends State<Contacts> {
     return Future.value(contacts);
   }
 
-  
+  ///this method query the db in the users table with the given uid as [String]
+  ///returns a [DBUser] obj which is already parsed or null if user not found in db
   Future<DBUser> getUserFromDB(String uid) async {
     FirebaseDatabase database = FirebaseDatabase();
     DatabaseReference userDb = database.reference().child('Users');
