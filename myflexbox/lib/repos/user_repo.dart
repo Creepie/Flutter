@@ -55,9 +55,14 @@ class UserRepository {
       }
     }
     if(count > 0){
-      var test = await userDb.child(userNew.uid).set(user.toJson());
+      userDb.child(userNew.uid).set(user.toJson()).then((result) {
+        return Future.value(true);
+      }).catchError((error){
+        return Future.value(false);
+      });
+    } else {
+      return Future.value(false);
     }
-    return true;
   }
 
   ///this method query all favourite [DBUser] and saves it into [favouriteContacts] for global usage
@@ -76,9 +81,7 @@ class UserRepository {
   ///param [uid] is the unique firebase identifier of the user
   ///returns [DBUser] object
   Future<DBUser> getUserFromDB(String uid) async {
-    DataSnapshot user = await userDb
-        .child(uid)
-        .once();
+    DataSnapshot user = await userDb.child(uid).once();
     if(user.value != null){
       return Future.value(DBUser.fromJson(user.value));
     } else {

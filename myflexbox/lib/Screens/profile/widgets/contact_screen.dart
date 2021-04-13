@@ -109,8 +109,9 @@ class _ContactsState extends State<Contacts> {
       }).catchError((error) {
         return Future.value(false); //fail to save
       });
+    } else {
+      return Future.value(false); //if not found and removed in list > should not happen
     }
-    return Future.value(false); //if not found and removed in list > should not happen
   }
 
   ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app
