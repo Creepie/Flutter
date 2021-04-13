@@ -94,9 +94,20 @@ class _ContactsState extends State<Contacts> {
 
   }
 
-  Future<List<DBUser>> removeDBContact(DBUser contact) async {
+  Future<bool> removeDBContact(DBUser contact) async {
+    FirebaseDatabase database = FirebaseDatabase();
+    DatabaseReference userDb = database.reference().child('Users');
+    var myUserId = FirebaseAuth.instance.currentUser.uid;
+    DBUser myUser = await getUserFromDB(myUserId);
 
+    var deleted = myUser.favourites.remove(contact.uid);
 
+    if(deleted){
+      var test = await userDb.child(myUser.uid).set(myUser.toJson());
+      return Future.value(true);
+    } else {
+      return Future.value(false);
+    }
   }
 
 
