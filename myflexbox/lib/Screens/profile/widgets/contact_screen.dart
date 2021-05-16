@@ -2,13 +2,16 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+//import 'package:flutter_sms/flutter_sms.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/repos/models/user.dart';
 
+
 class ContactScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     ///init the SizeConfig class for height and weight calc methods
@@ -25,10 +28,12 @@ class ContactScreen extends StatelessWidget {
   }
 }
 
+
 class Contacts extends StatefulWidget {
   @override
   _ContactsState createState() => _ContactsState();
 }
+
 
 class _ContactsState extends State<Contacts> {
   /// List for all contacts
@@ -43,6 +48,9 @@ class _ContactsState extends State<Contacts> {
   /// List for favorites
   List<DBUser> _savedContacts = [];
 
+
+  String mNumber = "";
+
   /// import all the contacts
   @override
   void initState() {
@@ -50,6 +58,7 @@ class _ContactsState extends State<Contacts> {
 
     // save the favorites from the db
     _savedContacts = favouriteContacts;
+
 
     /// look if controller has changed or text inside the search input
     /// has changed -> you nedd a listener
@@ -70,26 +79,36 @@ class _ContactsState extends State<Contacts> {
   ///returns a [bool] which means:
   ///return true = user was found in db and added > you can update favourite list
   ///return false = user was not found in db > open share > but cant added to favourite list right now
-  Future<bool> searchContact(String phoneNumber, bool invite) async {
-    var contactFromDB = await getDBContact(phoneNumber);
-    var haveWhatsapp = false;
+  Future<bool> searchContact(String phoneNumber) async {
 
-    if (contactFromDB != null) {
+    var contactFromDB = await getDBContact(mNumber);
+
+
+    if (contactFromDB != null) { //
       //adden in saved contacts
+
       for (int i = 0; i < contactFromDB.length; i++) {
         _savedContacts.add(contactFromDB[i]);
       }
 
       getAllContacts();
       return true;
-    } else if (haveWhatsapp) {
-      //send ShareLink via Whatsapp
-      return false;
-    } else {
+
+    }  else {
       //send ShareLink via SMS
+      String message = "This is a test message!";
+      List<String> recipents = ["1234567890", "5556787676"];
+
+      //_sendSMS(message, recipents);
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("TEEEEEEEST"),
+      ));
       return false;
     }
+
   }
+
 
   ///this method remove a dBContact from the users table which is online at the moment
   ///returns a [bool] which means:
@@ -102,8 +121,8 @@ class _ContactsState extends State<Contacts> {
     DBUser myUser = await getUserFromDB(myUserId);
 
     var deleted = myUser.favourites.remove(contact.uid);
-
     bool isCompleted = false;
+
     //check if saving is necessary
     if (deleted) {
       isCompleted = await userDb.child(myUser.uid).set(myUser.toJson()).then((result) {
@@ -115,9 +134,11 @@ class _ContactsState extends State<Contacts> {
     return Future.value(isCompleted);
   }
 
+
   ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app
   ///if user already in app > we return a list of [Contact] > if not return null
-  Future<List<DBUser>> getDBContact(String phoneNumber) async {
+  Future<List<DBUser>> getDBContact(String phoneNumber) async{
+
     int count = 0;
     List<DBUser> contacts = [];
     FirebaseDatabase database = FirebaseDatabase();
@@ -127,14 +148,13 @@ class _ContactsState extends State<Contacts> {
     //get my current user from db
     DBUser myUser = await getUserFromDB(myUserId);
     //get contacts list from search with the given phoneNumber
-    DataSnapshot contact =
-        await userDb.orderByChild('number').equalTo(phoneNumber).once();
+    DataSnapshot contact = await userDb.orderByChild('number').equalTo(phoneNumber).once();
 
     //if search not null > add all contacts to user favourites db and to list for favourites list
-    if (contact.value != null) {
-      Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
+    if(contact.value != null){
+      Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
         var user = DBUser.fromJson(values);
-        if (!myUser.favourites.contains(user.uid)) {
+        if(!myUser.favourites.contains(user.uid)){
           myUser.favourites.add(user.uid);
           contacts.add(user);
           favouriteContacts.add(user);
@@ -143,7 +163,7 @@ class _ContactsState extends State<Contacts> {
       });
 
       //save updated myUser to db
-      if (count > 0) {
+      if(count > 0){
         var test = await userDb.child(myUser.uid).set(myUser.toJson());
       }
     }
@@ -156,13 +176,17 @@ class _ContactsState extends State<Contacts> {
   Future<DBUser> getUserFromDB(String uid) async {
     FirebaseDatabase database = FirebaseDatabase();
     DatabaseReference userDb = database.reference().child('Users');
-    DataSnapshot user = await userDb.child(uid).once();
-    if (user.value != null) {
+    DataSnapshot user = await userDb
+        .child(uid)
+        .once();
+    if(user.value != null){
       return Future.value(DBUser.fromJson(user.value));
     } else {
       return Future.value(null);
     }
   }
+
+
 
   /// get all contacts that are on the phone
   getAllContacts() async {
@@ -172,11 +196,10 @@ class _ContactsState extends State<Contacts> {
     List<String> fav = [];
     List<DBUser> dbList = [];
 
-    for (int i = 0; i < _contacts.length; i++) {
+    for(int i=0; i < _contacts.length; i++){
       var contactNumbers = _contacts[i].phones.toList();
-      for (int j = 0; j < _contacts[i].phones.length; j++) {
-        dbList.add(DBUser("", _contacts[i].displayName,
-            contactNumbers[j].value.replaceAll(" ", ""), "", fav));
+      for(int j=0; j< _contacts[i].phones.length; j++){
+        dbList.add(DBUser("", _contacts[i].displayName, contactNumbers[j].value.replaceAll(" ", ""), "", fav));
       }
     }
 
@@ -194,11 +217,11 @@ class _ContactsState extends State<Contacts> {
   }
 
   /// filter the contact list after letters and numbers
-  filterContacts() {
+  filterContacts(){
     List<DBUser> _contacts = [];
     _contacts.addAll(contacts);
 
-    if (searchController.text.isNotEmpty) {
+    if(searchController.text.isNotEmpty){
       /// see which contact matches with the input in searchbar
       /// removes the ones who dont match in the list
       _contacts.retainWhere((contact) {
@@ -209,21 +232,23 @@ class _ContactsState extends State<Contacts> {
         bool nameMatches = contactName.contains(searchTerm);
 
         // found name
-        if (nameMatches == true) {
+        if(nameMatches == true){
           return true;
         }
 
-        if (searchTermFlatten.isEmpty) {
+        if(searchTermFlatten.isEmpty){
           return false;
         }
 
+
         String phnFlattened = flattenPhoneNumer(contact.number);
 
-        if (phnFlattened.contains(searchTermFlatten)) {
+        if(phnFlattened.contains(searchTermFlatten)){
           return phnFlattened.contains(searchTermFlatten);
         } else {
           return null;
         }
+
       });
 
       /// forces UI to rebuild and display filtered list
@@ -233,14 +258,13 @@ class _ContactsState extends State<Contacts> {
     }
   }
 
+
   /// Dialog for inviting a contact
   popUpDialog() {
-    // for testing
-    var number = "+436648360448";
 
     Widget cancelButton = FlatButton(
       child: Text('Cancel'),
-      onPressed: () {
+      onPressed: (){
         Navigator.of(context).pop();
       },
     );
@@ -249,9 +273,7 @@ class _ContactsState extends State<Contacts> {
       color: Colors.red,
       child: Text('Add'),
       onPressed: () async {
-        if (number != "") {
-          searchContact(number, true);
-        }
+        searchContact(mNumber);
       },
     );
 
@@ -262,34 +284,31 @@ class _ContactsState extends State<Contacts> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-                width: 280,
-                child: InternationalPhoneNumberInput(
-                  onInputChanged: (phoneNumber) {
-                    //  print(phoneNumber.phoneNumber);
-                  },
-                  errorMessage: "test",
-                  spaceBetweenSelectorAndTextField: 5,
-                  locale: "AT",
-                  autoFocus: false,
-                  autoFocusSearch: false,
-                  autoValidateMode: AutovalidateMode.always,
-                  countries: ["AT", "DE"],
-                  ignoreBlank: false,
-                  inputBorder: OutlineInputBorder(),
-                  selectorConfig: SelectorConfig(
-                    setSelectorButtonAsPrefixIcon: true,
-                  ),
-                ))
+            SizedBox(width: 280,
+              child: InternationalPhoneNumberInput(
+                onInputChanged: (phoneNumber) {
+                  mNumber = phoneNumber.phoneNumber;
+                },
+                errorMessage: "test",
+                spaceBetweenSelectorAndTextField: 5,
+                locale: "AT",
+                autoFocus: false,
+                autoFocusSearch: false,
+                autoValidateMode: AutovalidateMode.always,
+                countries: ["AT", "DE"],
+                ignoreBlank: false,
+                inputBorder: OutlineInputBorder(),
+                selectorConfig: SelectorConfig(
+                  setSelectorButtonAsPrefixIcon: true,
+                ),
+              ))
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            SizedBox(width: 100, child: cancelButton),
-            SizedBox(width: 100, child: deleteButton)
-          ],
-        )
+
+        Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+          SizedBox(width: 100,child: cancelButton),
+          SizedBox(width: 100,child: deleteButton)
+        ],)
       ],
     );
 
@@ -300,9 +319,11 @@ class _ContactsState extends State<Contacts> {
         });
   }
 
+
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -317,6 +338,7 @@ class _ContactsState extends State<Contacts> {
         ),
       ),
 
+
       /// add Button
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -325,11 +347,9 @@ class _ContactsState extends State<Contacts> {
           popUpDialog();
         },
       ),
-
       /// widget that combines common paiinting, positioning and sizing widgets
       body: Container(
         padding: EdgeInsets.all(20),
-
         /// displays its children in a vertical array
         child: Column(
           children: <Widget>[
@@ -341,68 +361,56 @@ class _ContactsState extends State<Contacts> {
                     labelText: 'Search',
                     border: new OutlineInputBorder(
                         borderSide: new BorderSide(
-                            color: Theme.of(context).primaryColor)),
+                            color: Theme.of(context).primaryColor
+                        )
+                    ),
                     prefixIcon: Icon(
                       Icons.search,
                       color: Theme.of(context).primaryColor,
-                    )),
+                    )
+                ),
               ),
             ),
-
             /// expands a child of a row, column or flex so that the child
             /// fills the available space
             Expanded(
-
-                /// Populates the List
-                child: ListView.builder(
+              /// Populates the List
+                child:  ListView.builder(
                     shrinkWrap: true,
                     // check if user is searching or not
-                    itemCount: isSearching == true
-                        ? contactsFiltered.length
-                        : contacts.length,
-                    itemBuilder: (context, index) {
-                      DBUser contact = isSearching == true
-                          ? contactsFiltered[index]
-                          : contacts[index];
+                    itemCount: isSearching == true ? contactsFiltered.length : contacts.length,
+                    itemBuilder: (context, index)  {
 
+                      DBUser contact = isSearching == true ? contactsFiltered[index] : contacts[index];
                       /// check if the user already saved the contact to favorites
                       bool alreadySaved = _savedContacts.contains(contact);
-
-                      /// check if user uses app
-                      bool hasApp =
-                          true; //searchContact(contact.phones.elementAt(0).value, false);
 
                       /// displays the user name and the phone number
                       return ListTile(
                           title: Text(contact.name),
                           subtitle: Text(
-                              // when user has more phone numbers takes the first one
-                              //contact.phones.elementAt(0).value
-                              contact.number),
-
+                            // when user has more phone numbers takes the first one
+                            //contact.phones.elementAt(0).value
+                            contact.number
+                          ),
                           /// if the user has an image saved for the contact show the image
                           /// else show the initials of the name from the contact
-                          ///
-                          leading: CircleAvatar(
+                          /// 
+                          leading:
+                          CircleAvatar(
                             child: Text(contact.name.substring(0, 1),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                )),
-                            backgroundColor: Theme.of(context).primaryColor,
-                          ),
-                          trailing: new IconButton(
-                              icon: Icon(
-                                alreadySaved
-                                    ? Icons.favorite
-                                    : hasApp
-                                        ? Icons.favorite_border
-                                        : Icons.person_add,
-                                color: alreadySaved ? Colors.red : null,
-                              ),
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
+                            backgroundColor:  Theme.of(context).primaryColor,),
+
+                          trailing: new IconButton(icon: Icon(alreadySaved ? Icons.favorite:
+                          Icons.favorite_border, color: alreadySaved ? Colors.red: null),
                               onPressed: () {
                                 setState(() {
+
                                   // add to favourites
-                                  if (alreadySaved) {
+                                  if(alreadySaved) {
                                     /// remove from firebase
                                     removeDBContact(contact);
 
@@ -410,20 +418,23 @@ class _ContactsState extends State<Contacts> {
                                     contacts.add(contact);
                                     getAllContacts();
 
-                                    // add to favorites
-                                  } else if (hasApp && alreadySaved == false) {
+                                  // add to favorites
+                                  } else {
                                     /// add contact to firebase
                                     getDBContact(contact.number);
 
-                                    _savedContacts.add(contact);
+                                    //_savedContacts.add(contact);
                                     contacts.remove(contact);
-                                    getAllContacts();
+                                    searchContact(contact.number);
+                                    //getAllContacts();
 
-                                    // sharesheet
-                                  } else if (hasApp == false) {}
+                                  }
+
                                 });
-                              }));
-                    }))
+                              })
+                      );
+                    })
+            )
           ],
         ),
       ),
