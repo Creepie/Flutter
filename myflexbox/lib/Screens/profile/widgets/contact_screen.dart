@@ -40,11 +40,6 @@ class _ContactsState extends State<Contacts> {
   /// List for all contacts
   List<DBUser> contacts = [];
 
-  /// List for added contacts
-  List<DBUser> addedContacts = [];
-
-  List<DBUser> phoneContacts = [];
-
   /// list for sontacts after searcing
   List<DBUser> contactsFiltered = [];
 
@@ -101,7 +96,7 @@ class _ContactsState extends State<Contacts> {
       //adden in saved contacts
       for (int i = 0; i < contactFromDB.length; i++) {
         _savedContacts.add(contactFromDB[i]);
-        addedContacts.add(contactFromDB[i]);
+       // addedContacts.add(contactFromDB[i]);
       }
       getAllContacts();
       return true;
