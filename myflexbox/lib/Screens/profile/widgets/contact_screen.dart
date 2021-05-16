@@ -1,8 +1,9 @@
+import 'dart:collection';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_sms/flutter_sms.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/size_config.dart';
@@ -39,6 +40,11 @@ class _ContactsState extends State<Contacts> {
   /// List for all contacts
   List<DBUser> contacts = [];
 
+  /// List for added contacts
+  List<DBUser> addedContacts = [];
+
+  List<DBUser> phoneContacts = [];
+
   /// list for sontacts after searcing
   List<DBUser> contactsFiltered = [];
 
@@ -48,8 +54,8 @@ class _ContactsState extends State<Contacts> {
   /// List for favorites
   List<DBUser> _savedContacts = [];
 
-
   String mNumber = "";
+  bool first = false;
 
   /// import all the contacts
   @override
@@ -58,7 +64,6 @@ class _ContactsState extends State<Contacts> {
 
     // save the favorites from the db
     _savedContacts = favouriteContacts;
-
 
     /// look if controller has changed or text inside the search input
     /// has changed -> you nedd a listener
@@ -75,35 +80,40 @@ class _ContactsState extends State<Contacts> {
     });
   }
 
+  void _sendSMS(String message, List<String> recipents) async {
+    String _result = await sendSMS(message: message, recipients: recipents)
+        .catchError((onError) {
+      print(onError);
+    });
+    print(_result);
+  }
+
+
   ///this method is called when user types in a phoneNumber and press the add Button
   ///returns a [bool] which means:
   ///return true = user was found in db and added > you can update favourite list
   ///return false = user was not found in db > open share > but cant added to favourite list right now
   Future<bool> searchContact(String phoneNumber) async {
 
-    var contactFromDB = await getDBContact(mNumber);
+    var contactFromDB = await getDBContact(phoneNumber);
 
-
-    if (contactFromDB != null) { //
+    if (contactFromDB != null) {
       //adden in saved contacts
-
       for (int i = 0; i < contactFromDB.length; i++) {
         _savedContacts.add(contactFromDB[i]);
+        addedContacts.add(contactFromDB[i]);
       }
-
       getAllContacts();
       return true;
 
-    }  else {
+    } else if (contactFromDB == null){
+
       //send ShareLink via SMS
-      String message = "This is a test message!";
-      List<String> recipents = ["1234567890", "5556787676"];
+      String message = "Download the MyFlexBox App";
+      List<String> recipents = [phoneNumber];
 
-      //_sendSMS(message, recipents);
+      _sendSMS(message, recipents);
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("TEEEEEEEST"),
-      ));
       return false;
     }
 
@@ -133,7 +143,6 @@ class _ContactsState extends State<Contacts> {
     }
     return Future.value(isCompleted);
   }
-
 
   ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app
   ///if user already in app > we return a list of [Contact] > if not return null
@@ -187,32 +196,40 @@ class _ContactsState extends State<Contacts> {
   }
 
 
-
   /// get all contacts that are on the phone
   getAllContacts() async {
-    // save contacts on phone in a list
-    List<Contact> _contacts = (await ContactsService.getContacts()).toList();
 
-    List<String> fav = [];
-    List<DBUser> dbList = [];
+    if(first == false){
+      // save contacts on phone in a list
+      List<Contact> _contacts = (await ContactsService.getContacts()).toList();
+      List<String> fav = [];
+      List<DBUser> dbList = [];
 
-    for(int i=0; i < _contacts.length; i++){
-      var contactNumbers = _contacts[i].phones.toList();
-      for(int j=0; j< _contacts[i].phones.length; j++){
-        dbList.add(DBUser("", _contacts[i].displayName, contactNumbers[j].value.replaceAll(" ", ""), "", fav));
+      for(int i=0; i < _contacts.length; i++){
+        var contactNumbers = _contacts[i].phones.toList();
+        for(int j=0; j< _contacts[i].phones.length; j++){
+          dbList.add(DBUser("", _contacts[i].displayName, contactNumbers[j].value.replaceAll(" ", ""), "", fav));
+        }
       }
+      contacts = dbList;
+      first = true;
     }
 
     /// sort the favorites and put them at the front
     var test = _savedContacts;
     test.sort((a, b) => a.name.compareTo(b.name));
-    test += dbList;
+    test += contacts;
+
+    //List<DBUser> result = LinkedHashSet<DBUser>.from(test).toList();
+    test = Set.of(test).toList();
 
     /// rebuild the List after flutter has the contacts
     /// populates the list
     setState(() {
       /// remove duplicates
-      contacts = test.toSet().toList();
+      //contacts = test.toSet().toList();
+      contacts = test;
+
     });
   }
 
@@ -261,7 +278,6 @@ class _ContactsState extends State<Contacts> {
 
   /// Dialog for inviting a contact
   popUpDialog() {
-
     Widget cancelButton = FlatButton(
       child: Text('Cancel'),
       onPressed: (){
@@ -311,7 +327,6 @@ class _ContactsState extends State<Contacts> {
         ],)
       ],
     );
-
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -323,7 +338,6 @@ class _ContactsState extends State<Contacts> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-
 
     return Scaffold(
       appBar: AppBar(
@@ -409,25 +423,23 @@ class _ContactsState extends State<Contacts> {
                               onPressed: () {
                                 setState(() {
 
-                                  // add to favourites
                                   if(alreadySaved) {
                                     /// remove from firebase
                                     removeDBContact(contact);
 
-                                    _savedContacts.remove(contact);
+                                    while(_savedContacts.contains(contact)){
+                                      _savedContacts.remove(contact);
+                                    }
                                     contacts.add(contact);
                                     getAllContacts();
 
-                                  // add to favorites
                                   } else {
                                     /// add contact to firebase
                                     getDBContact(contact.number);
 
-                                    //_savedContacts.add(contact);
+                                    _savedContacts.add(contact);
                                     contacts.remove(contact);
-                                    searchContact(contact.number);
-                                    //getAllContacts();
-
+                                    getAllContacts();
                                   }
 
                                 });
