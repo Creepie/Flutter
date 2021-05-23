@@ -50,7 +50,6 @@ class _ContactsState extends State<Contacts> {
   List<DBUser> _savedContacts = [];
 
   String mNumber = "";
-  bool first = false;
 
   /// import all the contacts
   @override
@@ -75,6 +74,7 @@ class _ContactsState extends State<Contacts> {
     });
   }
 
+  /// send a sms to a phonenumber who hasn't downloaded the MyFlexboxApp
   void _sendSMS(String message, List<String> recipents) async {
     String _result = await sendSMS(message: message, recipients: recipents)
         .catchError((onError) {
@@ -101,7 +101,6 @@ class _ContactsState extends State<Contacts> {
       return true;
 
     } else if (contactFromDB.isEmpty){
-
       //send ShareLink via SMS
       String message = "Download the MyFlexBox App";
       List<String> recipents = [phoneNumber];
@@ -191,9 +190,6 @@ class _ContactsState extends State<Contacts> {
 
   /// get all contacts that are on the phone
   getAllContacts() async {
-
-    if(first == false){
-      // save contacts on phone in a list
       List<Contact> _contacts = (await ContactsService.getContacts()).toList();
       List<String> fav = [];
       List<DBUser> dbList = [];
@@ -205,23 +201,20 @@ class _ContactsState extends State<Contacts> {
         }
       }
       contacts = dbList;
-      first = true;
-    }
+
 
     /// sort the favorites and put them at the front
-    var test = _savedContacts;
-    test.sort((a, b) => a.name.compareTo(b.name));
-    test += contacts;
+    var displayContactList = _savedContacts;
+    displayContactList.sort((a, b) => a.name.compareTo(b.name));
+    displayContactList += contacts;
 
-    //List<DBUser> result = LinkedHashSet<DBUser>.from(test).toList();
-    test = Set.of(test).toList();
+    displayContactList = Set.of(displayContactList).toList();
 
     /// rebuild the List after flutter has the contacts
     /// populates the list
     setState(() {
       /// remove duplicates
-      //contacts = test.toSet().toList();
-      contacts = test;
+      contacts = displayContactList;
 
     });
   }
@@ -249,8 +242,6 @@ class _ContactsState extends State<Contacts> {
         if(searchTermFlatten.isEmpty){
           return false;
         }
-
-
         String phnFlattened = flattenPhoneNumer(contact.number);
 
         if(phnFlattened.contains(searchTermFlatten)){
