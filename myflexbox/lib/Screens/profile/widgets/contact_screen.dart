@@ -92,21 +92,19 @@ class _ContactsState extends State<Contacts> {
 
     var contactFromDB = await getDBContact(phoneNumber);
 
-    if (contactFromDB != null) {
+    if (contactFromDB.isNotEmpty ) {
       //adden in saved contacts
       for (int i = 0; i < contactFromDB.length; i++) {
         _savedContacts.add(contactFromDB[i]);
-       // addedContacts.add(contactFromDB[i]);
       }
       getAllContacts();
       return true;
 
-    } else if (contactFromDB == null){
+    } else if (contactFromDB.isEmpty){
 
       //send ShareLink via SMS
       String message = "Download the MyFlexBox App";
       List<String> recipents = [phoneNumber];
-
       _sendSMS(message, recipents);
 
       return false;
