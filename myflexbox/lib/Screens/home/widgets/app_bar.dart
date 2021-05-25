@@ -16,8 +16,9 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
             return ProfileAppBar();
           } else if(state is AddLockerNavState) {
             return RentLockerAppBar();
-          }
-          else {
+          } else if(state is CurrentLockersNavState){
+            return HistoryAppBar();
+        } else{
             return DefaultAppBar();
           }
         }
@@ -75,4 +76,20 @@ class RentLockerAppBar extends StatelessWidget {
           style: TextStyle(color: Colors.black54),
         ));
   }
+}
+
+class HistoryAppBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+        brightness: Brightness.light,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        title: Text(
+          "Verlauf",
+          style: TextStyle(color: Colors.black54),
+        ));
+  }
+
 }
