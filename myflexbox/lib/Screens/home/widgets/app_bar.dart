@@ -88,7 +88,7 @@ class HistoryAppBar extends StatelessWidget {
         elevation: 0,
         title: Text(
           "Verlauf",
-          style: TextStyle(color: Colors.black54),
+          style: TextStyle(color: Colors.black),
         ));
   }
 
