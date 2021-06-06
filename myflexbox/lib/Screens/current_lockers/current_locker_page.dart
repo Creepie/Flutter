@@ -1,77 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myflexbox/config/app_router.dart';
 
-final List<String> entries = <String>['A', 'B', 'C'];
+final List<String> entries = <String>[
+  'Locker A',
+  'Locker B',
+  'Locker C',
+  'Locker D',
+  'Locker E',
+  'Locker F'
+];
 final List<int> colorCodes = <int>[600, 500, 100];
 
 class CurrentLockersPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-
-        elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.black
-        ),
-        backgroundColor: Colors.white,
-        title: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey,
-                width: 1
+        appBar: AppBar(
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black),
+          backgroundColor: Colors.white,
+          title: Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey, width: 1),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20),
+                )),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Search",
+                border: InputBorder.none,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.grey,
+                ),
+              ),
             ),
-            borderRadius: BorderRadius.all(
-                Radius.circular(20),
+          ),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext buildContext) {
+                      return HistoryFilter();
+                    });
+              },
+              child: Container(
+                margin: EdgeInsets.only(
+                  right: 20,
+                  left: 10,
+                ),
+                child: Icon(Icons.filter_list),
+              ),
             )
-          ),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: "Search",
-              border: InputBorder.none,
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.grey,
-              ),
-            ),
-          ),
+          ],
         ),
-        actions: [
-          GestureDetector(
-            onTap: (){
-              FocusScope.of(context).unfocus();
-              showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext buildContext) {
-                    return HistoryFilter();
-                  });
-            },
-            child: Container(
-              margin: EdgeInsets.only(
-                right: 20,
-                left: 10,
-              ),
-              child: Icon(Icons.filter_list),
-            ),
-          )
-        ],
-      ),
-      body: HistoryList()
-    );
+        body: HistoryList());
   }
 }
 
 class HistoryFilter extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 340,
-      padding: EdgeInsets.only(top: 20, bottom: 0, left: 0, right: 0),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30), topRight: Radius.circular(30))),
-      //color: Colors.amber,
+        height: 340,
+        padding: EdgeInsets.only(top: 20, bottom: 0, left: 0, right: 0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30), topRight: Radius.circular(30))),
+        //color: Colors.amber,
         child: Column(
           children: [
             Text(
@@ -108,26 +107,127 @@ class HistoryFilter extends StatelessWidget {
               ),
             )
           ],
-        )
-    );
+        ));
   }
 }
-
 
 class HistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: entries.length,
       itemBuilder: (BuildContext context, int index) {
         return Container(
-          height: 50,
-          color: Colors.amber[colorCodes[index]],
-          child: Center(child: Text(entries[index]),),
+          child: HistoryTile(index: index),
         );
       },
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
+  }
+}
+
+class HistoryTile extends StatelessWidget {
+  final int index;
+
+  const HistoryTile({Key key, this.index}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+
+    return Card(
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("List Tile tabbed"),
+              ));
+            },
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: width * 0.7,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entries[index],
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                                "status",
+                            style: TextStyle(color: Colors.black54),),
+                            SizedBox(width: 5,),
+                            Text("Bereit zur einlagerung")
+                          ],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                            "reserviert",
+                        style: TextStyle(color: Colors.black54),)
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.account_balance_wallet)
+                ],
+              ),
+            ),
+          ),
+          const Divider(
+            height: 1,
+            thickness: 1,
+            indent: 5,
+            endIndent: 5,
+          ),
+          GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("Paket einlegen tabbed"),
+              ));
+            },
+            child: Container(
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: width * 0.6,
+                    child: Text(
+                      "Paket einlegen",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("QR COde tabbed"),
+                      ));
+                    },
+                    icon: Icon(
+                      Icons.qr_code,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
