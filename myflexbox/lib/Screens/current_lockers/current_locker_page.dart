@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart';
 import 'package:myflexbox/config/app_router.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_state.dart';
+import 'package:myflexbox/repos/get_locker_booking_repo.dart';
+import 'package:myflexbox/repos/models/booking.dart';
 
-final List<String> entries = <String>[
-  'Locker A',
-  'Locker B',
-  'Locker C',
-  'Locker D',
-  'Locker E',
-  'Locker F'
-];
-final List<int> colorCodes = <int>[600, 500, 100];
 
 class CurrentLockersPage extends StatelessWidget {
   @override
@@ -57,7 +53,17 @@ class CurrentLockersPage extends StatelessWidget {
             )
           ],
         ),
-        body: HistoryList());
+        body: BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
+          builder: (context, state){
+            if(state is CurrentLockerList){
+              return HistoryList();
+            } else if(state is CurrentLockerEmpty){
+              return Center();
+          } else {
+              return RentLockerListLoadingIndicator();
+            }
+          },
+        ));
   }
 }
 
@@ -114,22 +120,28 @@ class HistoryFilter extends StatelessWidget {
 class HistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: entries.length,
-      itemBuilder: (BuildContext context, int index) {
-        return Container(
-          child: HistoryTile(index: index),
-        );
-      },
-    );
-  }
-}
+    return BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
+    builder: (context, state){
+      List <Booking> bookingList = [];
+      if(state is CurrentLockerList){
+        bookingList = (state).bookingList;
+      }
+      return ListView.builder(
+        padding: const EdgeInsets.all(8),
+        itemCount: bookingList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            child: HistoryTile(booking: bookingList[index]),
+          );
+        },
+      );
+  });
+}}
 
 class HistoryTile extends StatelessWidget {
-  final int index;
+  final Booking booking;
 
-  const HistoryTile({Key key, this.index}) : super(key: key);
+  const HistoryTile({Key key, this.booking}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +166,7 @@ class HistoryTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          entries[index],
+                          booking.state,
                           style: TextStyle(
                             fontSize: 18,
                           ),
@@ -231,3 +243,7 @@ class HistoryTile extends StatelessWidget {
     );
   }
 }
+
+
+
+

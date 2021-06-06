@@ -6,6 +6,7 @@ import 'package:myflexbox/Screens/profile/profile_page.dart';
 import 'package:myflexbox/Screens/rent_locker/rent_locker_page.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_state.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/rent_locker_repository.dart';
@@ -61,6 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 providers: [
                   BlocProvider<RentLockerCubit>(
                     create: (context) => RentLockerCubit(RentLockerRepository())..getCurrentLocation(),
+                  ),
+                  BlocProvider<CurrentLockerCubit>(
+                    create: (context) => CurrentLockerCubit()..loadData(),
                   ),
                 ],
               child: PageView(

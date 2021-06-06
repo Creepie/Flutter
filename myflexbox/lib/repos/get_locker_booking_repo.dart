@@ -17,7 +17,7 @@ class GetLockerBooking{
     var url = '$baseUrl/api/1/bookings?externalId=${externalId}';
     final response = await http.get(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
 
-    if (response.statusCode == 200) {
+    if (response. statusCode == 200) {
       List<Booking> list = json
           .decode(response.body)['bookings']
           .map((data) => Booking.fromJson(data))
