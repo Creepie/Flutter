@@ -149,9 +149,20 @@ class HistoryTile extends StatelessWidget {
 
   const HistoryTile({Key key, this.booking}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+    var stateImageSrc = "";
+    if(booking.state == "BOOKING_CREATED"){
+      stateImageSrc = "assets/images/status_booking_created.png";
+    } else if(booking.state == "COLLECTED"){
+      stateImageSrc = "assets/images/status_collected.png";
+    } else if(booking.state == "NOT_COLLECTED"){
+      stateImageSrc = "assets/images/status_not_collected.png";
+    } else {
+      stateImageSrc = "assets/images/status_booking_cancelled.png";
+    }
 
     return Card(
       child: Column(
@@ -199,7 +210,7 @@ class HistoryTile extends StatelessWidget {
                     ),
                   ),
                   Image.asset(
-                    'assets/images/status_booking_cancelled.png',
+                    stateImageSrc,
                     width: 80,
                   )
                 ],
