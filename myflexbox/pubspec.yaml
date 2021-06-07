@@ -45,6 +45,7 @@ dependencies:
   google_maps_flutter: ^2.0.1
   intl_phone_number_input: ^0.7.0+1
   flutter_sms: ^2.1.1
+  timelines: ^0.1.0
 
 
 dev_dependencies:

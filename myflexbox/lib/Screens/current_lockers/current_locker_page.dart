@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart';
@@ -6,9 +8,13 @@ import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/cubits/current_locker/current_locker_state.dart';
 import 'package:myflexbox/repos/get_locker_booking_repo.dart';
 import 'package:myflexbox/repos/models/booking.dart';
+import 'package:timelines/timelines.dart';
 
 
 class CurrentLockersPage extends StatelessWidget {
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,7 +167,7 @@ class HistoryTile extends StatelessWidget {
               child: Row(
                 children: [
                   SizedBox(
-                    width: width * 0.7,
+                    width: width * 0.60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -192,11 +198,15 @@ class HistoryTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Icon(Icons.account_balance_wallet)
+                  Image.asset(
+                    'assets/images/status_booking_cancelled.png',
+                    width: 80,
+                  )
                 ],
               ),
             ),
           ),
+          //TimeLine(),
           const Divider(
             height: 1,
             thickness: 1,
@@ -239,6 +249,23 @@ class HistoryTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TimeLine extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+    return Timeline.tileBuilder(
+      builder: TimelineTileBuilder.fromStyle(
+        contentsAlign: ContentsAlign.alternating,
+        contentsBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text('T $index'),
+        ),
+        itemCount: 2,
       ),
     );
   }
