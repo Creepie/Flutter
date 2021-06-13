@@ -13,11 +13,7 @@ import 'package:myflexbox/repos/models/booking.dart';
 import 'package:timelines/timelines.dart';
 import 'package:myflexbox/Screens/current_locker_detail/current_locker_detail.dart';
 
-
 class CurrentLockersPage extends StatelessWidget {
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,12 +59,12 @@ class CurrentLockersPage extends StatelessWidget {
           ],
         ),
         body: BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
-          builder: (context, state){
-            if(state is CurrentLockerList){
+          builder: (context, state) {
+            if (state is CurrentLockerList) {
               return HistoryList();
-            } else if(state is CurrentLockerEmpty){
+            } else if (state is CurrentLockerEmpty) {
               return Center();
-          } else {
+            } else {
               return RentLockerListLoadingIndicator();
             }
           },
@@ -130,9 +126,9 @@ class HistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
-    builder: (context, state){
-      List <Booking> bookingList = [];
-      if(state is CurrentLockerList){
+        builder: (context, state) {
+      List<Booking> bookingList = [];
+      if (state is CurrentLockerList) {
         bookingList = (state).bookingList;
       }
       return ListView.builder(
@@ -144,24 +140,24 @@ class HistoryList extends StatelessWidget {
           );
         },
       );
-  });
-}}
+    });
+  }
+}
 
 class HistoryTile extends StatelessWidget {
   final Booking booking;
 
   const HistoryTile({Key key, this.booking}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var stateImageSrc = "";
-    if(booking.state == "BOOKING_CREATED"){
+    if (booking.state == "BOOKING_CREATED") {
       stateImageSrc = "assets/images/status_booking_created.png";
-    } else if(booking.state == "COLLECTED"){
+    } else if (booking.state == "COLLECTED") {
       stateImageSrc = "assets/images/status_collected.png";
-    } else if(booking.state == "NOT_COLLECTED"){
+    } else if (booking.state == "NOT_COLLECTED") {
       stateImageSrc = "assets/images/status_not_collected.png";
     } else {
       stateImageSrc = "assets/images/status_booking_cancelled.png";
@@ -178,7 +174,8 @@ class HistoryTile extends StatelessWidget {
                   builder: (BuildContext buildContext) {
                     var currentLockerCubit = context.read<CurrentLockerCubit>();
                     return BlocProvider(
-                      create: (context) => LockerDetailCubit(booking, currentLockerCubit.repo),
+                      create: (context) =>
+                          LockerDetailCubit(booking, currentLockerCubit.repo),
                       child: CurrentLockerDetailScreen(),
                     );
                   });
@@ -195,8 +192,12 @@ class HistoryTile extends StatelessWidget {
                         Text(
                           booking.state,
                           style: TextStyle(
-                            fontSize: 18,
-                          ),
+                              fontSize: 18,
+                              color: booking is BookingFrom
+                                  ? Colors.lightGreen
+                                  : booking is BookingTo
+                                      ? Colors.yellow
+                                      : Colors.black87),
                         ),
                         SizedBox(
                           height: 5,
@@ -204,9 +205,12 @@ class HistoryTile extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                                "status",
-                            style: TextStyle(color: Colors.black54),),
-                            SizedBox(width: 5,),
+                              "status",
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
                             Text("Bereit zur einlagerung")
                           ],
                         ),
@@ -214,8 +218,9 @@ class HistoryTile extends StatelessWidget {
                           height: 5,
                         ),
                         Text(
-                            "reserviert",
-                        style: TextStyle(color: Colors.black54),)
+                          "reserviert",
+                          style: TextStyle(color: Colors.black54),
+                        )
                       ],
                     ),
                   ),
@@ -236,9 +241,17 @@ class HistoryTile extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("Paket einlegen tabbed"),
-              ));
+              showModalBottomSheet<dynamic>(
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext buildContext) {
+                    var currentLockerCubit = context.read<CurrentLockerCubit>();
+                    return BlocProvider(
+                      create: (context) =>
+                          LockerDetailCubit(booking, currentLockerCubit.repo)..showQR(),
+                      child: CurrentLockerDetailScreen(),
+                    );
+                  });
             },
             child: Container(
               padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
@@ -256,9 +269,17 @@ class HistoryTile extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("QR COde tabbed"),
-                      ));
+                      showModalBottomSheet<dynamic>(
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (BuildContext buildContext) {
+                            var currentLockerCubit = context.read<CurrentLockerCubit>();
+                            return BlocProvider(
+                              create: (context) =>
+                              LockerDetailCubit(booking, currentLockerCubit.repo)..showQR(),
+                              child: CurrentLockerDetailScreen(),
+                            );
+                          });
                     },
                     icon: Icon(
                       Icons.qr_code,
@@ -275,8 +296,7 @@ class HistoryTile extends StatelessWidget {
   }
 }
 
-class TimeLine extends StatelessWidget{
-
+class TimeLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Timeline.tileBuilder(
@@ -291,7 +311,3 @@ class TimeLine extends StatelessWidget{
     );
   }
 }
-
-
-
-

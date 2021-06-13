@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:http/http.dart' as http;
+import 'models/user.dart';
 
 class GetLockerBooking{
   FirebaseDatabase database;
@@ -54,7 +57,8 @@ class GetLockerBooking{
         String bId = bookingList[i].bookingId.toString();
         if (to.containsKey(bId)) {
           String toId = to[bId]['to'] as String;
-          bookingList[i] = BookingTo(bookingList[i], toId);
+          DBUser fromUser = await getUser(toId);
+          bookingList[i] = BookingTo(bookingList[i], fromUser);
         }
       } catch(e) {}
     }
@@ -72,7 +76,8 @@ class GetLockerBooking{
       Booking booking = await getBooking(entry.key);
       if(booking != null) {
         String fromId = entry.value['from'] as String;
-        BookingFrom bookingFrom = BookingFrom(booking, fromId);
+        DBUser fromUser = await getUser(fromId);
+        BookingFrom bookingFrom = BookingFrom(booking, fromUser);
         //booking.share = Share.fromJson(entry.value, booking.bookingId);
         fromBookingList.add(bookingFrom);
       }
@@ -108,6 +113,27 @@ class GetLockerBooking{
 
   Future<void> shareBooking(String externalId, String shareId, int bookingID) async {
     //Todo implement
+  }
+
+  Future<DBUser> getUser(String uid) async {
+    DataSnapshot user = await database.reference().child('Users').child(uid).once();
+    if (user.value != null) {
+      return Future.value(DBUser.fromJson(user.value));
+    } else {
+      return Future.value(null);
+    }
+  }
+
+  Future<MemoryImage> getQR(int id) async {
+    var url = '$baseUrl/api/1/qr?code=${id}';
+    final response = await http.get(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
+
+    if (response.statusCode == 200) {
+      return MemoryImage(response.bodyBytes);
+    } else {
+      // If the server did not return a 200 OK response,
+      return null;
+    }
   }
 
 }

@@ -1,5 +1,7 @@
 
 
+import 'package:myflexbox/repos/models/user.dart';
+
 class Booking {
   final int status;
   final int bookingId; //can be used for api getBooking as param
@@ -62,9 +64,9 @@ class Booking {
 }
 
 class BookingTo extends Booking {
-  final String toId;
+  final DBUser toUser;
 
-  BookingTo(Booking booking, this.toId): super(
+  BookingTo(Booking booking, this.toUser): super(
     status: booking.status,
     bookingId: booking.bookingId,
     parcelNumber: booking.parcelNumber,
@@ -86,9 +88,9 @@ class BookingTo extends Booking {
 }
 
 class BookingFrom extends Booking {
-  final String fromId;
+  final DBUser fromUser;
 
-  BookingFrom(Booking booking, this.fromId): super(
+  BookingFrom(Booking booking, this.fromUser): super(
     status: booking.status,
     bookingId: booking.bookingId,
     parcelNumber: booking.parcelNumber,
