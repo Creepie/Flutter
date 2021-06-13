@@ -6,9 +6,12 @@ import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/cubits/current_locker/current_locker_state.dart';
+import 'package:myflexbox/cubits/locker_detail/locker_detail_cubit.dart';
+import 'package:myflexbox/cubits/locker_detail/locker_detail_state.dart';
 import 'package:myflexbox/repos/get_locker_booking_repo.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 import 'package:timelines/timelines.dart';
+import 'package:myflexbox/Screens/current_locker_detail/current_locker_detail.dart';
 
 
 class CurrentLockersPage extends StatelessWidget {
@@ -169,9 +172,15 @@ class HistoryTile extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("List Tile tabbed"),
-              ));
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext buildContext) {
+                    var currentLockerCubit = context.read<CurrentLockerCubit>();
+                    return BlocProvider(
+                      create: (context) => LockerDetailCubit(booking, currentLockerCubit.repo),
+                      child: CurrentLockerDetailScreen(),
+                    );
+                  });
             },
             child: Container(
               padding: EdgeInsets.all(20),
