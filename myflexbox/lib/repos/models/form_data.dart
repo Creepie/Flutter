@@ -70,6 +70,10 @@ class Telephone {
   Telephone.clone(Telephone telephone): this(number: telephone.number, error: telephone.error);
 
   void validate() {
-    error = null;
+    if(number.length <= 6) {
+      error = "Muss mindestens 7 Zeichen sein";
+    } else {
+      error = null;
+    }
   }
 }

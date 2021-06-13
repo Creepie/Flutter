@@ -30,8 +30,13 @@ class AuthCubit extends Cubit<AuthState> {
       //get token with fireBaseUser.getIdToken(refresh: true)
       //get user name from firebase
       var user = await userRepository.getUserFromDB(firebaseUser.uid);
-      userRepository.getFavouriteUsers(user.uid);
-      emit(AuthAuthenticated(user));
+
+      if(user != null) {
+        userRepository.getFavouriteUsers(user.uid);
+        emit(AuthAuthenticated(user));
+      } else {
+        logout();
+      }
     } else {
       emit(AuthUnauthenticated());
     }
@@ -49,24 +54,22 @@ class AuthCubit extends Cubit<AuthState> {
       var firebaseUser = (await FirebaseAuth.instance
               .signInWithEmailAndPassword(email: email, password: password))
           .user;
-      //throw Exception();
       if (!firebaseUser.emailVerified) {
+        await FirebaseAuth.instance.signOut();
         return [ErrorType.EmailError, "Email nicht verifiziert"];
       } else {
         var user = await userRepository.getUserFromDB(firebaseUser.uid);
         userRepository.getFavouriteUsers(user.uid);
         emit(AuthAuthenticated(user));
       }
-    } catch (e) {
-      return [
-        ErrorType.EmailError,
-        "Es gab ein Problem beim Login"
-      ]; //delete that
+    } on FirebaseAuthException catch (e) {
+      print(e.toString());
       switch (e.code) {
-        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
           return [ErrorType.PasswordError, "Passwort ist falsch"];
+        case "user-not-found":
+          return [ErrorType.EmailError, "Email wurde nicht gefunden"];
         default:
-          print("here");
           return [ErrorType.EmailError, "Es gab ein Problem beim Login"];
       }
     }
@@ -84,27 +87,26 @@ class AuthCubit extends Cubit<AuthState> {
       var user = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       user.user.sendEmailVerification();
-      var token = user.user.getIdToken(true);
-      //List<String> testList = [];
-      //testList.add("User1");
-      //testList.add("User2");
-      var userDb =
-          DBUser(email, username, telephone, user.user.uid, []);
+
+      var userDb = DBUser(email, username, telephone, user.user.uid, []);
       var success = await userRepository.addUserToDB(userDb);
       userRepository.addFavouritesToUser(userDb);
       if (success) {
+        await FirebaseAuth.instance.signOut();
         return null;
       } else {
         return [ErrorType.EmailError, "Es gab ein Problem mit der Datenbank"];
       }
     } catch (e) {
       print(e.toString());
-      return [ErrorType.EmailError, "Es gab ein Problem beim Login"]; //delete
       switch (e.code) {
-        case "":
-          return [ErrorType.EmailError, "Email ist nicht zugelassen"];
+        case "email-already-in-use":
+          return [ErrorType.EmailError, "Email wird bereits genuzt"];
         default:
-          return [ErrorType.EmailError, "Es gab ein Problem beim registrieren"];
+          return [
+            ErrorType.UsernameError,
+            "Es gab ein Problem bei der Registrierug"
+          ];
       }
     }
   }
@@ -124,13 +126,23 @@ class AuthCubit extends Cubit<AuthState> {
     );
 
     // Once signed in, return the UserCredential
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    //emit(AuthAuthenticated(user))
+    var firebaseUser =
+        (await FirebaseAuth.instance.signInWithCredential(credential)).user;
+
+    //Get user from Db, if null -> create new user
+    var userDb = await userRepository.getUserFromDB(firebaseUser.uid);
+    if(userDb == null) {
+      userDb = DBUser(firebaseUser.email, firebaseUser.email, firebaseUser.phoneNumber, firebaseUser.uid, []);
+      var success = await userRepository.addUserToDB(userDb);
+      userRepository.addFavouritesToUser(userDb);
+      emit(AuthAuthenticated(userDb));
+    } else {
+      userRepository.getFavouriteUsers(userDb.uid);
+      emit(AuthAuthenticated(userDb));
+    }
   }
 
   Future<void> logout() async {
-    print("hello");
     await FirebaseAuth.instance.signOut();
     emit(AuthUnauthenticated());
   }

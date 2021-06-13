@@ -133,7 +133,27 @@ class EmailFormField extends StatelessWidget {
   }
 }
 
-class TelephoneFormField extends StatelessWidget {
+class TelephoneFormField extends StatefulWidget {
+  @override
+  _TelephoneFormFieldState createState() => _TelephoneFormFieldState();
+}
+
+class _TelephoneFormFieldState extends State<TelephoneFormField> {
+
+  TextEditingController textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+    textEditingController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    textEditingController.dispose();
+  }
+
   @override
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
@@ -143,6 +163,7 @@ class TelephoneFormField extends StatelessWidget {
           registerCubit.changedPhoneNumber(phoneNumber.toString());
         },
         errorMessage: state.telephone.error,
+        textFieldController: textEditingController,
         spaceBetweenSelectorAndTextField: 5,
         locale: "AT",
         autoFocus: false,
@@ -150,9 +171,26 @@ class TelephoneFormField extends StatelessWidget {
         autoValidateMode: AutovalidateMode.always,
         countries: ["AT", "DE"],
         ignoreBlank: false,
-        inputBorder: OutlineInputBorder(),
+        formatInput: false,
+        //inputBorder: OutlineInputBorder(),
         selectorConfig: SelectorConfig(
           setSelectorButtonAsPrefixIcon: true,
+        ),
+        inputDecoration: InputDecoration(
+          border: OutlineInputBorder(),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: state is RegisterFailure ? Colors.red : Colors.blue,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: state is RegisterFailure ? Colors.red : Colors.grey,
+            ),
+          ),
+          errorStyle: TextStyle(
+            color: state is RegisterFailure ? Colors.red : Colors.grey,
+          ),
         ),
       );
     });
