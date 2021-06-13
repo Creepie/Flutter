@@ -6,6 +6,6 @@ import 'locker_detail_state.dart';
 class LockerDetailCubit extends Cubit<LockerDetailState> {
   final currentLockersRepository;
 
-  LockerDetailCubit(Booking booking, this.currentLockersRepository, ) : super(LockerDetailStateLoading(booking));
+  LockerDetailCubit(Booking booking, this.currentLockersRepository, ) : super(LockerDetailStateDefault(booking));
 
 }

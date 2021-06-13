@@ -172,7 +172,8 @@ class HistoryTile extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              showModalBottomSheet(
+              showModalBottomSheet<dynamic>(
+                  isScrollControlled: true,
                   context: context,
                   builder: (BuildContext buildContext) {
                     var currentLockerCubit = context.read<CurrentLockerCubit>();

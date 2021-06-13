@@ -12,6 +12,14 @@ abstract class LockerDetailState extends Equatable {
   List<Object> get props => [];
 }
 
-class LockerDetailStateLoading extends LockerDetailState {
-  LockerDetailStateLoading(Booking booking) : super(booking);
+class LockerDetailStateDefault extends LockerDetailState {
+  LockerDetailStateDefault(Booking booking) : super(booking);
+}
+
+class LockerDetailStateShare extends LockerDetailState {
+  LockerDetailStateShare(Booking booking) : super(booking);
+}
+
+class LockerDetailStateQR extends LockerDetailState {
+  LockerDetailStateQR(Booking booking) : super(booking);
 }

@@ -60,3 +60,51 @@ class Booking {
     );
   }
 }
+
+class BookingTo extends Booking {
+  final String toId;
+
+  BookingTo(Booking booking, this.toId): super(
+    status: booking.status,
+    bookingId: booking.bookingId,
+    parcelNumber: booking.parcelNumber,
+    externalId: booking.externalId,
+    lockerId: booking.lockerId,
+    compartmentId: booking.compartmentId,
+    compartmentLength: booking.compartmentLength,
+    compartmentHeight: booking.compartmentHeight,
+    compartmentDepth: booking.compartmentDepth,
+    deliveryCode: booking.deliveryCode,
+    collectingCode: booking.collectingCode,
+    state: booking.state,
+    startTimeSystem: booking.startTimeSystem,
+    startTime: booking.startTime,
+    endTime: booking.endTime,
+    endTimeSystem: booking.endTimeSystem,
+    message: booking.message,
+  );
+}
+
+class BookingFrom extends Booking {
+  final String fromId;
+
+  BookingFrom(Booking booking, this.fromId): super(
+    status: booking.status,
+    bookingId: booking.bookingId,
+    parcelNumber: booking.parcelNumber,
+    externalId: booking.externalId,
+    lockerId: booking.lockerId,
+    compartmentId: booking.compartmentId,
+    compartmentLength: booking.compartmentLength,
+    compartmentHeight: booking.compartmentHeight,
+    compartmentDepth: booking.compartmentDepth,
+    deliveryCode: booking.deliveryCode,
+    collectingCode: booking.collectingCode,
+    state: booking.state,
+    startTimeSystem: booking.startTimeSystem,
+    startTime: booking.startTime,
+    endTime: booking.endTime,
+    endTimeSystem: booking.endTimeSystem,
+    message: booking.message,
+  );
+}

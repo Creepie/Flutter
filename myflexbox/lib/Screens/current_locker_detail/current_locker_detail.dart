@@ -8,12 +8,42 @@ class CurrentLockerDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LockerDetailCubit, LockerDetailState>(
       builder: (context, state) {
-        return Center(
-          child: Text(
-            "Whatever"
-          ),
-        );
+        if(state is LockerDetailStateDefault) {
+          return CurrentLockerDefaultView();
+        } else if (state is LockerDetailStateShare) {
+          return CurrentLockerShareView();
+        } else if (state is LockerDetailStateQR) {
+          return CurrentLockerQRView();
+        } else {
+          return Center();
+        }
       },
     );
   }
+}
+
+
+class CurrentLockerDefaultView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center();
+  }
+
+}
+
+
+class CurrentLockerQRView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center();
+  }
+
+}
+
+class CurrentLockerShareView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center();
+  }
+
 }
