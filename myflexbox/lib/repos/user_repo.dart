@@ -53,7 +53,7 @@ class UserRepository {
     DataSnapshot contact =
     await userDb.orderByChild('number').equalTo(number).once();
     print('favouriteAdded');
-    if (contact.value != null) {
+    if (contact.value != null && user.uid != contact.value) {
       Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
         userDb.child(user.uid).child("favourites").child(key).set({"key":key});
       });
