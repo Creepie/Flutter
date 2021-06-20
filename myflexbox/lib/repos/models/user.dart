@@ -25,7 +25,8 @@ class DBUser {
     var favouritesFromJson = json['favourites'];
     List<String> favouritesList = [];
     if(favouritesFromJson != null){
-      favouritesList = new List<String>.from(favouritesFromJson);
+      Map<String,String> favouriteMap = new Map<String,String>.from(favouritesFromJson);
+      favouriteMap.forEach((key, value) => favouritesList.add(value));
     }
 
     return DBUser.json(

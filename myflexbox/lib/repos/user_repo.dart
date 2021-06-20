@@ -29,8 +29,6 @@ class UserRepository {
   ///this method checks the phonebook and search for each [Contact] in it in the userDB
   ///if a
   Future<bool> addFavouritesToUser(DBUser user) async {
-    var userNew = user;
-    int count = 0;
     List<Contact> _contacts = (await ContactsService.getContacts()).toList();
 
     List<String> numberList = [];
@@ -44,29 +42,22 @@ class UserRepository {
 
     for (int i = 0; i < numberList.length; i++) {
       if (numberList[i].isNotEmpty) {
-        DataSnapshot contact =
-            await userDb.orderByChild('number').equalTo(numberList[i]).once();
-
-        if (contact.value != null) {
-          Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
-            userNew.favourites.add(key);
-            count++;
-          });
-        }
+        addFavouriteToFirebase(numberList[i],user);
       }
     }
 
-    bool isComplete = false;
-    if (count > 0) {
-      isComplete =
-          await userDb.child(userNew.uid).set(user.toJson()).then((result) {
-        return Future.value(true);
-      }).catchError((error) {
-        return Future.value(false);
+    return Future.value(true);
+  }
+  
+  Future<void> addFavouriteToFirebase(String number, DBUser user) async {
+    DataSnapshot contact =
+    await userDb.orderByChild('number').equalTo(number).once();
+    print('favouriteAdded');
+    if (contact.value != null) {
+      Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
+        userDb.child(user.uid).child("favourites").set({key:key});
       });
     }
-
-    return Future.value(isComplete);
   }
 
   ///this method query all favourite [DBUser] and saves it into [favouriteContacts] for global usage
