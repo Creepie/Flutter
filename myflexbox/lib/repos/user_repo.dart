@@ -55,7 +55,7 @@ class UserRepository {
     print('favouriteAdded');
     if (contact.value != null) {
       Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
-        userDb.child(user.uid).child("favourites").set({key:key});
+        userDb.child(user.uid).child("favourites").child(key).set({"key":key});
       });
     }
   }
