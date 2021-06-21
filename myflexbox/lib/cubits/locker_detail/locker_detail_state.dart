@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:myflexbox/repos/models/booking.dart';
+import 'package:myflexbox/repos/models/user.dart';
 
 abstract class LockerDetailState extends Equatable {
   final Booking booking;
@@ -20,7 +21,16 @@ class LockerDetailStateDefault extends LockerDetailState {
 }
 
 class LockerDetailStateShare extends LockerDetailState {
-  LockerDetailStateShare(Booking booking) : super(booking);
+  final List<DBUser> contacts;
+  final List<DBUser> contactsFiltered;
+  final List<DBUser> favorites;
+  final List<DBUser> favoritesFiltered;
+  final String filter;
+
+  LockerDetailStateShare(Booking booking, this.contacts, this.contactsFiltered, this.favorites, this.favoritesFiltered, this.filter) : super(booking);
+
+  @override
+  List<Object> get props => [booking, contacts, favorites, favoritesFiltered, contactsFiltered, filter];
 }
 
 class LockerDetailStateQR extends LockerDetailState {

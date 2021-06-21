@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:http/http.dart' as http;
 import 'models/user.dart';
 
-class GetLockerBooking{
+class GetLockerBooking {
   FirebaseDatabase database;
   DatabaseReference shareDB;
 
@@ -17,23 +18,27 @@ class GetLockerBooking{
   }
 
   ///the [apiKey] is needed in each api call and is stored in the auth header
-  final String apiKey = "Basic 77+977+90IcGI++/vVQhWjDvv73vv70R77+9Nh/vv70yVTIoe++/vRDvv71WVwBd77+9";
+  final String apiKey =
+      "Basic 77+977+90IcGI++/vVQhWjDvv73vv70R77+9Nh/vv70yVTIoe++/vRDvv71WVwBd77+9";
 
   ///the [baseUrl] is needed in each api call for building the url endpoint
   final String baseUrl = "https://dev-myflxbx-rest.azurewebsites.net";
 
-
   ///this method Retrieves a List of [Booking] where the externalId (Firebase Uid) matches
   Future<List<Booking>> getBookings(String externalId) async {
     var url = '$baseUrl/api/1/bookings?externalId=${externalId}';
-    final response = await http.get(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {HttpHeaders.authorizationHeader: apiKey},
+    );
 
     //Get the Bookings of the user
-    if (response. statusCode == 200) {
+    if (response.statusCode == 200) {
       List<Booking> userBookings = json
           .decode(response.body)['bookings']
           .map((data) => Booking.fromJson(data))
-          .toList().cast<Booking>();
+          .toList()
+          .cast<Booking>();
       //Get the Bookings that are Shared  to the user
       List<Booking> sharedBookings = await getSharedBookingsFrom(externalId);
       //Transform the Bookings of the user to BookingsTo if they are shared
@@ -49,47 +54,71 @@ class GetLockerBooking{
 
   //Transforms Bookings in the passed list to BookingsTo if the user with the
   // externalId has share some of the lockers with others.
-  Future<void> getSharedBookingsTo(String externalID, List<Booking> bookingList) async {
-    DataSnapshot toF = await shareDB.orderByChild("from").equalTo("uQPtBj7Csxf6f5iZRDJsATjLiUJ3").once();
+  Future<void> getSharedBookingsTo(
+      String externalID, List<Booking> bookingList) async {
+    DataSnapshot toF = await shareDB
+        .orderByChild("from")
+        .equalTo("o3j1l1fUThR3oqnizRI9WfMZ7jn1")
+        .once();
     Map<dynamic, dynamic> to = toF.value;
-    for(int i = 0; i < bookingList.length; i++) {
-      try {
-        String bId = bookingList[i].bookingId.toString();
-        if (to.containsKey(bId)) {
-          String toId = to[bId]['to'] as String;
-          DBUser fromUser = await getUser(toId);
-          bookingList[i] = BookingTo(bookingList[i], fromUser);
+    if (to != null) {
+      for (int i = 0; i < bookingList.length; i++) {
+        try {
+          String bId = bookingList[i].bookingId.toString();
+          if (to.containsKey(bId)) {
+            String toId = to[bId]['to'] as String;
+            DBUser fromUser = toId.startsWith("+43")
+                ? getUserWithNumber(toId)
+                : await getUser(toId);
+            bookingList[i] = BookingTo(bookingList[i], fromUser);
+          }
+        } catch (e) {
+          print(e.toString());
         }
-      } catch(e) {}
+      }
     }
+  }
+
+  DBUser getUserWithNumber(String number) {
+    //TODO search in telephoneBook for user
+    return DBUser("", number, number, null, []);
   }
 
   //Creates a List with BookingsFrom, that are shared to the user with the
   // external id
   Future<List<Booking>> getSharedBookingsFrom(String externalID) async {
     //Get Firebase Shares as List
-    DataSnapshot fromF = await shareDB.orderByChild("to").equalTo("uQPtBj7Csxf6f5iZRDJsATjLiUJ3").once();
+    DataSnapshot fromF = await shareDB
+        .orderByChild("to")
+        .equalTo("o3j1l1fUThR3oqnizRI9WfMZ7jn1")
+        .once();
     Map<dynamic, dynamic> from = fromF.value;
     //For each -> get Booking
-    List<Booking> fromBookingList = [];
-    await Future.forEach(from.entries, ((entry) async {
-      Booking booking = await getBooking(entry.key);
-      if(booking != null) {
-        String fromId = entry.value['from'] as String;
-        DBUser fromUser = await getUser(fromId);
-        BookingFrom bookingFrom = BookingFrom(booking, fromUser);
-        //booking.share = Share.fromJson(entry.value, booking.bookingId);
-        fromBookingList.add(bookingFrom);
-      }
-    }));
-    return fromBookingList;
+    if (from != null) {
+      List<Booking> fromBookingList = [];
+      await Future.forEach(from.entries, ((entry) async {
+        Booking booking = await getBooking(entry.key);
+        if (booking != null) {
+          String fromId = entry.value['from'] as String;
+          DBUser fromUser = await getUser(fromId);
+          BookingFrom bookingFrom = BookingFrom(booking, fromUser);
+          //booking.share = Share.fromJson(entry.value, booking.bookingId);
+          fromBookingList.add(bookingFrom);
+        }
+      }));
+      return fromBookingList;
+    } else {
+      return [];
+    }
   }
 
-
   ///this method Retrieves one [Booking] with a given bookingId
-  Future<Booking> getBooking(String bookingId) async{
+  Future<Booking> getBooking(String bookingId) async {
     var url = '$baseUrl/api/1/booking?bookingId=${bookingId}';
-    final response = await http.get(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {HttpHeaders.authorizationHeader: apiKey},
+    );
 
     if (response.statusCode == 200) {
       return Booking.fromJson(jsonDecode(response.body));
@@ -102,31 +131,39 @@ class GetLockerBooking{
   ///this method deletes one [Booking] with a given bookingId
   Future<bool> deleteBooking(String bookingId) async {
     var url = '$baseUrl/api/1/booking?bookingId=${bookingId}';
-    final response = await http.delete(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
+    final response = await http.delete(
+      Uri.parse(url),
+      headers: {HttpHeaders.authorizationHeader: apiKey},
+    );
 
-    if (response.statusCode == 200){
+    if (response.statusCode == 200) {
       return true;
     } else {
       return false;
     }
   }
 
-  Future<void> shareBooking(String externalId, String shareId, int bookingID) async {
-    //Todo implement
+  Future<void> shareBooking(String toId, String fromId, int bookingID) async {
+    shareDB.child(bookingID.toString()).set({"to": toId.toString(), "from" : fromId.toString()});
+    //TODO check if successful
   }
 
   Future<DBUser> getUser(String uid) async {
-    DataSnapshot user = await database.reference().child('Users').child(uid).once();
+    DataSnapshot user =
+        await database.reference().child('Users').child(uid).once();
     if (user.value != null) {
       return Future.value(DBUser.fromJson(user.value));
     } else {
-      return Future.value(null);
+      return DBUser("", uid, uid, null, []);
     }
   }
 
   Future<MemoryImage> getQR(int id) async {
     var url = '$baseUrl/api/1/qr?code=${id}';
-    final response = await http.get(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: apiKey},);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {HttpHeaders.authorizationHeader: apiKey},
+    );
 
     if (response.statusCode == 200) {
       return MemoryImage(response.bodyBytes);
@@ -135,5 +172,4 @@ class GetLockerBooking{
       return null;
     }
   }
-
 }
