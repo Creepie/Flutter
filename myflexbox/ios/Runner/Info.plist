@@ -23,9 +23,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
-	<key>NSContactsUsageDescription</key>
-    <string>Reason we need access to the contact list</string>
 	<string>LaunchScreen</string>
+	<key>NSContactsUsageDescription</key>
+    <string>definitely a good reason</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
