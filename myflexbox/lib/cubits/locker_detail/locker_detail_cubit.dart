@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 import 'package:myflexbox/repos/models/user.dart';
 import 'package:myflexbox/repos/user_repo.dart';
@@ -13,8 +15,9 @@ import 'dart:io';
 class LockerDetailCubit extends Cubit<LockerDetailState> {
   final GetLockerBooking currentLockersRepository;
   final UserRepository userRepository = new UserRepository();
+  final CurrentLockerCubit currentLockerCubit;
 
-  LockerDetailCubit(Booking booking, this.currentLockersRepository)
+  LockerDetailCubit(Booking booking, this.currentLockersRepository, this.currentLockerCubit)
       : super(LockerDetailStateDefault(booking));
 
   void showQR() async {
@@ -24,10 +27,10 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     emit(LockerDetailStateQR(state.booking, image));
   }
 
-  void showShare(List<String> favoriteIds) {
+  Future<void> showShare(List<String> favoriteIds) async {
     emit(LockerDetailStateShare(state.booking, null, null, null, null, ""));
-    getFavorites(favoriteIds);
-    getContacts();
+    var favorites = await getFavorites(favoriteIds);
+    getContacts(favorites);
   }
 
   void filterShare(String filter) async {
@@ -67,50 +70,54 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     }
   }
 
-  void getFavorites(List<String> favoriteIds) async {
+  Future<List<DBUser>> getFavorites(List<String> favoriteIds) async {
     List<DBUser> favorites = [];
-
-    //await Future.delayed(Duration(seconds: 20));
-
     for (final favoriteID in favoriteIds) {
       favorites.add(await userRepository.getUserFromDB(favoriteID));
     }
-
-    if (state is LockerDetailStateShare) {
-      var shareState = state as LockerDetailStateShare;
-      emit(LockerDetailStateShare(
-          shareState.booking,
-          shareState.contacts,
-          shareState.contactsFiltered,
-          favorites,
-          favorites,
-          shareState.filter));
-    }
+    return favorites;
   }
 
-  //TODO Filter favorites
-  void getContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts()).toList();
-    List<String> fav = [];
-    List<DBUser> dbList = [];
+  void getContacts(List<DBUser> favList) async {
+    List<Contact> _contacts = (await ContactsService.getContacts(
+      withThumbnails: false,
+      photoHighResolution: false,
+    ))
+        .toList();
 
+    List<DBUser> contactList = [];
+
+    //Loop all contacts
     for (int i = 0; i < _contacts.length; i++) {
+      //Loop all numbers of a contact
       var contactNumbers = _contacts[i].phones.toList();
       for (int j = 0; j < _contacts[i].phones.length; j++) {
-        dbList.add(DBUser("", _contacts[i].displayName,
-            contactNumbers[j].value.replaceAll(" ", ""), null, fav));
+        var isFavorite = false;
+        var contactNumber = contactNumbers[j].value.replaceAll(" ", "");
+        //check if the number is duplicated for the contact
+        if (!(j > 0 &&
+            contactNumbers[j - 1].value.replaceAll(" ", "") == contactNumber)) {
+          //check if the contact is a favorite
+          for (int t = 0; t < favList.length; t++) {
+            //if yes, add the name to the favorite
+            if (favList[t].number == contactNumber) {
+              isFavorite = true;
+              favList[t].name += " (" + _contacts[i].displayName + ")";
+            }
+          }
+          //if not, add contact to the list
+          if (!isFavorite) {
+            contactList.add(
+                DBUser("", _contacts[i].displayName, contactNumber, null, []));
+          }
+        }
       }
     }
 
     if (state is LockerDetailStateShare) {
       var shareState = state as LockerDetailStateShare;
-      emit(LockerDetailStateShare(
-          shareState.booking,
-          dbList,
-          dbList,
-          shareState.favorites,
-          shareState.favoritesFiltered,
-          shareState.filter));
+      emit(LockerDetailStateShare(shareState.booking, contactList, contactList,
+          favList, favList, shareState.filter));
     }
   }
 
@@ -118,20 +125,12 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     emit(LockerDetailStateDefault(state.booking));
   }
 
-  void shareViaWhatsapp(String numberTo, DBUser userFrom) async {
-    if (state is LockerDetailStateShare) {
-      await launch(
-              "https://wa.me/$numberTo?text=Hello");
-    }
-  }
-
-  void shareViaSMS(String numberTo, DBUser userFrom) async {
-    if (state is LockerDetailStateShare) {
-      await sendSMS(message: "", recipients: [numberTo])
-          .catchError((onError) {
-        print(onError);
-      });
-    }
+  Future<void> deleteShare() async {
+    emit(LockerDetailStateLoading(state.booking));
+    await currentLockersRepository.deleteShare(state.booking.bookingId.toString());
+    currentLockerCubit.loadData();
+    Booking updatedBooking = Booking.fromBooking(state.booking);
+    emit(LockerDetailStateDefault(updatedBooking));
   }
 
   void shareViaFlexBox(DBUser userTo, DBUser userFrom) async {
@@ -142,6 +141,30 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     await currentLockersRepository.shareBooking(
         toID, fromID, state.booking.bookingId);
     var newBooking = BookingTo(state.booking, userTo);
+    currentLockerCubit.loadData();
+    emit(LockerDetailStateDefault(newBooking));
+  }
+
+  void shareViaWhatsapp(DBUser userTo, DBUser userFrom) async {
+    if (state is LockerDetailStateShare) {
+      launch("https://wa.me/${userTo.number}?text=Hello");
+      shareSuccess(userTo, userFrom);
+    }
+  }
+
+  void shareViaSMS(DBUser userTo, DBUser userFrom) async {
+    if (state is LockerDetailStateShare) {
+      sendSMS(message: "", recipients: [userTo.number]);
+      shareSuccess(userTo, userFrom);
+    }
+  }
+
+  void shareSuccess(DBUser userTo, DBUser userFrom) async {
+    emit(LockerDetailStateLoading(state.booking));
+    await currentLockersRepository.shareBooking(
+        userTo.number, userFrom.uid, state.booking.bookingId);
+    var newBooking = BookingTo(state.booking, userTo);
+    currentLockerCubit.loadData();
     emit(LockerDetailStateDefault(newBooking));
   }
 }

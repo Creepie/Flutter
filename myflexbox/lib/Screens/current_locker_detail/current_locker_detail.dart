@@ -65,74 +65,194 @@ class CurrentLockerDefaultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("Fertig")),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(booking.state == "COLLECTED"
-                      ? "abgeholt"
-                      : booking.state == "BOOKING_CREATED"
-                          ? "gebucht"
-                          : booking.state == "NOT_COLLECTED"
-                              ? "eingelagert"
-                              : "gecancelt"),
+      child: BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
+        List<String> favoriteIds = (state as AuthAuthenticated).user.favourites;
+        return Column(
+          children: [
+            Container(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.keyboard_arrow_down_rounded, size: 30)),
                 ),
-                flex: 2,
-              ),
-              BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
-                List<String> favoriteIds =
-                    (state as AuthAuthenticated).user.favourites;
-                if (!(booking is BookingFrom)) {
-                  return Expanded(
-                      child: IconButton(
-                          icon: Icon(Icons.share),
-                          onPressed: () {
-                            cubit.showShare(favoriteIds);
-                          }));
-                } else {
-                  return Spacer();
-                }
-              }),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Von: "),
-              booking is BookingFrom
-                  ? Text((booking as BookingFrom).fromUser.name)
-                  : Text("Mir")
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("An: "),
-              booking is BookingFrom
-                  ? Text("Mich")
-                  : booking is BookingTo
-                      ? Text((booking as BookingTo).toUser.name)
-                      : Text("---")
-            ],
-          ),
-          FlatButton(
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      booking.state == "COLLECTED"
+                          ? "abgeholt"
+                          : booking.state == "BOOKING_CREATED"
+                              ? "gebucht"
+                              : booking.state == "NOT_COLLECTED"
+                                  ? "eingelagert"
+                                  : "gecancelt",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, color: Colors.grey),
+                    ),
+                  ),
+                  flex: 2,
+                ),
+                !(booking is BookingFrom)
+                    ? Expanded(
+                        child: IconButton(
+                            icon: Icon(Icons.share),
+                            onPressed: () {
+                              cubit.showShare(favoriteIds);
+                            }))
+                    : Spacer(),
+              ],
+            ),
+            Container(height: 10),
+            booking.message == null ? Container() : Text(booking.message),
+            Container(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                booking is BookingFrom
+                    ? Text("geteilt von:", style: TextStyle(color: Colors.grey))
+                    : booking is BookingTo
+                        ? Text("geteilt mit:",
+                            style: TextStyle(color: Colors.black54))
+                        : Container(),
+                Container(width: 5),
+                booking is BookingFrom
+                    ? Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(.1),
+                            borderRadius: BorderRadius.all(Radius.circular(7))),
+                        padding: EdgeInsets.only(
+                            top: 5, bottom: 5, left: 12, right: 12),
+                        child: Text((booking as BookingFrom).fromUser.name))
+                    : booking is BookingTo
+                        ? Container(
+                            padding: EdgeInsets.only(
+                                top: 5, bottom: 5, left: 12, right: 5),
+                            child: Row(
+                              children: [
+                                Text((booking as BookingTo).toUser.name),
+                                IconButton(
+                                    padding: EdgeInsets.zero,
+                                    constraints: BoxConstraints(),
+                                    icon: Icon(
+                                      Icons.close,
+                                      size: 15,
+                                      color: Colors.redAccent,
+                                    ),
+                                    onPressed: () {
+                                      cubit.deleteShare();
+                                    })
+                              ],
+                            ),
+                            decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(.1),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(7))),
+                          )
+                        : Row(
+                            children: [
+                              Text("Mit niemanden geteilt,",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.black54)),
+                              TextButton(
+                                  onPressed: () {
+                                    cubit.showShare(favoriteIds);
+                                  },
+                                  child: Text("jetzt teilen"),
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.only(left: 3),
+                                  ))
+                            ],
+                          )
+              ],
+            ),
+            Container(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Box-Size:", style: TextStyle(color: Colors.black54)),
+                Container(width: 10),
+                Icon(Icons.inbox, color: Colors.redAccent),
+                Text("m"),
+              ],
+            ),
+            Container(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Text(convertDate(booking.startTime),
+                        style: TextStyle(fontSize: 19)),
+                    Container(height: 5),
+                    Text("von", style: TextStyle(color: Colors.black54)),
+                  ],
+                ),
+                Container(width: 25),
+                Column(
+                  children: [
+                    Text(convertDate(booking.endTime),
+                        style: TextStyle(fontSize: 19)),
+                    Container(height: 5),
+                    Text("bis", style: TextStyle(color: Colors.black54)),
+                  ],
+                )
+              ],
+            ),
+            Container(height: 25),
+            FlatButton(
               onPressed: () {
                 cubit.showQR();
               },
-              child: Text("QR anzeigen"))
-        ],
-      ),
+              color: Colors.redAccent,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.qr_code_rounded, color: Colors.white),
+                  Container(width: 10),
+                  Text("QR anzeigen", style: TextStyle(color: Colors.white)),
+                ],
+              ),
+            ),
+            Container(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                children: [
+                  Icon(Icons.location_on_outlined, color: Colors.lightBlue),
+                  Text("Location, Haptpaltz 1234"),
+                  Spacer(),
+                  Text("Route", style: TextStyle(color: Colors.lightBlue)),
+                  Icon(Icons.alt_route_outlined, color: Colors.lightBlue)
+                ],
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
+            )
+          ],
+        );
+      }),
     );
+  }
+
+  String convertDate(String date) {
+    var time = DateTime.parse(date);
+    return time.day.toString() +
+        "." +
+        time.month.toString() +
+        "." +
+        time.year.toString();
   }
 }
 
@@ -149,35 +269,37 @@ class CurrentLockerQRView extends StatelessWidget {
     return IntrinsicHeight(
       child: Column(
         children: [
+          Container(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("Fertig")),
-              ),
+                  child: FlatButton(
+                onPressed: () {
+                  cubit.showDefault();
+                },
+                child: Icon(Icons.close),
+              )),
               Expanded(
                 child: Center(
-                  child: Text(booking.state == "COLLECTED"
-                      ? "Bereits abgeholt"
-                      : booking.state == "BOOKING_CREATED"
-                          ? "Einlagern"
-                          : booking.state == "NOT_COLLECTED"
-                              ? "Abholen"
-                              : "Gecancelt"),
-                ),
+                    child: Text(
+                        booking.state == "COLLECTED"
+                            ? "Bereits abgeholt"
+                            : booking.state == "BOOKING_CREATED"
+                                ? "Einlagern"
+                                : booking.state == "NOT_COLLECTED"
+                                    ? "Abholen"
+                                    : "gecancelt",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: Colors.grey))),
                 flex: 2,
               ),
               Expanded(
                 child: FlatButton(
-                    onPressed: () {
-                      cubit.showDefault();
-                    },
-                    child: Text("Zurück")),
-              ),
+                  onPressed: () {},
+                  child: Text(""),
+                ),
+              )
             ],
           ),
           Opacity(
@@ -186,8 +308,8 @@ class CurrentLockerQRView extends StatelessWidget {
                 ? 1
                 : .3,
             child: Container(
-              width: 150,
-              height: 150,
+              width: 250,
+              height: 250,
               decoration: BoxDecoration(
                 image: new DecorationImage(
                   fit: BoxFit.cover,
@@ -195,7 +317,8 @@ class CurrentLockerQRView extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
+          Container(height: 50)
         ],
       ),
     );
@@ -214,15 +337,17 @@ class CurrentLockerShareView extends StatelessWidget {
       child: IntrinsicHeight(
         child: Column(
           children: [
+            Container(height: 5),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
                   child: FlatButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("Fertig")),
+                    onPressed: () {
+                      cubit.showDefault();
+                    },
+                    child: Icon(Icons.close),
+                  ),
                 ),
                 Expanded(
                   child: Center(
@@ -231,11 +356,7 @@ class CurrentLockerShareView extends StatelessWidget {
                   flex: 2,
                 ),
                 Expanded(
-                  child: FlatButton(
-                      onPressed: () {
-                        cubit.showDefault();
-                      },
-                      child: Text("Zurück")),
+                  child: FlatButton(onPressed: () {}, child: Text("")),
                 ),
               ],
             ),
@@ -312,9 +433,12 @@ class CurrentLockerShareView extends StatelessWidget {
                         ),
                         FlatButton(
                             onPressed: () {
+                              var number =
+                                  (state as LockerDetailStateShare).filter;
+                              var userTo = DBUser("", number, number, null, []);
                               cubit.shareViaWhatsapp(
-                                (state as LockerDetailStateShare).filter,
-                                  (authState as AuthAuthenticated).user,
+                                userTo,
+                                (authState as AuthAuthenticated).user,
                               );
                             },
                             color: validNumber ? Colors.green : Colors.grey,
@@ -327,8 +451,11 @@ class CurrentLockerShareView extends StatelessWidget {
                         ),
                         FlatButton(
                             onPressed: () {
+                              var number =
+                                  (state as LockerDetailStateShare).filter;
+                              var userTo = DBUser("", number, number, null, []);
                               cubit.shareViaSMS(
-                                (state as LockerDetailStateShare).filter,
+                                userTo,
                                 (authState as AuthAuthenticated).user,
                               );
                             },
@@ -522,7 +649,7 @@ class ListItem extends StatelessWidget {
                     icon: Icons.messenger_outline,
                     onTap: () => {
                       lockerDetailCubit.shareViaWhatsapp(
-                          user.number, (state as AuthAuthenticated).user)
+                          user, (state as AuthAuthenticated).user)
                     },
                   ),
                   IconSlideAction(
@@ -531,7 +658,7 @@ class ListItem extends StatelessWidget {
                     icon: Icons.sms_outlined,
                     onTap: () => {
                       lockerDetailCubit.shareViaSMS(
-                          user.number, (state as AuthAuthenticated).user)
+                          user, (state as AuthAuthenticated).user)
                     },
                   ),
                 ]

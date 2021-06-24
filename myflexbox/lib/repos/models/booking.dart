@@ -40,6 +40,26 @@ class Booking {
         this.endTimeSystem,
         this.message});
 
+  Booking.fromBooking(Booking booking): this(
+    status: booking.status,
+    bookingId: booking.bookingId,
+    parcelNumber: booking.parcelNumber,
+    externalId: booking.externalId,
+    lockerId: booking.lockerId,
+    compartmentId: booking.compartmentId,
+    compartmentLength: booking.compartmentLength,
+    compartmentHeight: booking.compartmentHeight,
+    compartmentDepth: booking.compartmentDepth,
+    deliveryCode: booking.deliveryCode,
+    collectingCode: booking.collectingCode,
+    state: booking.state,
+    startTimeSystem: booking.startTimeSystem,
+    startTime: booking.startTime,
+    endTime: booking.endTime,
+    endTimeSystem: booking.endTimeSystem,
+    message: booking.message,
+  );
+
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
       status: json['status'] as int,

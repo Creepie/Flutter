@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -26,7 +27,7 @@ class GetLockerBooking {
 
   ///this method Retrieves a List of [Booking] where the externalId (Firebase Uid) matches
   Future<List<Booking>> getBookings(String externalId) async {
-    var url = '$baseUrl/api/1/bookings?externalId=${externalId}';
+    var url = '$baseUrl/api/1/bookings?externalId=${""}';
     final response = await http.get(
       Uri.parse(url),
       headers: {HttpHeaders.authorizationHeader: apiKey},
@@ -56,10 +57,8 @@ class GetLockerBooking {
   // externalId has share some of the lockers with others.
   Future<void> getSharedBookingsTo(
       String externalID, List<Booking> bookingList) async {
-    DataSnapshot toF = await shareDB
-        .orderByChild("from")
-        .equalTo("o3j1l1fUThR3oqnizRI9WfMZ7jn1")
-        .once();
+    DataSnapshot toF =
+        await shareDB.orderByChild("from").equalTo(externalID).once();
     Map<dynamic, dynamic> to = toF.value;
     if (to != null) {
       for (int i = 0; i < bookingList.length; i++) {
@@ -68,7 +67,7 @@ class GetLockerBooking {
           if (to.containsKey(bId)) {
             String toId = to[bId]['to'] as String;
             DBUser fromUser = toId.startsWith("+43")
-                ? getUserWithNumber(toId)
+                ? await getUserWithNumber(toId)
                 : await getUser(toId);
             bookingList[i] = BookingTo(bookingList[i], fromUser);
           }
@@ -79,19 +78,27 @@ class GetLockerBooking {
     }
   }
 
-  DBUser getUserWithNumber(String number) {
-    //TODO search in telephoneBook for user
-    return DBUser("", number, number, null, []);
+  Future<DBUser> getUserWithNumber(String number) async {
+    List<Contact> _contacts = (await ContactsService.getContactsForPhone(
+      number,
+      withThumbnails: false,
+      photoHighResolution: false,
+    ))
+        .toList();
+    if (_contacts.isEmpty) {
+      return DBUser("", number, number, null, []);
+    } else {
+      String name = _contacts[0].displayName;
+      return DBUser("", name, number, null, []);
+    }
   }
 
   //Creates a List with BookingsFrom, that are shared to the user with the
   // external id
   Future<List<Booking>> getSharedBookingsFrom(String externalID) async {
     //Get Firebase Shares as List
-    DataSnapshot fromF = await shareDB
-        .orderByChild("to")
-        .equalTo("o3j1l1fUThR3oqnizRI9WfMZ7jn1")
-        .once();
+    DataSnapshot fromF =
+        await shareDB.orderByChild("to").equalTo(externalID).once();
     Map<dynamic, dynamic> from = fromF.value;
     //For each -> get Booking
     if (from != null) {
@@ -144,7 +151,9 @@ class GetLockerBooking {
   }
 
   Future<void> shareBooking(String toId, String fromId, int bookingID) async {
-    shareDB.child(bookingID.toString()).set({"to": toId.toString(), "from" : fromId.toString()});
+    shareDB
+        .child(bookingID.toString())
+        .set({"to": toId.toString(), "from": fromId.toString()});
     //TODO check if successful
   }
 
@@ -171,5 +180,10 @@ class GetLockerBooking {
       // If the server did not return a 200 OK response,
       return null;
     }
+  }
+
+  Future<void> deleteShare(String bookingID) async {
+    print(bookingID);
+    await shareDB.child(bookingID).remove();
   }
 }

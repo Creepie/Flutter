@@ -171,11 +171,17 @@ class HistoryTile extends StatelessWidget {
               showModalBottomSheet<dynamic>(
                   isScrollControlled: true,
                   context: context,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      topLeft: Radius.circular(15)
+                    ),
+                  ),
                   builder: (BuildContext buildContext) {
                     var currentLockerCubit = context.read<CurrentLockerCubit>();
                     return BlocProvider(
                       create: (context) =>
-                          LockerDetailCubit(booking, currentLockerCubit.repo),
+                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit),
                       child: CurrentLockerDetailScreen(),
                     );
                   });
@@ -244,11 +250,17 @@ class HistoryTile extends StatelessWidget {
               showModalBottomSheet<dynamic>(
                   isScrollControlled: true,
                   context: context,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                        topLeft: Radius.circular(15)
+                    ),
+                  ),
                   builder: (BuildContext buildContext) {
                     var currentLockerCubit = context.read<CurrentLockerCubit>();
                     return BlocProvider(
                       create: (context) =>
-                          LockerDetailCubit(booking, currentLockerCubit.repo)..showQR(),
+                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR(),
                       child: CurrentLockerDetailScreen(),
                     );
                   });
@@ -272,11 +284,17 @@ class HistoryTile extends StatelessWidget {
                       showModalBottomSheet<dynamic>(
                           isScrollControlled: true,
                           context: context,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(15),
+                                topLeft: Radius.circular(15)
+                            ),
+                          ),
                           builder: (BuildContext buildContext) {
                             var currentLockerCubit = context.read<CurrentLockerCubit>();
                             return BlocProvider(
                               create: (context) =>
-                              LockerDetailCubit(booking, currentLockerCubit.repo)..showQR(),
+                              LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR(),
                               child: CurrentLockerDetailScreen(),
                             );
                           });

@@ -11,7 +11,7 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
 
   void loadData() async{
     emit(new CurrentLockerLoading());
-    List<Booking> bookingList = await repo.getBookings("");
+    List<Booking> bookingList = await repo.getBookings("z1k9qFupQpdcHCwnWWbq9Nrl6im1");
     if(bookingList.isNotEmpty){
       emit(new CurrentLockerList(bookingList: bookingList));
     } else {
