@@ -152,9 +152,10 @@ class _ContactsState extends State<Contacts> {
     DataSnapshot contact = await userDb.orderByChild('number').equalTo(phoneNumber).once();
 
     //if search not null > add all contacts to user favourites db and to list for favourites list
+    DBUser user;
     if(contact.value != null){
       Map<dynamic, dynamic>.from(contact.value).forEach((key,values) {
-        var user = DBUser.fromJson(values);
+         user = DBUser.fromJson(values);
         if(!myUser.favourites.contains(user.uid)){
           myUser.favourites.add(user.uid);
           contacts.add(user);
@@ -165,7 +166,8 @@ class _ContactsState extends State<Contacts> {
 
       //save updated myUser to db
       if(count > 0){
-        var test = await userDb.child(myUser.uid).set(myUser.toJson());
+        userDb.child(myUser.uid).child("favourites").child(user.uid).set({"key":user.uid});
+        //var test = await userDb.child(myUser.uid).set(myUser.toJson());
       }
     }
 

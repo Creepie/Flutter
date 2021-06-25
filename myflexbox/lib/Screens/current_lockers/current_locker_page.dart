@@ -181,7 +181,7 @@ class HistoryTile extends StatelessWidget {
                     var currentLockerCubit = context.read<CurrentLockerCubit>();
                     return BlocProvider(
                       create: (context) =>
-                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit),
+                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..getPosition(),
                       child: CurrentLockerDetailScreen(),
                     );
                   });
@@ -260,7 +260,7 @@ class HistoryTile extends StatelessWidget {
                     var currentLockerCubit = context.read<CurrentLockerCubit>();
                     return BlocProvider(
                       create: (context) =>
-                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR(),
+                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR()..getPosition(),
                       child: CurrentLockerDetailScreen(),
                     );
                   });
@@ -294,7 +294,7 @@ class HistoryTile extends StatelessWidget {
                             var currentLockerCubit = context.read<CurrentLockerCubit>();
                             return BlocProvider(
                               create: (context) =>
-                              LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR(),
+                              LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR()..getPosition(),
                               child: CurrentLockerDetailScreen(),
                             );
                           });

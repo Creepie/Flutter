@@ -42,20 +42,20 @@ class UserRepository {
 
     for (int i = 0; i < numberList.length; i++) {
       if (numberList[i].isNotEmpty) {
-        addFavouriteToFirebase(numberList[i],user);
+        addFavouriteToFirebase(numberList[i], user);
       }
     }
 
     return Future.value(true);
   }
-  
+
   Future<void> addFavouriteToFirebase(String number, DBUser user) async {
     DataSnapshot contact =
-    await userDb.orderByChild('number').equalTo(number).once();
+        await userDb.orderByChild('number').equalTo(number).once();
     print('favouriteAdded');
     if (contact.value != null && user.uid != contact.value) {
       Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
-        userDb.child(user.uid).child("favourites").child(key).set({"key":key});
+        userDb.child(user.uid).child("favourites").child(key).set({"key": key});
       });
     }
   }
@@ -83,34 +83,44 @@ class UserRepository {
       return Future.value(null);
     }
   }
-}
 
-//Check if LogIn Data is correct and return Token, null otherwise
-Future<String> authenticate({
-  @required String username,
-  @required String password,
-}) async {
-  await Future.delayed(Duration(seconds: 2));
-  return "";
-}
+  //Returns all contact as a list of users, if they are not already favorites
+  //Also adds the name of the Contact to the flexbox username in the passed
+  //favList
+  Future<List<DBUser>> getContactsWithoutFavorites(List<DBUser> favList) async {
+    //Get all contacts
+    List<Contact> _contacts = (await ContactsService.getContacts(
+      withThumbnails: false,
+      photoHighResolution: false,
+    )).toList();
 
-//Return Token if the user is logged in, null otherwise
-Future<String> hasToken() async {
-  await Future.delayed(Duration(seconds: 3));
-  return "";
-}
-
-Future<DBUser> getUser(String token) async {
-  await Future.delayed(Duration(seconds: 2));
-  return DBUser("mail", "name", token, null, null);
-}
-
-Future<bool> logIn() async {
-  await Future.delayed(Duration(seconds: 2));
-  return true;
-}
-
-Future<String> createUser({String username, String password}) async {
-  await Future.delayed(Duration(seconds: 2));
-  return null;
+    List<DBUser> contactList = [];
+    //Loop all contacts
+    for (int i = 0; i < _contacts.length; i++) {
+      //Loop all numbers of a contact
+      var contactNumbers = _contacts[i].phones.toList();
+      for (int j = 0; j < _contacts[i].phones.length; j++) {
+        var isFavorite = false;
+        var contactNumber = contactNumbers[j].value.replaceAll(" ", "");
+        //check if the number is not a duplicated for the contact
+        if (!(j > 0 &&
+            contactNumbers[j - 1].value.replaceAll(" ", "") == contactNumber)) {
+          //check if the contact is a favorite
+          for (int t = 0; t < favList.length; t++) {
+            //if yes, add the name to the favorite
+            if (favList[t].number == contactNumber) {
+              isFavorite = true;
+              favList[t].name += " (" + _contacts[i].displayName + ")";
+            }
+          }
+          //if not, add contact to the list
+          if (!isFavorite) {
+            contactList.add(
+                DBUser("", _contacts[i].displayName, contactNumber, null, []));
+          }
+        }
+      }
+    }
+    return contactList;
+  }
 }

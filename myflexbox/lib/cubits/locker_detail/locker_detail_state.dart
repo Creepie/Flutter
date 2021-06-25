@@ -3,12 +3,14 @@ import 'dart:ui';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:myflexbox/repos/models/booking.dart';
+import 'package:myflexbox/repos/models/locker.dart';
 import 'package:myflexbox/repos/models/user.dart';
 
 abstract class LockerDetailState extends Equatable {
   final Booking booking;
+  final Locker locker;
 
-  LockerDetailState(this.booking);
+  LockerDetailState(this.booking, this.locker);
 
   //sets the value on which two states are compared. The UI is only rebuild, if
   //two stated are different.
@@ -17,7 +19,8 @@ abstract class LockerDetailState extends Equatable {
 }
 
 class LockerDetailStateDefault extends LockerDetailState {
-  LockerDetailStateDefault(Booking booking) : super(booking);
+  LockerDetailStateDefault(Booking booking, Locker locker)
+      : super(booking, locker);
 }
 
 class LockerDetailStateShare extends LockerDetailState {
@@ -27,18 +30,35 @@ class LockerDetailStateShare extends LockerDetailState {
   final List<DBUser> favoritesFiltered;
   final String filter;
 
-  LockerDetailStateShare(Booking booking, this.contacts, this.contactsFiltered, this.favorites, this.favoritesFiltered, this.filter) : super(booking);
+  LockerDetailStateShare(
+      Booking booking,
+      this.contacts,
+      this.contactsFiltered,
+      this.favorites,
+      this.favoritesFiltered,
+      this.filter,
+      Locker locker)
+      : super(booking, locker);
 
   @override
-  List<Object> get props => [booking, contacts, favorites, favoritesFiltered, contactsFiltered, filter];
+  List<Object> get props => [
+        booking,
+        contacts,
+        favorites,
+        favoritesFiltered,
+        contactsFiltered,
+        filter
+      ];
 }
 
 class LockerDetailStateQR extends LockerDetailState {
   final MemoryImage qr;
-  LockerDetailStateQR(Booking booking, this.qr) : super(booking);
+
+  LockerDetailStateQR(Booking booking, this.qr, Locker locker)
+      : super(booking, locker);
 }
 
-
 class LockerDetailStateLoading extends LockerDetailState {
-  LockerDetailStateLoading(Booking booking) : super(booking);
+  LockerDetailStateLoading(Booking booking, Locker locker)
+      : super(booking, locker);
 }
