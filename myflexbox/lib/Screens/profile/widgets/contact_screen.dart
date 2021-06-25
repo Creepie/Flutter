@@ -120,8 +120,13 @@ class _ContactsState extends State<Contacts> {
     FirebaseDatabase database = FirebaseDatabase();
     DatabaseReference userDb = database.reference().child('Users');
     var myUserId = FirebaseAuth.instance.currentUser.uid;
-    DBUser myUser = await getUserFromDB(myUserId);
 
+
+    //Removed einen user aus den favoriten
+    await database.reference().child('Users').child(myUserId).child("favourites").child(contact.uid).remove();
+    return true;
+    /*
+    DBUser myUser = await getUserFromDB(myUserId);
     var deleted = myUser.favourites.remove(contact.uid);
     bool isCompleted = false;
 
@@ -134,6 +139,7 @@ class _ContactsState extends State<Contacts> {
       });
     }
     return Future.value(isCompleted);
+     */
   }
 
   ///this method takes a [phoneNumber] param > with this number we look in the db if user already installed the app

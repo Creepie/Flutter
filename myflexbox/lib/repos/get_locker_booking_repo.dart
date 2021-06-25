@@ -11,10 +11,12 @@ import 'models/user.dart';
 class GetLockerBooking {
   FirebaseDatabase database;
   DatabaseReference shareDB;
+  DatabaseReference userDB;
 
   GetLockerBooking() {
     database = FirebaseDatabase();
     shareDB = database.reference().child('share');
+    userDB = database.reference().child('Users');
   }
 
   ///the [apiKey] is needed in each api call and is stored in the auth header
@@ -173,7 +175,7 @@ class GetLockerBooking {
 
   //Returns the QR code as MemoryImage for a locker with the id
   Future<MemoryImage> getQR(int id) async {
-    var url = '$baseUrl/api/1/qr?code=${id}';
+    var url = '$baseUrl/api/1/qr?code=$id';
     final response = await http.get(
       Uri.parse(url),
       headers: {HttpHeaders.authorizationHeader: apiKey},
@@ -214,5 +216,27 @@ class GetLockerBooking {
   Future<void> deleteShare(String bookingID) async {
     print(bookingID);
     await shareDB.child(bookingID).remove();
+  }
+
+  //If the locker was shared with a contact or a new number,
+  // check if this number has a flexbox account
+  // If so, change the share to value from the number to the id, and the
+  //number is added to favorites
+  Future<void> checkIfFlexBoxUser(
+      String number, String fromId, int bookingID) async {
+    DataSnapshot contact =
+        await userDB.orderByChild('number').equalTo(number).once();
+    bool finished = false;
+    if (contact.value != null) {
+      Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
+        if (!finished) {
+          //set favorite
+          userDB.child(fromId).child("favourites").child(key).set({"key": key});
+          //update the shareBooking entry
+          shareBooking(key, fromId, bookingID);
+          finished = true;
+        }
+      });
+    }
   }
 }

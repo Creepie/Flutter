@@ -145,6 +145,9 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     var newBooking = BookingTo(state.booking, userTo);
     currentLockerCubit.loadData();
     emit(LockerDetailStateDefault(newBooking, state.locker));
+    if(userTo.uid == null) {
+      currentLockersRepository.checkIfFlexBoxUser(userTo.number, fromID, state.booking.bookingId);
+    }
   }
 
   void shareViaWhatsapp(DBUser userTo, DBUser userFrom) async {

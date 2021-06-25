@@ -375,7 +375,6 @@ class _MapViewState extends State<MapView> {
         'assets/images/flexbox_marker.png');
     setState(() {});
   }
-
 }
 
 class DefaultViewMenuBar extends StatelessWidget {
