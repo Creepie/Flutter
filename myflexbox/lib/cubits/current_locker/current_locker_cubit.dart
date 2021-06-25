@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/repos/get_locker_booking_repo.dart';
 import 'package:myflexbox/repos/models/booking.dart';
@@ -5,6 +6,8 @@ import 'current_locker_state.dart';
 
 class CurrentLockerCubit extends Cubit<CurrentLockerState> {
   GetLockerBooking repo = new GetLockerBooking();
+  var myUserId = FirebaseAuth.instance.currentUser.uid;
+  //todo get userid from firebase and put it into getBookings if everything is ready
 
   CurrentLockerCubit()
       : super(new CurrentLockerLoading());
