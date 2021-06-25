@@ -230,6 +230,7 @@ class HistoryTile extends StatelessWidget {
                       ],
                     ),
                   ),
+                  Spacer(),
                   Image.asset(
                     stateImageSrc,
                     width: 80,
@@ -279,7 +280,10 @@ class HistoryTile extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Spacer(),
                   IconButton(
+                    padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
+                    constraints: BoxConstraints(),
                     onPressed: () {
                       showModalBottomSheet<dynamic>(
                           isScrollControlled: true,
