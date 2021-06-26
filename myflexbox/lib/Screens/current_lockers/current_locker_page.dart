@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/Screens/current_lockers/widgets/BottomCard.dart';
 import 'package:myflexbox/Screens/current_lockers/widgets/TopCard.dart';
+import 'package:myflexbox/Screens/current_lockers/widgets/current_locker_empty.dart';
+import 'package:myflexbox/Screens/current_lockers/widgets/current_locker_filter.dart';
 import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
@@ -217,7 +219,6 @@ class HistoryTile extends StatelessWidget {
     );
   }
 
-
   ///this method is to set the right text left to the QR Code
   String getQRCodeText(Booking booking){
     if(booking is BookingFrom){
@@ -231,135 +232,8 @@ class HistoryTile extends StatelessWidget {
 }
 
 
-class HistoryFilter extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = 340.0;
-    return Container(
-        height: height,
-        padding: EdgeInsets.only(top: 20, bottom: 0, left: 0, right: 0),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30), topRight: Radius.circular(30))),
-        //color: Colors.amber,
-        child: Column(
-          children: [
-            Text(
-              "Filter Bookings",
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black12,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  BoxPickerSquare(width: width,filterType: "nicht Eingelagert", height: height,assetPath: "assets/images/status_booking_created.png"),
-                  BoxPickerSquare(width: width,filterType: "Abgeholt", height: height,assetPath: "assets/images/status_collected.png",),
-                ],
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black12,
-                    width: 1.0,
-                  ),
-                  bottom: BorderSide(
-                    color: Colors.black12,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  BoxPickerSquare(width: width,filterType: "nicht Abgeholt", height: height,assetPath: "assets/images/status_not_collected.png",),
-                  BoxPickerSquare(width: width,filterType: "Abgebrochen", height: height,assetPath: "assets/images/status_booking_cancelled.png",),
-                ],
-              ),
-            )
-          ],
-        ));
-  }
-}
-
-class BoxPickerSquare extends StatelessWidget{
-  final double width;
-  final String filterType;
-  final double height;
-  final String assetPath;
-
-  const BoxPickerSquare({Key key, this.width, this.filterType, this.height, this.assetPath}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-
-      },
-      child: Container(
-        width: width * 0.5,
-        height: height *0.4,
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-
-          border: Border(
-            right: BorderSide(
-              color: Colors.black12,
-              width: 1.0,
-            ),
-          ),
-        ),
-        child: Column(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  filterType,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                    color: Colors.black
-                  ),
-                ),
-                Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
-                Image.asset(
-                  assetPath,
-                  width: 65,
-                )
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-}
 
 
-class EmptyScreen extends StatelessWidget{
-
-  @override
-  Widget build(BuildContext context) {
-    return Center();
-  }
-
-}
 
 
 
