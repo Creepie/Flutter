@@ -16,18 +16,18 @@ class CurrentLockerShareView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: IntrinsicHeight(
-        child: Column(
-          children: [
-            Container(height: 5),
-            ShareViewMenuBar(cubit: cubit),
-            ShareViewSearchField(cubit: cubit),
-            ShareViewBody(cubit: cubit, booking: booking)
-          ],
+      return SingleChildScrollView(
+        child: IntrinsicHeight(
+          child: Column(
+            children: [
+              Container(height: 5),
+              ShareViewMenuBar(cubit: cubit),
+              ShareViewSearchField(cubit: cubit),
+              ShareViewBody(cubit: cubit, booking: booking)
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -66,7 +66,7 @@ class ShareViewMenuBar extends StatelessWidget {
 class ShareViewSearchField extends StatelessWidget {
   final LockerDetailCubit cubit;
 
-  const ShareViewSearchField({Key key, this.cubit}) : super(key: key);
+  ShareViewSearchField({Key key, this.cubit}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +75,7 @@ class ShareViewSearchField extends StatelessWidget {
       child: TextFormField(
         autocorrect: false,
         onChanged: (text) async {
+          print("Search bar change");
           cubit.filterShare(text);
         },
         decoration: InputDecoration(
@@ -155,7 +156,8 @@ class ShareViewUserList extends StatelessWidget {
               DBUser dbUser;
               //First Separator
               if (index == 0) {
-                return getSeparator(favoritesList, favoritesListLength, "Favoriten");
+                return getSeparator(
+                    favoritesList, favoritesListLength, "Favoriten");
               }
               //Second Separator
               if (index == favoritesListLength + 1) {

@@ -143,7 +143,7 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     await currentLockersRepository.shareBooking(
         toID, fromID, state.booking.bookingId);
     var newBooking = BookingTo(state.booking, userTo);
-    currentLockerCubit.loadData();
+    currentLockerCubit.loadDataBackground();
     emit(LockerDetailStateDefault(newBooking, state.locker));
     if(userTo.uid == null) {
       currentLockersRepository.checkIfFlexBoxUser(userTo.number, fromID, state.booking.bookingId);
@@ -168,7 +168,7 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     emit(LockerDetailStateLoading(state.booking, state.locker));
     await currentLockersRepository
         .deleteShare(state.booking.bookingId.toString());
-    currentLockerCubit.loadData();
+    currentLockerCubit.loadDataBackground();
     Booking updatedBooking = Booking.fromBooking(state.booking);
     emit(LockerDetailStateDefault(updatedBooking, state.locker));
   }

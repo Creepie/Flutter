@@ -12,7 +12,7 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
   CurrentLockerCubit()
       : super(new CurrentLockerLoading());
 
-  void loadData() async{
+  Future<void> loadData() async{
     emit(new CurrentLockerLoading());
     List<Booking> bookingList = await repo.getBookings("z1k9qFupQpdcHCwnWWbq9Nrl6im1");
     if(bookingList.isNotEmpty){
@@ -20,7 +20,16 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
     } else {
       emit(new CurrentLockerEmpty());
     }
+  }
 
+  //Needed for error-free background actualisation
+  Future<void> loadDataBackground() async{
+    List<Booking> bookingList = await repo.getBookings("z1k9qFupQpdcHCwnWWbq9Nrl6im1");
+    if(bookingList.isNotEmpty){
+      emit(new CurrentLockerList(bookingList: bookingList));
+    } else {
+      emit(new CurrentLockerEmpty());
+    }
   }
 
   void filterData(){

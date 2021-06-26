@@ -15,12 +15,14 @@ abstract class LockerDetailState extends Equatable {
   //sets the value on which two states are compared. The UI is only rebuild, if
   //two stated are different.
   @override
-  List<Object> get props => [booking];
+  List<Object> get props => [booking, locker];
 }
 
 class LockerDetailStateDefault extends LockerDetailState {
   LockerDetailStateDefault(Booking booking, Locker locker)
       : super(booking, locker);
+  @override
+  List<Object> get props => [booking, locker];
 }
 
 class LockerDetailStateShare extends LockerDetailState {
@@ -43,6 +45,7 @@ class LockerDetailStateShare extends LockerDetailState {
   @override
   List<Object> get props => [
         booking,
+        locker,
         contacts,
         favorites,
         favoritesFiltered,
@@ -56,9 +59,13 @@ class LockerDetailStateQR extends LockerDetailState {
 
   LockerDetailStateQR(Booking booking, this.qr, Locker locker)
       : super(booking, locker);
+  @override
+  List<Object> get props => [booking, locker, qr];
 }
 
 class LockerDetailStateLoading extends LockerDetailState {
   LockerDetailStateLoading(Booking booking, Locker locker)
       : super(booking, locker);
+  @override
+  List<Object> get props => [booking, locker];
 }
