@@ -222,21 +222,19 @@ class GetLockerBooking {
   // check if this number has a flexbox account
   // If so, change the share to value from the number to the id, and the
   //number is added to favorites
-  Future<void> checkIfFlexBoxUser(
+  Future<String> checkIfFlexBoxUser(
       String number, String fromId, int bookingID) async {
     DataSnapshot contact =
         await userDB.orderByChild('number').equalTo(number).once();
-    bool finished = false;
     if (contact.value != null) {
       Map<dynamic, dynamic>.from(contact.value).forEach((key, values) {
-        if (!finished) {
           //set favorite
           userDB.child(fromId).child("favourites").child(key).set({"key": key});
           //update the shareBooking entry
           shareBooking(key, fromId, bookingID);
-          finished = true;
-        }
+          return key;
       });
     }
+    return null;
   }
 }

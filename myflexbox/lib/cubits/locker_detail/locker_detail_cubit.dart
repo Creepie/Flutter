@@ -4,6 +4,7 @@ import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 import 'package:myflexbox/repos/models/locker.dart';
 import 'package:myflexbox/repos/models/user.dart';
+import 'package:myflexbox/repos/notification_repo.dart';
 import 'package:myflexbox/repos/user_repo.dart';
 import 'locker_detail_state.dart';
 import 'package:myflexbox/repos/get_locker_booking_repo.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_sms/flutter_sms.dart';
 class LockerDetailCubit extends Cubit<LockerDetailState> {
   final GetLockerBooking currentLockersRepository;
   final UserRepository userRepository = new UserRepository();
+  final NotificationRepo notificationRepo = new NotificationRepo();
   final CurrentLockerCubit currentLockerCubit;
 
   LockerDetailCubit(
@@ -145,8 +147,21 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
     var newBooking = BookingTo(state.booking, userTo);
     currentLockerCubit.loadDataBackground();
     emit(LockerDetailStateDefault(newBooking, state.locker));
-    if(userTo.uid == null) {
-      currentLockersRepository.checkIfFlexBoxUser(userTo.number, fromID, state.booking.bookingId);
+
+    //Check if the user is a flexbox user and send notification
+    if (userTo.uid == null) {
+      //Check if is a FLexBox User
+      toID = await currentLockersRepository.checkIfFlexBoxUser(
+          userTo.number, fromID, state.booking.bookingId);
+      if (toID != null) {
+        //Is a flexboxUser
+        //send notification
+        notificationRepo.notifyLockerShared(fromID, toID, state.booking);
+      }
+    } else {
+      //Is a flexboxUser
+      //send notification
+      notificationRepo.notifyLockerShared(fromID, toID, state.booking);
     }
   }
 
