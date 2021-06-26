@@ -4,10 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sms/flutter_sms.dart';
+import 'package:intl/intl.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/config/constants.dart';
+import 'package:myflexbox/repos/models/notification.dart';
 import 'package:myflexbox/repos/models/user.dart';
 
 
@@ -95,8 +97,13 @@ class _ContactsState extends State<Contacts> {
     if (contactFromDB.isNotEmpty ) {
       //adden in saved contacts
       for (int i = 0; i < contactFromDB.length; i++) {
-        _savedContacts.add(contactFromDB[i]);
+        // notification: user added to favourites
+        if(contactFromDB[i].number == phoneNumber){
+          addNotificationUser(contactFromDB[0].uid, contactFromDB[0].name);
+        }
+
       }
+
       getAllContacts();
       return true;
 
@@ -106,8 +113,43 @@ class _ContactsState extends State<Contacts> {
       List<String> recipents = [phoneNumber];
       _sendSMS(message, recipents);
 
+      // notification: used got invited
+      addNotificationUser("", phoneNumber);
       return false;
     }
+
+  }
+
+  /// This method adds a notification to the list for the current user
+  void addNotificationUser(String friendUid, String friendName) async {
+    FirebaseDatabase database = FirebaseDatabase();
+    DatabaseReference userDb = database.reference().child('Notifications');
+
+    var myUserId = FirebaseAuth.instance.currentUser.uid;
+    var myUserName = FirebaseAuth.instance.currentUser.displayName;
+
+    Messages messageUser;
+    Messages messageFriend;
+
+
+    // friendUid has app
+    if(friendUid != ""){
+      messageUser = new Messages(friendName, "Added friend");
+
+      // notification for friend
+      messageFriend = new Messages(myUserName, "Added you as friend");
+      userDb.child(friendUid).push().set(messageFriend.toJson());
+
+    } else {
+      final DateTime now = DateTime. now();
+      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+      final String formatted = formatter. format(now);
+
+      messageUser = new Messages(friendName, "This phone number received an invitation on the ${formatted}.");
+    }
+
+    // add uid to list
+    userDb.child(myUserId).push().set(messageUser.toJson());
 
   }
 

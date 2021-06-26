@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
+import 'package:myflexbox/repos/models/notification.dart';
+
 
 class CustomData extends StatefulWidget {
   CustomData({this.app});
@@ -32,7 +35,8 @@ class _CustomDataState extends State<CustomData> {
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
-    userDb = database.reference().child('Users');
+    var myUserId = FirebaseAuth.instance.currentUser.uid;
+    userDb = database.reference().child('Notifications').child(myUserId);
     query = userDb;
     super.initState();
   }
@@ -41,84 +45,41 @@ class _CustomDataState extends State<CustomData> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('PersonList'),
-      ),
       ///A box in which a single widget can be scrolled.
       body: SingleChildScrollView(
         child: Column(
           children: [
             Center(
               child: Container(
-                color: Colors.grey,
+                color: Colors.white,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Column(
                   children: [
-                    ///add a Header Text Widget with a padding
-                    Container(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Text(
-                        "Usertable",
-                        textAlign: TextAlign.center,
-                        style:
-                            TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ///add a input TextField Widget where the user can type in a name
+
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius:  BorderRadius.circular(32),
+                          color: Colors.white,
                         ),
-                        child: TextField(
-                          controller: editTextController,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(fontSize: 17),
-                            hintText: 'Enter your name',
-                            suffixIcon: Icon(Icons.add),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(20),
-                          ),
-                        ),
-                      ),
-                    ),
-                    ///Add a Button where the user can push up a Person object to Firebase db
-                    TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            primary: Colors.white),
-                        onPressed: () {
-                          ///create a Person
-                          Person person = new Person("marioTest", "marioeberth@gmail.com", "1", "123" );
-                          ///push it to Firebase db
-                          //userDb = database.reference().child('messages');
-                          //userDb.child(toUserId).push().set(message.toJson());
-                          userDb.push().set(person.toJson()); //userdb.child(notification).child(userid).push().set(message)
-                          ///clear the input text field
-                          editTextController.clear();
-                        },
-                        ///give the button an Text
-                        child: Text('add User')),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius:  BorderRadius.circular(32),
-                        ),
-                        child: TextField(
-                          controller: searchTextController,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(fontSize: 17),
-                            hintText: 'Search for User',
-                            suffixIcon: Icon(Icons.search),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(20),
-                          ),
-                        ),
+                        child:
+
+                          TextField(
+                            controller: searchTextController,
+                            decoration: InputDecoration(
+                                labelText: 'Search',
+                                border: new OutlineInputBorder(
+                                    borderSide: new BorderSide(
+                                        color: Theme.of(context).primaryColor
+                                    )
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: Theme.of(context).primaryColor,
+                                )
+                            ),
+                          )
                       ),
                     ),
                     ///add a button where the user can reload the db search
@@ -179,17 +140,24 @@ class _CustomDataState extends State<CustomData> {
             Animation<double> animation,
             int index) {
           ///convert the db result to an person object
-          Person person = Person.fromJson(snapshot.value);
+          Messages person = Messages.fromJson(snapshot.value);
+          String text;
+          if(person.friendUid.startsWith('+')){
+             text = "Number: ${person.friendUid}";
+          } else {
+             text = "Name: ${person.friendUid}";
+          }
+          
           ///A single fixed-height row that typically contains some text as well as a leading or trailing icon.
           return new ListTile(
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () =>
                 ///if pressed delete this item in the app and on db
-                    userDb.child(snapshot.key).remove(),
+                userDb.child(snapshot.key).remove(),
               ),
-              title: new Text("Name: ${person.name}"),
-              subtitle: new Text("uid: ${person.uid}")
+              title: new Text(text),
+              subtitle: new Text("${person.text}")
           );
         });
   }
@@ -222,10 +190,10 @@ class Person{
   ///is used to parse the data from json to object
   factory Person.fromJson(Map<dynamic, dynamic> json) {
     return Person.json(
-      email: json['email'] as String,
-      name: json['name'] as String,
-      token: json['token'] as String,
-      uid: json['uid'] as String
+        email: json['email'] as String,
+        name: json['name'] as String,
+        token: json['token'] as String,
+        uid: json['uid'] as String
     );
   }
 }
