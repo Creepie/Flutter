@@ -156,12 +156,12 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
       if (toID != null) {
         //Is a flexboxUser
         //send notification
-        notificationRepo.notifyLockerShared(fromID, toID, state.booking);
+        notificationRepo.notifyLockerShared(userFrom, toID, state.booking);
       }
     } else {
       //Is a flexboxUser
       //send notification
-      notificationRepo.notifyLockerShared(fromID, toID, state.booking);
+      notificationRepo.notifyLockerShared(userFrom, toID, state.booking);
     }
   }
 
