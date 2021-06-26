@@ -33,8 +33,8 @@ class Password {
   Password.clone(Password password): this(text: password.text, error: password.error);
 
   void validate() {
-    if(text.length <= 4) {
-      error = "Muss länger als 4 Zeichen sein";
+    if(text.length <= 6) {
+      error = "Muss länger als 6 Zeichen sein";
     } else {
       error = null;
     }
