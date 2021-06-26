@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart';
@@ -152,16 +153,6 @@ class HistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    var stateImageSrc = "";
-    if (booking.state == "BOOKING_CREATED") {
-      stateImageSrc = "assets/images/status_booking_created.png";
-    } else if (booking.state == "COLLECTED") {
-      stateImageSrc = "assets/images/status_collected.png";
-    } else if (booking.state == "NOT_COLLECTED") {
-      stateImageSrc = "assets/images/status_not_collected.png";
-    } else {
-      stateImageSrc = "assets/images/status_booking_cancelled.png";
-    }
 
     return Card(
       child: Column(
@@ -188,55 +179,13 @@ class HistoryTile extends StatelessWidget {
             },
             child: Container(
               padding: EdgeInsets.all(20),
-              child: Row(
+              child: Column(
                 children: [
-                  SizedBox(
-                    width: width * 0.60,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          booking.state,
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: booking is BookingFrom
-                                  ? Colors.lightGreen
-                                  : booking is BookingTo
-                                      ? Colors.yellow
-                                      : Colors.black87),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "status",
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text("Bereit zur einlagerung")
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "reserviert",
-                          style: TextStyle(color: Colors.black54),
-                        )
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  Image.asset(
-                    stateImageSrc,
-                    width: 80,
-                  )
+                  TopCard(booking: booking,),
+
+                  BottomCard(booking: booking,)
                 ],
-              ),
+              )
             ),
           ),
           //TimeLine(),
@@ -274,7 +223,7 @@ class HistoryTile extends StatelessWidget {
                   SizedBox(
                     width: width * 0.6,
                     child: Text(
-                      "Paket einlegen",
+                      getQRCodeText(booking),
                       style: TextStyle(
                         fontSize: 18,
                       ),
@@ -316,6 +265,42 @@ class HistoryTile extends StatelessWidget {
       ),
     );
   }
+
+
+  ///this method is to set the right text left to the QR Code
+  String getQRCodeText(Booking booking){
+    if(booking is BookingFrom){
+      return "Paket abholen";
+    } else if(booking is BookingTo && booking.state == "BOOKING_CREATED"){
+      return "Paket einlegen";
+    } else {
+      return "Paket entnehmen";
+    }
+  }
+
+  String getCreator(Booking booking){
+    var myUserId = FirebaseAuth.instance.currentUser.displayName;
+    if(booking is BookingTo){
+      return "Ich";
+    } else if(booking is BookingFrom){
+      return (booking).fromUser.name;
+    } else {
+      return "Ich";
+    }
+  }
+  
+  String getSharedName(Booking booking) {
+    var myUserId = FirebaseAuth.instance.currentUser.displayName;
+    String txt = "";
+    if (booking is BookingFrom) {
+      txt = (booking as BookingFrom).fromUser.name;
+    }
+    if (txt.isNotEmpty) {
+      return "Mir";
+    } else {
+      return txt;
+    }
+  }
 }
 
 class TimeLine extends StatelessWidget {
@@ -331,5 +316,184 @@ class TimeLine extends StatelessWidget {
         itemCount: 2,
       ),
     );
+  }
+}
+
+class TopCard extends StatelessWidget{
+  final Booking booking;
+
+
+  const TopCard({Key key, this.booking}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+   return Row(
+     children: [
+       SizedBox(
+         width: width * 0.60,
+         child: Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
+           children: [
+             Text(
+               getStateText(),
+               style: TextStyle(
+                   fontSize: 18,
+                   color: booking is BookingFrom
+                       ? Colors.lightGreen
+                       : booking is BookingTo
+                       ? Colors.yellow
+                       : Colors.black87),
+             ),
+             SizedBox(
+               height: 5,
+             ),
+             Row(
+               children: [
+                 Text(
+                   "von",
+                   style: TextStyle(color: Colors.black54),
+                 ),
+                 SizedBox(
+                   width: 5,
+                 ),
+                 Text(convertDate(booking.startTime))
+               ],
+             ),
+             SizedBox(
+               height: 5,
+             ),
+             Row(
+                 children: [
+                   Text(
+                     "bis",
+                     style: TextStyle(color: Colors.black54),
+                   ),
+                   SizedBox(
+                     width: 5,
+                   ),
+                   Text(convertDate(booking.endTime)),
+                 ]
+             ),
+           ],
+         ),
+       ),
+       Spacer(),
+       Column(
+         children: [
+           Image.asset(
+             getImagePath(),
+             width: 80,
+           ),
+           Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 0))
+         ],
+       )
+     ],
+   );
+  }
+
+  ///this method is to set the header state string
+  String getStateText(){
+    String txt = "";
+    if (booking.state == "BOOKING_CREATED") {
+      txt = "Bereit zu Einlagerung";
+    } else if (booking.state == "COLLECTED") {
+      txt = "Abgeholt";
+    } else if (booking.state == "NOT_COLLECTED") {
+      txt = "nicht Abgeholt";
+    } else {
+      txt = "Abgebrochen";
+    }
+    return txt;
+  }
+
+  ///this method is to get the right image for each booking
+  String getImagePath(){
+    String stateImageSrc = "";
+    if (booking.state == "BOOKING_CREATED") {
+      stateImageSrc = "assets/images/status_booking_created.png";
+    } else if (booking.state == "COLLECTED") {
+      stateImageSrc = "assets/images/status_collected.png";
+    } else if (booking.state == "NOT_COLLECTED") {
+      stateImageSrc = "assets/images/status_not_collected.png";
+    } else {
+      stateImageSrc = "assets/images/status_booking_cancelled.png";
+    }
+    return stateImageSrc;
+  }
+
+  String convertDate(String date) {
+    var time = DateTime.parse(date);
+    return time.day.toString() +
+        "." +
+        time.month.toString() +
+        "." +
+        time.year.toString();
+  }
+
+}
+
+
+class BottomCard extends StatelessWidget{
+  final Booking booking;
+
+  const BottomCard({Key key, this.booking}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+            children: [
+              Text(
+                "Ersteller",
+                style: TextStyle(color: Colors.black54),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(getCreator()),
+            ]
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Row(
+            children: [
+              Text(
+                "Geteilt mit",
+                style: TextStyle(color: Colors.black54),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(getSharedName()),
+            ]
+        ),
+      ],
+    );
+  }
+
+  String getSharedName() {
+    String txt = "";
+    if (booking is BookingFrom) {
+      txt = (booking as BookingFrom).fromUser.name;
+    }
+    if (txt.isNotEmpty) {
+      return "Mir";
+    } else {
+      return txt;
+    }
+  }
+
+  String getCreator(){
+    var myUserId = FirebaseAuth.instance.currentUser.displayName;
+    if(booking is BookingTo){
+      return "Ich";
+    } else if(booking is BookingFrom){
+      return (booking as BookingFrom).fromUser.name;
+    } else {
+      return "Ich";
+    }
   }
 }

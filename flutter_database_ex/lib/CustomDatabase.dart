@@ -94,6 +94,8 @@ class _CustomDataState extends State<CustomData> {
                           ///create a Person
                           Person person = new Person("marioTest", "marioeberth@gmail.com", "1", "123" );
                           ///push it to Firebase db
+                          //userDb = database.reference().child('messages');
+                          //userDb.child(toUserId).push().set(message.toJson());
                           userDb.push().set(person.toJson());
                           ///clear the input text field
                           editTextController.clear();
