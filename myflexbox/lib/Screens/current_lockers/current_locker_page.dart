@@ -20,7 +20,7 @@ import 'package:myflexbox/Screens/current_locker_detail/current_locker_detail.da
 
 class CurrentLockersPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildContext) {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -44,22 +44,30 @@ class CurrentLockersPage extends StatelessWidget {
             ),
           ),
           actions: [
-            GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-                showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext buildContext) {
-                      return HistoryFilter();
-                    });
-              },
-              child: Container(
-                margin: EdgeInsets.only(
-                  right: 20,
-                  left: 10,
-                ),
-                child: Icon(Icons.filter_list),
-              ),
+            BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
+              builder: (context, state) {
+                return GestureDetector(
+                  onTap: () {
+                    FocusScope.of(buildContext).unfocus();
+                    showModalBottomSheet(
+                        context: buildContext,
+                        builder: (BuildContext buildContext) {
+                          var cubit = context.read<CurrentLockerCubit>();
+                          return BlocProvider.value(
+                            value: cubit,
+                            child: HistoryFilter(),
+                          );
+                        });
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      right: 20,
+                      left: 10,
+                    ),
+                    child: Icon(Icons.filter_list),
+                  ),
+                );
+              }
             )
           ],
         ),
@@ -84,16 +92,23 @@ class HistoryList extends StatelessWidget {
         builder: (context, state) {
       List<Booking> bookingList = [];
       if (state is CurrentLockerList) {
-        bookingList = (state).bookingList;
+        bookingList = (state).bookingListFiltered;
       }
-      return ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: bookingList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            child: HistoryTile(booking: bookingList[index]),
-          );
+      return RefreshIndicator(
+        onRefresh: (){
+          var cubit = context.read<CurrentLockerCubit>();
+          return cubit.loadDataBackground();
+
         },
+        child: ListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: bookingList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              child: HistoryTile(booking: bookingList[index]),
+            );
+          },
+        ),
       );
     });
   }
