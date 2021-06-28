@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myflexbox/components/default_button.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/models/locker.dart';
 

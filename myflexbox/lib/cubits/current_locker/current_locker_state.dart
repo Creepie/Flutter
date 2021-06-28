@@ -36,11 +36,12 @@ class CurrentLockerLoading extends CurrentLockerState {
 class CurrentLockerList extends CurrentLockerState {
   List<Booking> bookingList;
   List<Booking> bookingListFiltered;
+  String filterTxt = "";
 
-  CurrentLockerList({this.bookingList,this.bookingListFiltered,Map<FilterStates,bool> filter}) : super(filter);
+  CurrentLockerList({this.bookingList,this.bookingListFiltered,Map<FilterStates,bool> filter, this.filterTxt}) : super(filter);
 
   @override
-  List<Object> get props => [bookingList,filter];
+  List<Object> get props => [bookingList,filter,bookingListFiltered];
 }
 
 class CurrentLockerEmpty extends CurrentLockerState {

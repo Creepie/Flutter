@@ -20,26 +20,11 @@ class HistoryFilter extends StatelessWidget {
             //color: Colors.amber,
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(110, 0, 0, 0),
-                    ),
-                    Text(
-                      "Filter Bookings",
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.check,
-
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                    )
-                  ],
+                Text(
+                  "Filter Bookings",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
                 SizedBox(
                   height: 20,
@@ -112,7 +97,7 @@ class BoxPickerSquare extends StatelessWidget{
             height: height * 0.4,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: state.filter[filterState]? Colors.white : Colors.grey,
+              color: state.filter[filterState]? Colors.red : Colors.white,
               border: Border(
                 right: BorderSide(
                   color: Colors.black12,

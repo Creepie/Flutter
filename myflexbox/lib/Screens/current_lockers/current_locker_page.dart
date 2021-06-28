@@ -32,16 +32,28 @@ class CurrentLockersPage extends StatelessWidget {
                 borderRadius: BorderRadius.all(
                   Radius.circular(20),
                 )),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Search",
-                border: InputBorder.none,
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Colors.grey,
-                ),
+              child: BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
+                builder: (context, state) {
+                  return TextField(
+                    onSubmitted: (value){
+                      //add filter function
+                      var cubit = context.read<CurrentLockerCubit>();
+                      cubit.changeTextFilter(value);
+                      ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
+                        content: Text(value),
+                      ));
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Search",
+                      border: InputBorder.none,
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  );
+                }
               ),
-            ),
           ),
           actions: [
             BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
