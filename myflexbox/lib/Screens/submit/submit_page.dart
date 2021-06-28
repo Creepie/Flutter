@@ -9,13 +9,21 @@ import 'package:myflexbox/repos/models/booking_request.dart';
 import 'package:myflexbox/repos/models/locker.dart';
 import 'package:myflexbox/repos/rent_locker_repository.dart';
 
-class SubmitPage extends StatelessWidget {
+class SubmitPage extends StatefulWidget {
   final BoxSize lockerSize;
   final DateTime startDate;
   final DateTime endDate;
   final Locker locker;
 
   SubmitPage({this.lockerSize, this.startDate, this.endDate, this.locker});
+
+  @override
+  _SubmitPageState createState() => _SubmitPageState();
+}
+
+class _SubmitPageState extends State<SubmitPage> {
+  bool isLoading = false;
+  String noteText = "";
 
   String parseDate(DateTime date) {
     String formattedString = DateFormat('yyyy-MM-ddTKK:mm:00+02:00').format(date);
@@ -31,6 +39,12 @@ class SubmitPage extends StatelessWidget {
     String cur = box.toString().toUpperCase();
     String substring = cur.substring(cur.length - 1);
     return substring;
+  }
+
+  void toggleLoading() {
+    setState(() {
+      isLoading = !isLoading;
+    });
   }
 
   @override
@@ -55,7 +69,7 @@ class SubmitPage extends StatelessWidget {
                     fontWeight: FontWeight.bold
                   )),
                   SizedBox(width: 20,),
-                  Text(formatBoxSize(lockerSize))
+                  Text(formatBoxSize(widget.lockerSize))
                 ],
               ),
               SizedBox(height: 10),
@@ -66,7 +80,7 @@ class SubmitPage extends StatelessWidget {
                       fontWeight: FontWeight.bold
                     ),),
                   SizedBox(width: 8,),
-                  Text(formattingDate(startDate)),
+                  Text(formattingDate(widget.startDate)),
                 ],
               ),
               SizedBox(height: 10),
@@ -77,7 +91,7 @@ class SubmitPage extends StatelessWidget {
                       fontWeight: FontWeight.bold
                     ),),
                   SizedBox(width: 16,),
-                  Text(formattingDate(endDate))
+                  Text(formattingDate(widget.endDate))
                 ],
               ),
               SizedBox(height: 10),
@@ -91,7 +105,7 @@ class SubmitPage extends StatelessWidget {
                     SizedBox(width: 40,),
 
                     Expanded(
-                      child: Text("${locker.streetName} ${locker.streetNumber}",
+                      child: Text("${widget.locker.streetName} ${widget.locker.streetNumber}",
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         maxLines: 1,)
@@ -106,30 +120,69 @@ class SubmitPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),),
                   SizedBox(width: 15),
-                  Text("${locker.postcode} ${locker.city}"),
+                  Text("${widget.locker.postcode} ${widget.locker.city}"),
                 ],
-              )
+              ),
+              SizedBox(height: 10,),
+              Row(
+                children: [
+                  Text("Notiz:", style:
+                  TextStyle(
+                    fontWeight: FontWeight.bold,
+                  )),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+
+                    child: TextField(
+                      maxLines: 1,
+                      autocorrect: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "optional"
+                      ),
+                      onChanged: (text) {
+                        noteText = text;
+                      },
+
+                    ),
+                  )
+                ],
+              ),
             ],
           )
         ),
       ),
       SizedBox(height: 10,),
-      ElevatedButton(
-        child: Text("Submit"),
+      isLoading ? CircularProgressIndicator(
+        backgroundColor: Colors.yellow,
+        strokeWidth: 8,
+        valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+
+      ):ElevatedButton(
+        child: Text("Reservierung bestätigen"),
         onPressed: () async{
+          if (isLoading) {
+            return;
+          }
+          toggleLoading();
           BookingRequest request = new BookingRequest(
-              locker.lockerId,
-              locker.compartments.first.compartmentId,
-              parseDate(startDate),
-              parseDate(endDate),
+              widget.locker.lockerId,
+              widget.locker.compartments.first.compartmentId,
+              parseDate(widget.startDate),
+              parseDate(widget.endDate),
               FirebaseAuth.instance.currentUser.uid,
               "");
 
           var response = await RentLockerRepository().bookLocker(request);
 
+          toggleLoading();
+
           if (response != null) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("ok")));
+            Navigator.pop(context, true);
+
           } else {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text("error")));
