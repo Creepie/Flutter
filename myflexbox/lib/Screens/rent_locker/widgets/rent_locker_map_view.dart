@@ -183,7 +183,7 @@ class LockerLocationModal extends StatelessWidget {
                         arguments: arguments);
                   },
                   child: Text(
-                    "buchen",
+                    "Buchen",
                     style: TextStyle(color: Colors.white),
                   ))
             ],

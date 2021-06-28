@@ -86,11 +86,11 @@ class LoginCubit extends Cubit<LoginState> {
     print("invalid input");
     Email email = Email.clone(state.email);
     if(email.text == null) {
-      email.error = "Email is required";
+      email.error = "Bitte gib deine Email Adresse an";
     }
     Password password = Password.clone(state.password);
     if(password.text == null) {
-      password.error = "Password is required";
+      password.error = "Bitte Passwort eingeben";
     }
     emit(LoginFailure(
       email: email,

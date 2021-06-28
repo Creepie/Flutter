@@ -50,12 +50,12 @@ class ProfileBody extends StatelessWidget {
             press: () {},
           ),
           ProfileMenu(
-            text: "Payment einrichten",
+            text: "Zahlung einrichten",
             icon: "assets/icons/Cash.svg",
             press: () {},
           ),
           ProfileMenu(
-            text: "Payment verlauf",
+            text: "Zahlungsverlauf",
             icon: "assets/icons/Bill_Icon.svg",
             press: () {},
           ),
@@ -67,7 +67,7 @@ class ProfileBody extends StatelessWidget {
           BlocBuilder<AuthCubit, AuthState>(
             builder: (cubitContext, state) {
               return ProfileMenu(
-                text: "Log Out",
+                text: "Abmelden",
                 icon: "assets/icons/Log_out.svg",
                 press: () async {
                   var authCubit = cubitContext.read<AuthCubit>();

@@ -150,19 +150,19 @@ class RegisterCubit extends Cubit<RegisterState> {
   void invalidInput() {
     Email email = Email.clone(state.email);
     if (email.text == null) {
-      email.error = "Email is required";
+      email.error = "Bitte gib deine Email Adresse an";
     }
     Password password = Password.clone(state.password);
     if (password.text == null) {
-      password.error = "Password is required";
+      password.error = "Bitte Passwort eingeben";
     }
     Username username = Username.clone(state.username);
     if (username.text == null) {
-      username.error = "Username is required";
+      username.error = "Benutzername ist erforderlich";
     }
     Telephone telephone = Telephone.clone(state.telephone);
     if (telephone.number == null) {
-      telephone.error = "PhoneNumber is required";
+      telephone.error = "Telefonnummer ist erforderlich";
       print("telephone error");
     }
     emit(RegisterFailure(

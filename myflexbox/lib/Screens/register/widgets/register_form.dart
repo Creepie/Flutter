@@ -67,7 +67,7 @@ class UsernameFormField extends StatelessWidget {
         enableSuggestions: false,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: "Username",
+          labelText: "Benutzername",
           // The error string is obtained from the username object that is stored
           // in the registerState
           //  Depending on the State, different Colors are used
@@ -215,7 +215,7 @@ class PasswordFormField extends StatelessWidget {
         obscureText: true,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: "Password",
+          labelText: "Passwort",
           // The error string is obtained from the error object that is stored
           // in the registerState
           //  Depending on the State, different Colors are used
@@ -266,7 +266,7 @@ class LoginButton extends StatelessWidget {
           width: 250,
           child: FlatButton(
             child: Text(
-              "register",
+              "Registrieren",
               style: TextStyle(
                 color: canSubmit ? Colors.white : Colors.blue,
               ),
@@ -296,7 +296,7 @@ class RegisterButton extends StatelessWidget {
     return BlocBuilder<RegisterCubit, RegisterState>(builder: (context, state) {
       return FlatButton(
         child: Text(
-          "back to login",
+          "zurück",
           style: TextStyle(
             color: Colors.grey,
           ),

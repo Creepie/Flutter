@@ -44,7 +44,7 @@ class CurrentLockersPage extends StatelessWidget {
                       ));
                     },
                     decoration: InputDecoration(
-                      hintText: "Search",
+                      hintText: "Suchen",
                       border: InputBorder.none,
                       prefixIcon: Icon(
                         Icons.search,

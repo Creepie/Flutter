@@ -27,19 +27,19 @@ class BottomGoogleNavigationBar extends StatelessWidget {
                     tabs: [
                       GButton(
                         icon: Icons.markunread_mailbox,
-                        text: 'Lockers',
+                        text: 'Übersicht',
                       ),
                       GButton(
                         icon: Icons.add,
-                        text: 'Add',
+                        text: 'Hinzufügen',
                       ),
                       GButton(
                         icon: Icons.notifications,
-                        text: 'Notify',
+                        text: 'Neuigkeiten',
                       ),
                       GButton(
                         icon: Icons.person,
-                        text: 'Profile',
+                        text: 'Profil',
                       ),
                     ],
                     selectedIndex: state.pageIndex,

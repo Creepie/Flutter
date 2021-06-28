@@ -78,13 +78,13 @@ class TopCard extends StatelessWidget{
   String getStateText(){
     String txt = "";
     if (booking.state == "BOOKING_CREATED") {
-      txt = "nicht Einlagert";
+      txt = "nicht eingelagert";
     } else if (booking.state == "COLLECTED") {
-      txt = "Abgeholt";
+      txt = "abgeholt";
     } else if (booking.state == "NOT_COLLECTED") {
-      txt = "nicht Abgeholt";
+      txt = "nicht abgeholt";
     } else {
-      txt = "Abgebrochen";
+      txt = "abgebrochen";
     }
     return txt;
   }

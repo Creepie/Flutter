@@ -14,7 +14,7 @@ class Email {
   void validate() {
       bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(text);
       if(!emailValid) {
-        error = "Gültige Email eingeben";
+        error = "Gültiges Emailformat eingeben";
       } else {
         error = null;
       }
@@ -34,7 +34,7 @@ class Password {
 
   void validate() {
     if(text.length <= 6) {
-      error = "Muss länger als 6 Zeichen sein";
+      error = "Passwort muss mindestens 6 Zeichen lang sein";
     } else {
       error = null;
     }
@@ -54,7 +54,7 @@ class Username {
 
   void validate() {
     if(text.length <= 3) {
-      error = "Muss länger als 3 Zeichen sein";
+      error = "Benutzername muss länger als 3 Zeichen sein";
     } else {
       error = null;
     }
@@ -71,7 +71,7 @@ class Telephone {
 
   void validate() {
     if(number.length <= 6) {
-      error = "Muss mindestens 7 Zeichen sein";
+      error = "Telefonnummer muss mindestens 7 Zeichen lang sein";
     } else {
       error = null;
     }

@@ -79,7 +79,7 @@ class QrViewMenuBar extends StatelessWidget {
                           ? "Einlagern"
                           : booking.state == "NOT_COLLECTED"
                               ? "Abholen"
-                              : "gecancelt",
+                              : "abgebrochen",
                   style: TextStyle(
                       fontWeight: FontWeight.w600, color: Colors.grey))),
           flex: 2,

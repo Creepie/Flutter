@@ -18,7 +18,7 @@ class RegisterSuccessView extends StatelessWidget {
         SizedBox(
             width: 200,
             child: Text(
-              "You registered successfully! \n Confirm your email to log in and get started",
+              "Du wurdest erfolgreich registriert! \n Bestätige bitte deine Emailadresse um dich einzuloggen und loslegen zu können.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -32,7 +32,7 @@ class RegisterSuccessView extends StatelessWidget {
         FlatButton(
           padding: EdgeInsets.only(left: 50, right: 50),
           child: Text(
-            "login",
+            "Login",
             style: TextStyle(color: Colors.white),
           ),
           color: Colors.blue,

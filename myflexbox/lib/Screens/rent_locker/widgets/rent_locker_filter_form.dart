@@ -243,7 +243,7 @@ class DatePickerModal extends StatelessWidget {
                     Navigator.pop(buildContext);
                   },
                   child: Text(
-                    "done",
+                    "Erledigt",
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: 16,
@@ -291,7 +291,7 @@ class BoxPickerModal extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              "Choose Box-Size",
+              "Größe auswählen",
               style: TextStyle(
                 fontSize: 20,
               ),

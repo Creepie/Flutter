@@ -176,7 +176,7 @@ class QRButton extends StatelessWidget {
         children: [
           Icon(Icons.qr_code_rounded, color: Colors.white),
           Container(width: 10),
-          Text("QR anzeigen", style: TextStyle(color: Colors.white)),
+          Text("QR-Code anzeigen", style: TextStyle(color: Colors.white)),
         ],
       ),
     );
@@ -233,7 +233,7 @@ class BoxSizeView extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Box-Size:", style: TextStyle(color: Colors.black54)),
+        Text("Fachgröße:", style: TextStyle(color: Colors.black54)),
         Container(width: 10),
         Icon(Icons.inbox, color: Colors.redAccent),
         Text(getBoxSize()),
@@ -407,7 +407,7 @@ class DefaultViewMenuBar extends StatelessWidget {
                       ? "gebucht"
                       : booking.state == "NOT_COLLECTED"
                           ? "eingelagert"
-                          : "gecancelt",
+                          : "abgebrochen",
               style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
             ),
           ),

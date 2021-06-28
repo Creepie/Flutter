@@ -79,7 +79,7 @@ class _CustomDataState extends State<CustomData> {
                           TextField(
                             controller: searchTextController,
                             decoration: InputDecoration(
-                                labelText: 'Search',
+                                labelText: 'Suchen',
                                 border: new OutlineInputBorder(
                                     borderSide: new BorderSide(
                                         color: Theme.of(context).primaryColor
@@ -115,7 +115,7 @@ class _CustomDataState extends State<CustomData> {
                           });
                         },
                         ///give the button an Text
-                        child: Text('Search for User in db')),
+                        child: Text('Benutzer suchen')),
                     Flexible(
                       ///add the firebase Animated List
                         child: firebaseList()

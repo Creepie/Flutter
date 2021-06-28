@@ -29,7 +29,7 @@ class BottomCard extends StatelessWidget{
         Row(
             children: [
               Text(
-                "Geteilt mit",
+                "geteilt mit",
                 style: TextStyle(color: Colors.black54),
               ),
               SizedBox(

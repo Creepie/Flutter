@@ -102,7 +102,7 @@ class PasswordFormField extends StatelessWidget {
         obscureText: true,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: "Password",
+          labelText: "Passwort",
           // The error string is obtained from the password object that is stored
           // in the loginState
           //  Depending on the State, different Colors are used
@@ -153,7 +153,7 @@ class LoginButton extends StatelessWidget {
           width: 250,
           child: FlatButton(
             child: Text(
-              "login",
+              "Login",
               style: TextStyle(
                 color: canSubmit ? Colors.white : Colors.blue,
               ),
@@ -184,7 +184,7 @@ class RegisterButton extends StatelessWidget {
     return BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
       return FlatButton(
         child: Text(
-          "create an account",
+          "Account erstellen",
           style: TextStyle(
             color: Colors.grey,
           ),
@@ -213,7 +213,7 @@ class GoogleLoginButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Sign in with Google",
+                "Google Login",
                 style: TextStyle(
                   color: Colors.white,
                 ),

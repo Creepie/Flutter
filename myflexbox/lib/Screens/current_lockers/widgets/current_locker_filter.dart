@@ -21,7 +21,7 @@ class HistoryFilter extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  "Filter Bookings",
+                  "Buchungen filtern",
                   style: TextStyle(
                     fontSize: 20,
                   ),
@@ -40,8 +40,8 @@ class HistoryFilter extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      BoxPickerSquare(width: width,filterType: "nicht Eingelagert", height: height,assetPath: "assets/images/status_booking_created.png",filterState: FilterStates.BOOKING_CREATED),
-                      BoxPickerSquare(width: width,filterType: "Abgeholt", height: height,assetPath: "assets/images/status_collected.png",filterState: FilterStates.COLLECTED),
+                      BoxPickerSquare(width: width,filterType: "nicht eingelagert", height: height,assetPath: "assets/images/status_booking_created.png",filterState: FilterStates.BOOKING_CREATED),
+                      BoxPickerSquare(width: width,filterType: "abgeholt", height: height,assetPath: "assets/images/status_collected.png",filterState: FilterStates.COLLECTED),
                     ],
                   ),
                 ),
@@ -60,8 +60,8 @@ class HistoryFilter extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      BoxPickerSquare(width: width,filterType: "nicht Abgeholt", height: height,assetPath: "assets/images/status_not_collected.png", filterState: FilterStates.NOT_COLLECTED,),
-                      BoxPickerSquare(width: width,filterType: "Abgebrochen", height: height,assetPath: "assets/images/status_booking_cancelled.png",filterState: FilterStates.CANCELLED,),
+                      BoxPickerSquare(width: width,filterType: "nicht abgeholt", height: height,assetPath: "assets/images/status_not_collected.png", filterState: FilterStates.NOT_COLLECTED,),
+                      BoxPickerSquare(width: width,filterType: "abgebrochen", height: height,assetPath: "assets/images/status_booking_cancelled.png",filterState: FilterStates.CANCELLED,),
                     ],
                   ),
                 )

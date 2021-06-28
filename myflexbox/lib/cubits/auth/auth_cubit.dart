@@ -101,11 +101,11 @@ class AuthCubit extends Cubit<AuthState> {
       print(e.toString());
       switch (e.code) {
         case "email-already-in-use":
-          return [ErrorType.EmailError, "Email wird bereits genuzt"];
+          return [ErrorType.EmailError, "Email wird bereits verwendet"];
         default:
           return [
             ErrorType.UsernameError,
-            "Es gab ein Problem bei der Registrierug"
+            "Es gab ein Problem bei der Registrierung"
           ];
       }
     }

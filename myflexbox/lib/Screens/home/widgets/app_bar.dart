@@ -55,7 +55,7 @@ class ProfileAppBar extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         title: Text(
-          "Profile",
+          "Profil",
           style: TextStyle(color: Colors.black),
         ));
   }

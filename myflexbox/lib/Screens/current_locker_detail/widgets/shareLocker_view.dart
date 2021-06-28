@@ -51,7 +51,7 @@ class ShareViewMenuBar extends StatelessWidget {
         ),
         Expanded(
           child: Center(
-            child: Text("Locker sharen"),
+            child: Text("Locker teilen"),
           ),
           flex: 2,
         ),
@@ -320,7 +320,7 @@ class ShareViewNumberNotFound extends StatelessWidget {
             ),
             Container(
                 child: Text(
-                  "Es wurde kein Passender Kontakt oder Favorit gefunden.",
+                  "Es wurde kein passender Kontakt oder Favorit gefunden.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.grey, letterSpacing: .7, height: 1.5),
