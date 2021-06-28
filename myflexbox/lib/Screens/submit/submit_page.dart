@@ -17,46 +17,106 @@ class SubmitPage extends StatelessWidget {
 
   SubmitPage({this.lockerSize, this.startDate, this.endDate, this.locker});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Body(lockerSize: lockerSize, startDate: startDate, endDate: endDate, locker: locker),
-    );
-  }
-}
-
-
-class Body extends StatelessWidget {
-  const Body({
-    Key key,
-    @required this.lockerSize,
-    @required this.startDate,
-    @required this.endDate,
-    @required this.locker,
-  }) : super(key: key);
-
-  final BoxSize lockerSize;
-  final DateTime startDate;
-  final DateTime endDate;
-  final Locker locker;
-
   String parseDate(DateTime date) {
     String formattedString = DateFormat('yyyy-MM-ddTKK:mm:00+02:00').format(date);
     return formattedString;
   }
 
+  String formattingDate(DateTime date) {
+    String formattedString = DateFormat('dd.MM.yyyy').format(date);
+    return formattedString;
+  }
+
+  String formatBoxSize(BoxSize box) {
+    String cur = box.toString().toUpperCase();
+    String substring = cur.substring(cur.length - 1);
+    return substring;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(lockerSize.toString()),
-      Text(parseDate(startDate)),
-      Text(parseDate(endDate)),
-      Text("${locker.streetName} ${locker.streetNumber}"),
-      Text("${locker.city} ${locker.postcode}"),
-      TextButton(
-        onPressed: () async{
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Reservierung bestätigen"),
+      ) ,
+      body: Center(
+    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      Card(
+        margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Text("Boxgröße:", style:
+                  TextStyle(
+                    fontWeight: FontWeight.bold
+                  )),
+                  SizedBox(width: 20,),
+                  Text(formatBoxSize(lockerSize))
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Text("Startdatum:", style:
+                    TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),),
+                  SizedBox(width: 8,),
+                  Text(formattingDate(startDate)),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Text("Enddatum:", style:
+                    TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),),
+                  SizedBox(width: 16,),
+                  Text(formattingDate(endDate))
+                ],
+              ),
+              SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text("Straße:", style:
+                    TextStyle(
+                        fontWeight: FontWeight.bold
+                    ),
+                    ),
+                    SizedBox(width: 40,),
 
+                    Expanded(
+                      child: Text("${locker.streetName} ${locker.streetNumber}",
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        maxLines: 1,)
+                    )
+                  ],
+                ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Text("Plz / Stadt:", style:
+                    TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),),
+                  SizedBox(width: 15),
+                  Text("${locker.postcode} ${locker.city}"),
+                ],
+              )
+            ],
+          )
+        ),
+      ),
+      SizedBox(height: 10,),
+      ElevatedButton(
+        child: Text("Submit"),
+        onPressed: () async{
           BookingRequest request = new BookingRequest(
               locker.lockerId,
               locker.compartments.first.compartmentId,
@@ -75,8 +135,21 @@ class Body extends StatelessWidget {
                 .showSnackBar(SnackBar(content: Text("error")));
           }
         },
-        child: Text("Submit"),
+
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red,
+          onPrimary: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32)
+          )
+        )
+
+
+      ),
+    ])
       )
-    ]));
+    );
   }
 }
+
+
