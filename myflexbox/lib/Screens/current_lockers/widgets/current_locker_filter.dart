@@ -97,7 +97,7 @@ class BoxPickerSquare extends StatelessWidget{
             height: height * 0.4,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: state.filter[filterState]? Colors.red : Colors.white,
+              color: state.filter[filterState]? Colors.grey[200] : Colors.white,
               border: Border(
                 right: BorderSide(
                   color: Colors.black12,
