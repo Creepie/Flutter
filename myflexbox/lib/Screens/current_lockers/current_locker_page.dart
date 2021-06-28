@@ -118,6 +118,7 @@ class HistoryList extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Container(
               child: HistoryTile(booking: bookingList[index]),
+
             );
           },
         ),
@@ -135,113 +136,134 @@ class HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
 
-    return Card(
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet<dynamic>(
-                  isScrollControlled: true,
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(15),
-                      topLeft: Radius.circular(15)
-                    ),
-                  ),
-                  builder: (BuildContext buildContext) {
-                    var currentLockerCubit = context.read<CurrentLockerCubit>();
-                    return BlocProvider(
-                      create: (context) =>
-                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..getPosition(),
-                      child: CurrentLockerDetailScreen(),
-                    );
-                  });
-            },
-            child: Container(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  TopCard(booking: booking,),
-                  BottomCard(booking: booking,)
-                ],
-              )
-            ),
-          ),
-          //TimeLine(),
-          const Divider(
-            height: 1,
-            thickness: 1,
-            indent: 5,
-            endIndent: 5,
-          ),
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet<dynamic>(
-                  isScrollControlled: true,
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(15),
-                        topLeft: Radius.circular(15)
-                    ),
-                  ),
-                  builder: (BuildContext buildContext) {
-                    var currentLockerCubit = context.read<CurrentLockerCubit>();
-                    return BlocProvider(
-                      create: (context) =>
-                          LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR()..getPosition(),
-                      child: CurrentLockerDetailScreen(),
-                    );
-                  });
-            },
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: width * 0.6,
-                    child: Text(
-                      getQRCodeText(booking),
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-                  IconButton(
-                    padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      showModalBottomSheet<dynamic>(
-                          isScrollControlled: true,
-                          context: context,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(15),
-                                topLeft: Radius.circular(15)
-                            ),
-                          ),
-                          builder: (BuildContext buildContext) {
-                            var currentLockerCubit = context.read<CurrentLockerCubit>();
-                            return BlocProvider(
-                              create: (context) =>
-                              LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR()..getPosition(),
-                              child: CurrentLockerDetailScreen(),
-                            );
-                          });
-                    },
-                    icon: Icon(
-                      Icons.qr_code,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet<dynamic>(
+            isScrollControlled: true,
+            context: context,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(15),
+                  topLeft: Radius.circular(15)
               ),
             ),
-          ),
-        ],
+            builder: (BuildContext buildContext) {
+              var currentLockerCubit = context.read<CurrentLockerCubit>();
+              return BlocProvider(
+                create: (context) =>
+                LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..getPosition(),
+                child: CurrentLockerDetailScreen(),
+              );
+            });
+      },
+      child: Card(
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet<dynamic>(
+                    isScrollControlled: true,
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                        topLeft: Radius.circular(15)
+                      ),
+                    ),
+                    builder: (BuildContext buildContext) {
+                      var currentLockerCubit = context.read<CurrentLockerCubit>();
+                      return BlocProvider(
+                        create: (context) =>
+                            LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..getPosition(),
+                        child: CurrentLockerDetailScreen(),
+                      );
+                    });
+              },
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    TopCard(booking: booking,),
+                    BottomCard(booking: booking,)
+                  ],
+                )
+              ),
+            ),
+            //TimeLine(),
+            const Divider(
+              height: 1,
+              thickness: 1,
+              indent: 5,
+              endIndent: 5,
+            ),
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet<dynamic>(
+                    isScrollControlled: true,
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(15),
+                          topLeft: Radius.circular(15)
+                      ),
+                    ),
+                    builder: (BuildContext buildContext) {
+                      var currentLockerCubit = context.read<CurrentLockerCubit>();
+                      return BlocProvider(
+                        create: (context) =>
+                            LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR()..getPosition(),
+                        child: CurrentLockerDetailScreen(),
+                      );
+                    });
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: width * 0.6,
+                      child: Text(
+                        getQRCodeText(booking),
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
+                      constraints: BoxConstraints(),
+                      onPressed: () {
+                        showModalBottomSheet<dynamic>(
+                            isScrollControlled: true,
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  topLeft: Radius.circular(15)
+                              ),
+                            ),
+                            builder: (BuildContext buildContext) {
+                              var currentLockerCubit = context.read<CurrentLockerCubit>();
+                              return BlocProvider(
+                                create: (context) =>
+                                LockerDetailCubit(booking, currentLockerCubit.repo, currentLockerCubit)..showQR()..getPosition(),
+                                child: CurrentLockerDetailScreen(),
+                              );
+                            });
+                      },
+                      icon: Icon(
+                        Icons.qr_code,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
