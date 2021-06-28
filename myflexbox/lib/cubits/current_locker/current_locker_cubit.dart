@@ -28,7 +28,8 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
 
   //Needed for error-free background actualisation
   Future<void> loadDataBackground() async{
-    List<Booking> bookingList = await repo.getBookings("");
+    var userId = FirebaseAuth.instance.currentUser.uid;
+    List<Booking> bookingList = await repo.getBookings(userId);
       if(bookingList.isNotEmpty){
         //change to filterData if ready
         var filteredList = filterData(state.filter, bookingList, "");
@@ -84,6 +85,10 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
         return true;
       } else if(convertDate(booking.endTime).contains(txt)){
         return true;
+      } else if(booking is BookingFrom){
+        if(booking.fromUser.name.contains(txt)){
+          return true;
+        }
       }
 
     return false;

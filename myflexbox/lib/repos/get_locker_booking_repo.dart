@@ -30,7 +30,7 @@ class GetLockerBooking {
   //Transforms all Bookings that are shared by the user to BookingsTo
   //Gets the list of Bookings that are shared to the user, and combines the two lists
   Future<List<Booking>> getBookings(String externalId) async {
-    var url = '$baseUrl/api/1/bookings?externalId=${""}';
+    var url = '$baseUrl/api/1/bookings?externalId=$externalId';
     final response = await http.get(
       Uri.parse(url),
       headers: {HttpHeaders.authorizationHeader: apiKey},
