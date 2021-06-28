@@ -20,11 +20,14 @@ class ProfileBody extends StatelessWidget {
       /// a widget that displays its children in a vertical array
       child: Column(
         children: [
+          /*
           BlocBuilder<AuthCubit, AuthState>(
             builder: (cubitContext, state) {
               return Text(state is AuthAuthenticated ? state.user.email : "");
             },
           ),
+
+           */
 
           /// is a widget class
           ProfilePic(),

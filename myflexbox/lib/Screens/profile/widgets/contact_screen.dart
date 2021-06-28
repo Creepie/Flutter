@@ -134,10 +134,10 @@ class _ContactsState extends State<Contacts> {
 
     // friendUid has app
     if(friendUid != ""){
-      messageUser = new Messages(friendName, "Added friend");
+      messageUser = new Messages(friendName, "Added friend", "added");
 
       // notification for friend
-      messageFriend = new Messages(myUserName, "Added you as friend");
+      messageFriend = new Messages(myUserName, "Added you as friend", "added");
       userDb.child(friendUid).push().set(messageFriend.toJson());
 
     } else {
@@ -145,7 +145,7 @@ class _ContactsState extends State<Contacts> {
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
       final String formatted = formatter. format(now);
 
-      messageUser = new Messages(friendName, "This phone number received an invitation on the ${formatted}.");
+      messageUser = new Messages(friendName, "This phone number received an invitation on the ${formatted}.", "invited");
     }
 
     // add uid to list

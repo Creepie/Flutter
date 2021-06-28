@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -21,8 +22,19 @@ class ProfilePic extends StatelessWidget {
           children: [
             /// circle that represents a user
             CircleAvatar(
+
+               child: Text(FirebaseAuth.instance.currentUser.displayName.substring(0, 1),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 35.0
+                  )),
+              backgroundColor:  Theme.of(context).primaryColor,),
+            /*
+            CircleAvatar(
               backgroundImage: AssetImage("assets/images/Profile Image.png"),),
             /// controls where a child of a stack is positioned
+
+             */
             Positioned(
                 right: -16,
                 bottom: 0,
