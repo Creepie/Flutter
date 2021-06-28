@@ -174,7 +174,7 @@ class _SubmitPageState extends State<SubmitPage> {
               parseDate(widget.startDate),
               parseDate(widget.endDate),
               FirebaseAuth.instance.currentUser.uid,
-              "");
+              noteText);
 
           var response = await RentLockerRepository().bookLocker(request);
 
