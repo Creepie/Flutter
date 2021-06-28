@@ -16,7 +16,7 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
     FilterStates.BOOKING_CREATED : true,
     FilterStates.COLLECTED : true,
     FilterStates.NOT_COLLECTED : true,
-    FilterStates.CANCELED : true,
+    FilterStates.CANCELLED : true,
   }));
 
   Future<void> loadData() async{
@@ -29,12 +29,11 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
     List<Booking> bookingList = await repo.getBookings("z1k9qFupQpdcHCwnWWbq9Nrl6im1");
       if(bookingList.isNotEmpty){
         //change to filterData if ready
-        var filteredList = bookingList;
+        var filteredList = filterData(state.filter, bookingList);
         emit(new CurrentLockerList(bookingList: bookingList, bookingListFiltered: filteredList,filter: state.filter));
       } else {
         emit(new CurrentLockerEmpty(state.filter));
       }
-
   }
 
   Future<void> changeFilter(FilterStates filterSate) async {
@@ -42,20 +41,28 @@ class CurrentLockerCubit extends Cubit<CurrentLockerState> {
       Map<FilterStates,bool> updatedMap = new Map.from(state.filter);
       updatedMap[filterSate] = !updatedMap[filterSate];
       //change to filterData if ready
-      var filteredList = (state as CurrentLockerList).bookingList;
+      var filteredList = filterData(updatedMap, (state as CurrentLockerList).bookingList);
       emit(new CurrentLockerList(bookingList: (state as CurrentLockerList).bookingList, bookingListFiltered: filteredList, filter: updatedMap));
     }
   }
 
-  List<Booking> filterData(){
-    if(state is CurrentLockerList){
-      List<Booking> bookingList = (state as CurrentLockerList).bookingList;
-      var filter = state.filter;
+  List<Booking> filterData(Map<FilterStates, bool> filter, List<Booking> bookingList){
+      //create new list and return theme after the loop
+      List<Booking> filteredList = [];
 
-      ///filter the list and return it
-      return bookingList;
-    }
-    return [];
+      for(int i = 0; i < bookingList.length; i++){
+        if(bookingList[i].state == FilterStates.BOOKING_CREATED.toShortString() && filter[FilterStates.BOOKING_CREATED] == true){
+            filteredList.add(bookingList[i]);
+        } else if(bookingList[i].state == FilterStates.COLLECTED.toShortString() && filter[FilterStates.COLLECTED] == true){
+          filteredList.add(bookingList[i]);
+        }  else if(bookingList[i].state == FilterStates.NOT_COLLECTED.toShortString() && filter[FilterStates.NOT_COLLECTED] == true){
+          filteredList.add(bookingList[i]);
+        }  else if(bookingList[i].state == FilterStates.CANCELLED.toShortString() && filter[FilterStates.CANCELLED] == true){
+          filteredList.add(bookingList[i]);
+        }
+      }//end loop
+      return filteredList;
+
   }
 }
 

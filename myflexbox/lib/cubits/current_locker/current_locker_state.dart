@@ -5,7 +5,13 @@ enum FilterStates {
   BOOKING_CREATED,
   COLLECTED,
   NOT_COLLECTED,
-  CANCELED
+  CANCELLED
+}
+
+extension ParseToString on FilterStates {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
 }
 
 abstract class CurrentLockerState extends Equatable {

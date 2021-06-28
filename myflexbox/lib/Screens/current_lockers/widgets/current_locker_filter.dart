@@ -76,7 +76,7 @@ class HistoryFilter extends StatelessWidget {
                   child: Row(
                     children: [
                       BoxPickerSquare(width: width,filterType: "nicht Abgeholt", height: height,assetPath: "assets/images/status_not_collected.png", filterState: FilterStates.NOT_COLLECTED,),
-                      BoxPickerSquare(width: width,filterType: "Abgebrochen", height: height,assetPath: "assets/images/status_booking_cancelled.png",filterState: FilterStates.CANCELED,),
+                      BoxPickerSquare(width: width,filterType: "Abgebrochen", height: height,assetPath: "assets/images/status_booking_cancelled.png",filterState: FilterStates.CANCELLED,),
                     ],
                   ),
                 )
