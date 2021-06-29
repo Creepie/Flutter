@@ -174,7 +174,7 @@ class LockerDetailCubit extends Cubit<LockerDetailState> {
 
   void shareViaSMS(DBUser userTo, DBUser userFrom) async {
     if (state is LockerDetailStateShare) {
-      sendSMS(message: "", recipients: [userTo.number]);
+      sendSMS(message: "https://myflexbox.page.link/sharedLocker", recipients: [userTo.number]);
       shareFlexBox(userTo, userFrom);
     }
   }

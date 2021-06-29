@@ -100,9 +100,7 @@ class _ContactsState extends State<Contacts> {
         if(contactFromDB[i].number == phoneNumber){
           addNotificationUser(contactFromDB[0].uid, contactFromDB[0].name);
         }
-
       }
-
       getAllContacts();
       return true;
 
