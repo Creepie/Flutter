@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/cubits/auth/auth_state.dart';
 import 'package:myflexbox/cubits/locker_detail/locker_detail_cubit.dart';
@@ -102,7 +103,7 @@ class SharedByFrom extends StatelessWidget {
                 icon: Icon(
                   Icons.close,
                   size: 15,
-                  color: Colors.redAccent,
+                  color: kPrimaryColor,
                 ),
                 onPressed: () {
                   cubit.deleteShare();
@@ -170,7 +171,7 @@ class QRButton extends StatelessWidget {
       onPressed: () {
         cubit.showQR();
       },
-      color: Colors.redAccent,
+      color: kPrimaryColor,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -235,7 +236,7 @@ class BoxSizeView extends StatelessWidget {
       children: [
         Text("Fachgröße:", style: TextStyle(color: Colors.black54)),
         Container(width: 10),
-        Icon(Icons.inbox, color: Colors.redAccent),
+        Icon(Icons.inbox, color: kPrimaryColor),
         SizedBox(width: 5,),
         Text(getBoxSize()),
       ],
@@ -265,7 +266,7 @@ class MapViewText extends StatelessWidget {
         padding: const EdgeInsets.only(left: 10, right: 10),
         child: Row(
           children: [
-            Icon(Icons.location_on_outlined, color: Colors.lightBlue),
+            Icon(Icons.location_on_outlined, color: kPrimaryColor),
             Container(width: 180, child: Text(getAddress(state))),
             Spacer(),
             GestureDetector(
@@ -278,8 +279,8 @@ class MapViewText extends StatelessWidget {
               },
               child: Row(
                 children: [
-                  Text("Route", style: TextStyle(color: Colors.lightBlue)),
-                  Icon(Icons.alt_route_outlined, color: Colors.lightBlue),
+                  Text("Route", style: TextStyle(color: kPrimaryColor)),
+                  Icon(Icons.alt_route_outlined, color: kPrimaryColor),
                 ],
               ),
             )

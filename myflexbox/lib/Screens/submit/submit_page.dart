@@ -156,7 +156,6 @@ class _SubmitPageState extends State<SubmitPage> {
                       onChanged: (text) {
                         noteText = text;
                       },
-
                     ),
                   )
                 ],
