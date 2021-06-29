@@ -108,7 +108,7 @@ class _ContactsState extends State<Contacts> {
 
     } else if (contactFromDB.isEmpty){
       //send ShareLink via SMS
-      String message = "Download the MyFlexBox App";
+      String message = "Download the MyFlexBox App \n https://myflexbox.page.link/sharedLocker";
       List<String> recipents = [phoneNumber];
       _sendSMS(message, recipents);
 
