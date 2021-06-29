@@ -14,7 +14,7 @@ class NotificationRepo {
   }
 
   Future<void> notifyLockerShared(DBUser from, String toId, Booking booking) async {
-    Messages messageFriend = new Messages(from.name, "Shared you a locker", "shared");
+    Messages messageFriend = new Messages(from.name, "hat dir einen Locker geteilt", "shared");
     database.reference().child('Notifications').child(toId).push().set(messageFriend.toJson());
   }
 }

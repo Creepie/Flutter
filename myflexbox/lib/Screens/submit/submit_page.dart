@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:myflexbox/components/default_button.dart';
+import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/models/booking_request.dart';
 import 'package:myflexbox/repos/models/locker.dart';
@@ -51,7 +52,15 @@ class _SubmitPageState extends State<SubmitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Reservierung bestätigen"),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(
+          color: Colors.black
+        ),
+        brightness: Brightness.light,
+        foregroundColor: Colors.black,
+        title: Text("Reservierung bestätigen", style: TextStyle(color: Colors.black)),
       ) ,
       body: Center(
     child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -160,7 +169,7 @@ class _SubmitPageState extends State<SubmitPage> {
       isLoading ? CircularProgressIndicator(
         backgroundColor: Colors.yellow,
         strokeWidth: 8,
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+        valueColor: new AlwaysStoppedAnimation<Color>(kPrimaryColor),
 
       ):ElevatedButton(
         child: Text("Reservierung bestätigen"),
@@ -191,7 +200,7 @@ class _SubmitPageState extends State<SubmitPage> {
         },
 
         style: ElevatedButton.styleFrom(
-          primary: Colors.red,
+          primary: kPrimaryColor,
           onPrimary: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(32)

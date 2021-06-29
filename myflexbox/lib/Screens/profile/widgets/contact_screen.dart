@@ -134,18 +134,18 @@ class _ContactsState extends State<Contacts> {
 
     // friendUid has app
     if(friendUid != ""){
-      messageUser = new Messages(friendName, "Added friend", "added");
+      messageUser = new Messages(friendName, "als Freund hinzugefügt", "added");
 
       // notification for friend
-      messageFriend = new Messages(myUserName, "Added you as friend", "added");
+      messageFriend = new Messages(myUserName, "hat dich als Freund hinzugefügt", "added");
       userDb.child(friendUid).push().set(messageFriend.toJson());
 
     } else {
       final DateTime now = DateTime. now();
-      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+      final DateFormat formatter = DateFormat('dd.MM.yyyy');
       final String formatted = formatter. format(now);
 
-      messageUser = new Messages(friendName, "This phone number received an invitation on the ${formatted}.", "invited");
+      messageUser = new Messages(friendName, "hat am ${formatted} eine Einladung erhalten.", "invited");
     }
 
     // add uid to list

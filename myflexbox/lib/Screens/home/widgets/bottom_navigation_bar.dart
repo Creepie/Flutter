@@ -27,7 +27,7 @@ class BottomGoogleNavigationBar extends StatelessWidget {
                     tabs: [
                       GButton(
                         icon: Icons.markunread_mailbox,
-                        text: 'Übersicht',
+                        text: 'Verlauf',
                       ),
                       GButton(
                         icon: Icons.add,

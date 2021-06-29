@@ -94,7 +94,7 @@ class AddressSearch extends SearchDelegate<Suggestion> {
           ? Container(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Enter your address',
+                'Adresse eingeben',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,

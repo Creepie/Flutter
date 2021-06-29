@@ -236,6 +236,7 @@ class BoxSizeView extends StatelessWidget {
         Text("Fachgröße:", style: TextStyle(color: Colors.black54)),
         Container(width: 10),
         Icon(Icons.inbox, color: Colors.redAccent),
+        SizedBox(width: 5,),
         Text(getBoxSize()),
       ],
     );
@@ -246,11 +247,11 @@ class BoxSizeView extends StatelessWidget {
     int height = booking.compartmentHeight.toInt();
     print(height);
     if (height > 700) {
-      return "l";
+      return "L";
     } else if (height > 460) {
-      return "m";
+      return "M";
     } else {
-      return "s";
+      return "S";
     }
   }
 }
@@ -408,7 +409,7 @@ class DefaultViewMenuBar extends StatelessWidget {
                       : booking.state == "NOT_COLLECTED"
                           ? "eingelagert"
                           : "abgebrochen",
-              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black), // FontWeight.w500, color: Colors.grey
             ),
           ),
           flex: 2,

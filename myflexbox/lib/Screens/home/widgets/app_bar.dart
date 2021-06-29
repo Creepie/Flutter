@@ -73,7 +73,7 @@ class RentLockerAppBar extends StatelessWidget {
         elevation: 0,
         title: Text(
           "Locker reservieren",
-          style: TextStyle(color: Colors.black54),
+          style: TextStyle(color: Colors.black),
         ));
   }
 }
