@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_state.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
@@ -103,7 +104,7 @@ class LockerTile extends StatelessWidget {
                             },
                             icon: Icon(
                               Icons.map,
-                              color: Colors.grey,
+                              color: kPrimaryColor,
                             ),
                           )
                         ],

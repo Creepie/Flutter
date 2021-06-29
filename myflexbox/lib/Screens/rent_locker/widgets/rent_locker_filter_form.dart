@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/google_places_repo.dart';
@@ -38,7 +39,7 @@ class FilterForm extends StatelessWidget {
                               state is FilterRentLockerLoadingState
                           ? Icon(Icons.map)
                           : Icon(Icons.list),
-                      color: Colors.grey,
+                      color: kPrimaryColor,
                       onPressed: () {
                         var rentLockerCubit = context.read<RentLockerCubit>();
                         rentLockerCubit.switchScreen();
@@ -153,7 +154,7 @@ class LockerSearchBar extends StatelessWidget {
               constraints: BoxConstraints(),
               icon: Icon(
                 Icons.search,
-                color: Colors.grey,
+                color: kPrimaryColor,
               ),
               onPressed: () {
                 showLocationSearch(context, buildContext, state);
@@ -165,7 +166,7 @@ class LockerSearchBar extends StatelessWidget {
               icon: Icon(
                 Icons.location_on_outlined,
                 color: state.myLocation.description != null
-                    ? Colors.blueAccent
+                    ? kPrimaryColor
                     : Colors.grey,
               ),
               onPressed: () {
@@ -382,7 +383,7 @@ class BoxPickerSquare extends StatelessWidget {
             width: width * 0.5,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: boxSize == state.boxSize ? Colors.red : null,
+              color: boxSize == state.boxSize ? kPrimaryColor : null,
               border: Border(
                 right: BorderSide(
                   color: Colors.black12,
