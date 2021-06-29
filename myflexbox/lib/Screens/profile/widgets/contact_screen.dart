@@ -13,6 +13,7 @@ import 'package:myflexbox/repos/models/notification.dart';
 import 'package:myflexbox/repos/models/user.dart';
 
 
+
 class ContactScreen extends StatelessWidget {
 
   @override
@@ -240,6 +241,12 @@ class _ContactsState extends State<Contacts> {
 
   /// get all contacts that are on the phone
   getAllContacts() async {
+
+
+//       List<DBUser> test = getContactsWithoutFavorites(_savedContacts);
+
+      // getContactsWithoutFavorites
+
       List<Contact> _contacts = (await ContactsService.getContacts()).toList();
       List<String> fav = [];
       List<DBUser> dbList = [];
@@ -259,6 +266,8 @@ class _ContactsState extends State<Contacts> {
     displayContactList += contacts;
 
     displayContactList = Set.of(displayContactList).toList();
+
+
 
     /// rebuild the List after flutter has the contacts
     /// populates the list

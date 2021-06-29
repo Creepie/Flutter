@@ -20,20 +20,41 @@ class ProfileBody extends StatelessWidget {
       /// a widget that displays its children in a vertical array
       child: Column(
         children: [
-          /*
-          BlocBuilder<AuthCubit, AuthState>(
-            builder: (cubitContext, state) {
-              return Text(state is AuthAuthenticated ? state.user.email : "");
-            },
-          ),
-
-           */
 
           /// is a widget class
           ProfilePic(),
 
           /// a box with a specified size
           SizedBox(height: 20),
+
+          BlocBuilder<AuthCubit, AuthState>(
+            builder: (cubitContext, state) {
+              if(state is AuthAuthenticated){
+                /// user that is logged in with google has
+                /// the email saved as name -> only show ones
+                if(state.user.name == state.user.email){
+                  return Column(
+                    children: [
+                      Text( state is AuthAuthenticated ? state.user.name : ""),
+                    ],
+                  );
+
+                } else {
+                  /// show name and email of user
+                  return Column(
+                    children: [
+                      Text( state is AuthAuthenticated ? state.user.name : ""),
+                      SizedBox(height: 8,),
+                      Text(state is AuthAuthenticated ? state.user.email : "")
+                    ],
+                  );
+                }
+
+              }
+              return SizedBox(height: 8);
+            }
+            ,
+          ),
 
           /// different menu points
           ProfileMenu(
