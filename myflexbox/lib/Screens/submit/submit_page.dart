@@ -171,7 +171,7 @@ class _SubmitPageState extends State<SubmitPage> {
         strokeWidth: 8,
         valueColor: new AlwaysStoppedAnimation<Color>(kPrimaryColor),
 
-      ):ElevatedButton(
+      ):TextButton(
         child: Text("Reservierung bestätigen"),
         onPressed: () async{
           if (isLoading) {
@@ -199,12 +199,10 @@ class _SubmitPageState extends State<SubmitPage> {
           }
         },
 
-        style: ElevatedButton.styleFrom(
-          primary: kPrimaryColor,
-          onPrimary: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32)
-          )
+        style: TextButton.styleFrom(
+          backgroundColor: kPrimaryColor,
+          primary: Colors.white,
+
         )
 
 
