@@ -39,7 +39,7 @@ class DefaultAppBar extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         title: Text(
-          "My Flexbox",
+          "Neuigkeiten",
           style: TextStyle(color: Colors.black),
         ));
   }

@@ -11,6 +11,7 @@ import 'package:myflexbox/config/size_config.dart';
 import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/repos/models/notification.dart';
 import 'package:myflexbox/repos/models/user.dart';
+import 'package:myflexbox/repos/user_repo.dart';
 
 
 
@@ -58,9 +59,6 @@ class _ContactsState extends State<Contacts> {
   @override
   void initState() {
     getAllContacts();
-
-    // save the favorites from the db
-    _savedContacts = favouriteContacts;
 
     /// look if controller has changed or text inside the search input
     /// has changed -> you nedd a listener
@@ -242,11 +240,12 @@ class _ContactsState extends State<Contacts> {
   /// get all contacts that are on the phone
   getAllContacts() async {
 
+      // save the favorites from the db
+      _savedContacts = favouriteContacts;
+      List<DBUser> test = await UserRepository().getContactsWithoutFavorites(_savedContacts);
 
-//       List<DBUser> test = getContactsWithoutFavorites(_savedContacts);
 
-      // getContactsWithoutFavorites
-
+      /*
       List<Contact> _contacts = (await ContactsService.getContacts()).toList();
       List<String> fav = [];
       List<DBUser> dbList = [];
@@ -258,14 +257,16 @@ class _ContactsState extends State<Contacts> {
         }
       }
       contacts = dbList;
-
+      */
 
     /// sort the favorites and put them at the front
     var displayContactList = _savedContacts;
     displayContactList.sort((a, b) => a.name.compareTo(b.name));
-    displayContactList += contacts;
+    displayContactList += test;
 
-    displayContactList = Set.of(displayContactList).toList();
+   // displayContactList = Set.of(displayContactList).toList();
+
+
 
 
 
@@ -322,7 +323,7 @@ class _ContactsState extends State<Contacts> {
   /// Dialog for inviting a contact
   popUpDialog() {
     Widget cancelButton = FlatButton(
-      child: Text('Cancel'),
+      child: Text('Abbrechen'),
       onPressed: (){
         Navigator.of(context).pop();
       },
@@ -330,15 +331,15 @@ class _ContactsState extends State<Contacts> {
 
     Widget deleteButton = FlatButton(
       color: Colors.red,
-      child: Text('Add'),
+      child: Text('Hinzufügen'),
       onPressed: () async {
         searchContact(mNumber);
       },
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text('Add User'),
-      content: Text('Invite friend when he is not using the MyFlexBox App'),
+      title: Text('Freund hinzufügen'),
+      content: Text('Füge einen Freund hinzu oder lade ihn ein wenn er die MyFlexbox App nicht benutzt.'),
       actions: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -348,7 +349,8 @@ class _ContactsState extends State<Contacts> {
                 onInputChanged: (phoneNumber) {
                   mNumber = phoneNumber.phoneNumber;
                 },
-                errorMessage: "test",
+                errorMessage: "",
+                hintText: "Telefonnummer",
                 spaceBetweenSelectorAndTextField: 5,
                 locale: "AT",
                 autoFocus: false,
@@ -415,7 +417,7 @@ class _ContactsState extends State<Contacts> {
               child: TextField(
                 controller: searchController,
                 decoration: InputDecoration(
-                    labelText: 'Search',
+                    labelText: 'Suchen',
                     border: new OutlineInputBorder(
                         borderSide: new BorderSide(
                             color: Theme.of(context).primaryColor

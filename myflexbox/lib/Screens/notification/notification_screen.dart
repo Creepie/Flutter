@@ -131,7 +131,7 @@ class _CustomDataState extends State<CustomData> {
           Messages person = Messages.fromJson(snapshot.value);
           String text;
           if(person.friendUid.startsWith('+')){
-             text = "Number: ${person.friendUid}";
+             text = "Telefonnummer: ${person.friendUid}";
           } else {
              text = "Name: ${person.friendUid}";
           }

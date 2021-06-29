@@ -66,7 +66,7 @@ class UserRepository {
 
     for (int i = 0; i < myUser.favourites.length; i++) {
       DBUser user = await getUserFromDB(myUser.favourites[i]);
-      if (user != null) {
+      if (user != null && !favouriteContacts.contains(user)) {
         favouriteContacts.add(user);
       }
     }
