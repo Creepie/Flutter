@@ -78,7 +78,7 @@ class FilterForm extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.inbox),
+                            icon: Icon(Icons.inbox, color: kPrimaryColor,),
                             padding: EdgeInsets.zero,
                           ),
                           Text(state.boxSize == BoxSize.s
@@ -123,7 +123,7 @@ class LockerSearchBar extends StatelessWidget {
         builder: (context, state) {
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(4),
           color: Colors.white,
         ),
         child: Row(
@@ -205,6 +205,7 @@ class LockerTimeBar extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(left: 20, top: 15, bottom: 15, right: 20),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
             color: Colors.white,
           ),
           child: Row(
@@ -213,7 +214,7 @@ class LockerTimeBar extends StatelessWidget {
             children: [
               Icon(
                 Icons.calendar_today,
-                color: Colors.grey,
+                color: kPrimaryColor,
                 size: 20,
               ),
               Text(
