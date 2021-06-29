@@ -158,6 +158,7 @@ class HistoryTile extends StatelessWidget {
             });
       },
       child: Card(
+        margin: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
         child: Column(
           children: [
             GestureDetector(

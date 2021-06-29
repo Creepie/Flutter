@@ -77,6 +77,7 @@ class LockerTile extends StatelessWidget {
                 });
               },
               child: Card(
+                margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
                 child: Container(
                   padding: EdgeInsets.all(20),
                   child: Column(
@@ -87,7 +88,7 @@ class LockerTile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: width * 0.7,
+                            width: width * 0.6,
                             child: Text(
                               "${locker.streetName} ${locker.streetNumber}",
                               style: TextStyle(
@@ -106,7 +107,7 @@ class LockerTile extends StatelessWidget {
                               Icons.map,
                               color: kPrimaryColor,
                             ),
-                          )
+                          ),
                         ],
                       ),
                       SizedBox(
