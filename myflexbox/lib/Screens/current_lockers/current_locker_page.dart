@@ -9,6 +9,7 @@ import 'package:myflexbox/Screens/current_lockers/widgets/current_locker_empty.d
 import 'package:myflexbox/Screens/current_lockers/widgets/current_locker_filter.dart';
 import 'package:myflexbox/Screens/rent_locker/widgets/rent_locker_list_view.dart';
 import 'package:myflexbox/config/app_router.dart';
+import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/cubits/current_locker/current_locker_state.dart';
 import 'package:myflexbox/cubits/locker_detail/locker_detail_cubit.dart';
@@ -30,25 +31,25 @@ class CurrentLockersPage extends StatelessWidget {
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey, width: 1),
                 borderRadius: BorderRadius.all(
-                  Radius.circular(20),
+                  Radius.circular(4),
                 )),
               child: BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
                 builder: (context, state) {
                   return TextField(
-                    onSubmitted: (value){
+                    onChanged: (value){
                       //add filter function
                       var cubit = context.read<CurrentLockerCubit>();
                       cubit.changeTextFilter(value);
-                      ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
-                        content: Text(value),
-                      ));
+                      // ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
+                      //   content: Text(value),
+                      // ));
                     },
                     decoration: InputDecoration(
                       hintText: "Suchen",
                       border: InputBorder.none,
                       prefixIcon: Icon(
                         Icons.search,
-                        color: Colors.grey,
+                        color: kPrimaryColor,
                       ),
                     ),
                   );
