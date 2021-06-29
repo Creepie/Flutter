@@ -50,6 +50,11 @@ class GetLockerBooking {
           await getSharedBookingsFrom(externalId);
       //Add the own bookings to the bookings, shared by the user
       sharedToUserBookings.addAll(userBookings);
+
+      sharedToUserBookings.sort((a,b) {
+        return a.startTime.compareTo(b.startTime);
+      });
+
       return sharedToUserBookings;
     } else {
       return [];
