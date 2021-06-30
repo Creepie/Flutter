@@ -67,6 +67,66 @@ class _ContactsState extends State<Contacts> {
     });
   }
 
+
+  /// get all contacts that are on the phone
+  getAllContacts() async {
+    // save the favorites from the db
+    _savedContacts = favouriteContacts;
+    List<DBUser> test = await UserRepository().getContactsWithoutFavorites(_savedContacts);
+
+    /// sort the favorites and put them at the front
+    var displayContactList = _savedContacts;
+    displayContactList.sort((a, b) => a.name.compareTo(b.name));
+    displayContactList += test;
+
+    /// rebuild the List after flutter has the contacts
+    /// populates the list
+    setState(() {
+      /// remove duplicates
+      contacts = displayContactList;
+    });
+  }
+
+  /// filter the contact list after letters and numbers
+  filterContacts(){
+    List<DBUser> _contacts = [];
+    _contacts.addAll(contacts);
+
+    if(searchController.text.isNotEmpty){
+      /// see which contact matches with the input in searchbar
+      /// removes the ones who dont match in the list
+      _contacts.retainWhere((contact) {
+        String searchTerm = searchController.text.toLowerCase();
+        String searchTermFlatten = flattenPhoneNumer(searchTerm);
+
+        String contactName = contact.name.toLowerCase();
+        bool nameMatches = contactName.contains(searchTerm);
+
+        // found name
+        if(nameMatches == true){
+          return true;
+        }
+
+        if(searchTermFlatten.isEmpty){
+          return false;
+        }
+        String phnFlattened = flattenPhoneNumer(contact.number);
+
+        if(phnFlattened.contains(searchTermFlatten)){
+          return phnFlattened.contains(searchTermFlatten);
+        } else {
+          return null;
+        }
+
+      });
+
+      /// forces UI to rebuild and display filtered list
+      setState(() {
+        contactsFiltered = _contacts;
+      });
+    }
+  }
+
   /// remove all special characters, except '+' at the begonning of phone number
   String flattenPhoneNumer(String phoneStr) {
     return phoneStr.replaceAllMapped(RegExp(r'^(\+)|\D'), (Match m) {
@@ -104,12 +164,12 @@ class _ContactsState extends State<Contacts> {
       return true;
 
     } else if (contactFromDB.isEmpty){
-      //send ShareLink via SMS
+      ///send ShareLink via SMS
       String message = "Download the MyFlexBox App \n https://myflexbox.page.link/sharedLocker";
       List<String> recipents = [phoneNumber];
       _sendSMS(message, recipents);
 
-      // notification: used got invited
+      /// notification: used got invited
       addNotificationUser("", phoneNumber);
       return false;
     }
@@ -128,11 +188,11 @@ class _ContactsState extends State<Contacts> {
     Messages messageFriend;
 
 
-    // friendUid has app
+    /// friendUid has app
     if(friendUid != ""){
       messageUser = new Messages(friendName, "als Freund hinzugefügt", "added");
 
-      // notification for friend
+      /// notification for friend
       messageFriend = new Messages(myUserName, "hat dich als Freund hinzugefügt", "added");
       userDb.child(friendUid).push().set(messageFriend.toJson());
 
@@ -144,7 +204,7 @@ class _ContactsState extends State<Contacts> {
       messageUser = new Messages(friendName, "hat am ${formatted} eine Einladung erhalten.", "invited");
     }
 
-    // add uid to list
+    /// add uid to list
     userDb.child(myUserId).push().set(messageUser.toJson());
 
   }
@@ -232,131 +292,7 @@ class _ContactsState extends State<Contacts> {
     }
   }
 
-
-  /// get all contacts that are on the phone
-  getAllContacts() async {
-
-      // save the favorites from the db
-      _savedContacts = favouriteContacts;
-      List<DBUser> test = await UserRepository().getContactsWithoutFavorites(_savedContacts);
-
-
-    /// sort the favorites and put them at the front
-    var displayContactList = _savedContacts;
-    displayContactList.sort((a, b) => a.name.compareTo(b.name));
-    displayContactList += test;
-
-
-    /// rebuild the List after flutter has the contacts
-    /// populates the list
-    setState(() {
-      /// remove duplicates
-      contacts = displayContactList;
-
-    });
-  }
-
-  /// filter the contact list after letters and numbers
-  filterContacts(){
-    List<DBUser> _contacts = [];
-    _contacts.addAll(contacts);
-
-    if(searchController.text.isNotEmpty){
-      /// see which contact matches with the input in searchbar
-      /// removes the ones who dont match in the list
-      _contacts.retainWhere((contact) {
-        String searchTerm = searchController.text.toLowerCase();
-        String searchTermFlatten = flattenPhoneNumer(searchTerm);
-
-        String contactName = contact.name.toLowerCase();
-        bool nameMatches = contactName.contains(searchTerm);
-
-        // found name
-        if(nameMatches == true){
-          return true;
-        }
-
-        if(searchTermFlatten.isEmpty){
-          return false;
-        }
-        String phnFlattened = flattenPhoneNumer(contact.number);
-
-        if(phnFlattened.contains(searchTermFlatten)){
-          return phnFlattened.contains(searchTermFlatten);
-        } else {
-          return null;
-        }
-
-      });
-
-      /// forces UI to rebuild and display filtered list
-      setState(() {
-        contactsFiltered = _contacts;
-      });
-    }
-  }
-
-
-  /// Dialog for inviting a contact
-  popUpDialog() {
-    Widget cancelButton = FlatButton(
-      child: Text('Abbrechen'),
-      onPressed: (){
-        Navigator.of(context).pop();
-      },
-    );
-
-    Widget deleteButton = FlatButton(
-      color: Colors.red,
-      child: Text('Hinzufügen'),
-      onPressed: () async {
-        searchContact(mNumber);
-      },
-    );
-
-    AlertDialog alert = AlertDialog(
-      title: Text('Freund hinzufügen'),
-      content: Text('Füge einen Freund hinzu oder lade ihn ein wenn er die MyFlexbox App nicht benutzt.'),
-      actions: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(width: 280,
-              child: InternationalPhoneNumberInput(
-                onInputChanged: (phoneNumber) {
-                  mNumber = phoneNumber.phoneNumber;
-                },
-                errorMessage: "",
-                hintText: "Telefonnummer",
-                spaceBetweenSelectorAndTextField: 5,
-                locale: "AT",
-                autoFocus: false,
-                autoFocusSearch: false,
-                autoValidateMode: AutovalidateMode.always,
-                countries: ["AT", "DE"],
-                ignoreBlank: false,
-                inputBorder: OutlineInputBorder(),
-                selectorConfig: SelectorConfig(
-                  setSelectorButtonAsPrefixIcon: true,
-                ),
-              ))
-          ],
-        ),
-
-        Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
-          SizedBox(width: 100,child: cancelButton),
-          SizedBox(width: 100,child: deleteButton)
-        ],)
-      ],
-    );
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        });
-  }
-
-
+  /// Widget for UI
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
@@ -474,4 +410,66 @@ class _ContactsState extends State<Contacts> {
       ),
     );
   }
+
+
+  /// Dialog for inviting a contact
+  popUpDialog() {
+    Widget cancelButton = FlatButton(
+      child: Text('Abbrechen'),
+      onPressed: (){
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget deleteButton = FlatButton(
+      color: Colors.red,
+      child: Text('Hinzufügen'),
+      onPressed: () async {
+        searchContact(mNumber);
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text('Freund hinzufügen'),
+      content: Text('Füge einen Freund hinzu oder lade ihn ein wenn er die MyFlexbox App nicht benutzt.'),
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(width: 280,
+                child: InternationalPhoneNumberInput(
+                  onInputChanged: (phoneNumber) {
+                    mNumber = phoneNumber.phoneNumber;
+                  },
+                  errorMessage: "",
+                  hintText: "Telefonnummer",
+                  spaceBetweenSelectorAndTextField: 5,
+                  locale: "AT",
+                  autoFocus: false,
+                  autoFocusSearch: false,
+                  autoValidateMode: AutovalidateMode.always,
+                  countries: ["AT", "DE"],
+                  ignoreBlank: false,
+                  inputBorder: OutlineInputBorder(),
+                  selectorConfig: SelectorConfig(
+                    setSelectorButtonAsPrefixIcon: true,
+                  ),
+                ))
+          ],
+        ),
+
+        Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+          SizedBox(width: 100,child: cancelButton),
+          SizedBox(width: 100,child: deleteButton)
+        ],)
+      ],
+    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
+  }
+
+
 }

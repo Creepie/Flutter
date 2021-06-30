@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:myflexbox/Screens/profile/widgets/profile_menu.dart';
-import 'package:myflexbox/Screens/profile/widgets/profile_pic.dart';
 import 'package:myflexbox/cubits/auth/auth_cubit.dart';
 import 'package:myflexbox/cubits/auth/auth_state.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -74,6 +73,7 @@ class ProfileBody extends StatelessWidget {
                   SizedBox(height: 20),
               ],
               );
+
               }
               return  SizedBox(height: 8);
               }
@@ -104,9 +104,7 @@ class ProfileBody extends StatelessWidget {
                 }
                 return SizedBox(height: 8);
               }
-
           ),
-
 
 
           /// different menu points
