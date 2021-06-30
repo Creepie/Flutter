@@ -164,7 +164,12 @@ class _SubmitPageState extends State<SubmitPage> {
           )
         ),
       ),
-      SizedBox(height: 10,),
+      SizedBox(height: 20,),
+      Text("Gesamtkosten 0€", style: TextStyle(
+        fontSize: 22.0,
+        fontWeight: FontWeight.bold,
+      ),),
+      SizedBox(height: 20,),
       isLoading ? CircularProgressIndicator(
         backgroundColor: Colors.yellow,
         strokeWidth: 8,

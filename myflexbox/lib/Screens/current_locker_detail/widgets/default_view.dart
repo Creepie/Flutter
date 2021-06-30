@@ -139,10 +139,10 @@ class DescriptionView extends StatelessWidget {
   final Booking booking;
 
   const DescriptionView({Key key, this.booking}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    if (booking.message == null) {
+      if (booking.parcelNumber == "") {
+
       return Container();
     } else {
       return Container(
@@ -152,7 +152,7 @@ class DescriptionView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flexible(child: Text(booking.message, textAlign: TextAlign.center)),
+            Flexible(child: Text(booking.parcelNumber, textAlign: TextAlign.center)),
           ],
         ),
       );
