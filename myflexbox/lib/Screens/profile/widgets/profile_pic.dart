@@ -1,12 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myflexbox/repos/models/user.dart';
+import 'package:myflexbox/repos/user_repo.dart';
 
 class ProfilePic extends StatelessWidget {
 
-  const ProfilePic({
+
+  const ProfilePic(String name, {
     Key key,
 }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +18,7 @@ class ProfilePic extends StatelessWidget {
     return  SizedBox(
         height: 115,
         width: 115,
+
         /// a widget that positions its children relative to the edges of its box
         /// useful if you want to overlap several children in a simple way
         child: Stack(
@@ -22,8 +27,7 @@ class ProfilePic extends StatelessWidget {
           children: [
             /// circle that represents a user
             CircleAvatar(
-
-               child: Text(FirebaseAuth.instance.currentUser.displayName.substring(0, 1),
+               child: Text("",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 35.0
@@ -61,3 +65,7 @@ class ProfilePic extends StatelessWidget {
     );
   }
 }
+
+Future<DBUser> getInfos() async {
+    DBUser test = await UserRepository().getUserFromDB(FirebaseAuth.instance.currentUser.uid);
+  }

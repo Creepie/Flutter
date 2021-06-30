@@ -14,7 +14,6 @@ import 'package:myflexbox/repos/models/user.dart';
 import 'package:myflexbox/repos/user_repo.dart';
 
 
-
 class ContactScreen extends StatelessWidget {
 
   @override
@@ -212,7 +211,6 @@ class _ContactsState extends State<Contacts> {
       //save updated myUser to db
       if(count > 0){
         userDb.child(myUser.uid).child("favourites").child(user.uid).set({"key":user.uid});
-        //var test = await userDb.child(myUser.uid).set(myUser.toJson());
       }
     }
 
@@ -243,29 +241,10 @@ class _ContactsState extends State<Contacts> {
       List<DBUser> test = await UserRepository().getContactsWithoutFavorites(_savedContacts);
 
 
-      /*
-      List<Contact> _contacts = (await ContactsService.getContacts()).toList();
-      List<String> fav = [];
-      List<DBUser> dbList = [];
-
-      for(int i=0; i < _contacts.length; i++){
-        var contactNumbers = _contacts[i].phones.toList();
-        for(int j=0; j< _contacts[i].phones.length; j++){
-          dbList.add(DBUser("", _contacts[i].displayName, contactNumbers[j].value.replaceAll(" ", ""), "", fav));
-        }
-      }
-      contacts = dbList;
-      */
-
     /// sort the favorites and put them at the front
     var displayContactList = _savedContacts;
     displayContactList.sort((a, b) => a.name.compareTo(b.name));
     displayContactList += test;
-
-   // displayContactList = Set.of(displayContactList).toList();
-
-
-
 
 
     /// rebuild the List after flutter has the contacts
