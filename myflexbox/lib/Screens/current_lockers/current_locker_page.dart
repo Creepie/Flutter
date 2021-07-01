@@ -274,10 +274,12 @@ class HistoryTile extends StatelessWidget {
   String getQRCodeText(Booking booking){
     if(booking is BookingFrom){
       return "Paket abholen";
-    } else if(booking is BookingTo && booking.state == "BOOKING_CREATED"){
+    } else if(booking.state == "BOOKING_CREATED"){
       return "Paket einlegen";
+    } else if(booking.state == "CANCELLED"){
+      return "Abgelaufen";
     } else {
-      return "Paket entnehmen";
+      return "Paket einlegen";
     }
   }
 }
