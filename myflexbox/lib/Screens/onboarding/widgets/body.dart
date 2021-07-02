@@ -24,15 +24,15 @@ class _OnBoardingBodyState extends State<OnBoardingBody> {
   /// like the text and which image should be shown
   List<Map<String, String>> splashData = [
     {
-      "text": "Welcome to MYFLEXBOX, Screen 1",
+      "text": "Willkommen bei MyFlexbox!",
       "image": "assets/images/onboarding_one_img.png"
     },
     {
-      "text": "Welcome to MYFLEXBOX, Screen 2",
+      "text": "Die smarte Abholstation für Pakete",
       "image": "assets/images/onboarding_two_img.png"
     },
     {
-      "text": "Welcome to MYFLEXBOX, Screen 3",
+      "text": "24/7 GEÖFFNET - ZEITSPAREND - KONTAKTLOS",
       "image": "assets/images/onboarding_three_img.png"
     },
   ];
