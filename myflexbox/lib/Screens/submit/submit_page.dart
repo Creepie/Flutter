@@ -5,6 +5,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:myflexbox/components/default_button.dart';
 import 'package:myflexbox/config/constants.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/models/booking_request.dart';
 import 'package:myflexbox/repos/models/locker.dart';
@@ -195,6 +196,7 @@ class _SubmitPageState extends State<SubmitPage> {
           toggleLoading();
 
           if (response != null) {
+
             Navigator.pop(context, true);
 
           } else {

@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
 import 'package:myflexbox/cubits/bottom_nav/bottom_nav_state.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_state.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:myflexbox/repos/models/locker.dart';
@@ -58,116 +60,124 @@ class LockerTile extends StatelessWidget {
 
     return BlocBuilder<RentLockerCubit, RentLockerState>(
       builder: (context, state) {
-        return BlocBuilder<BottomNavCubit, BottomNavState>(
-          builder: (navContext, navState) {
-            return GestureDetector(
-              onTap: () {
-                var arguments = {
-                  "lockerSize": state.boxSize,
-                  "startDate": state.startDate,
-                  "endDate": state.endDate,
-                  "locker": locker,
-                };
-                Navigator.pushNamed(context, AppRouter.SubmitViewRoute,
-                    arguments: arguments).then((value) {
-                      if (value != null) {
-                        var navCubit = navContext.read<BottomNavCubit>();
-                        navCubit.changePage(0);
-                      }
-                });
-              },
-              child: Card(
-                margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+        return BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
+          builder: (curLockerContext, curLockerState) {
+            return BlocBuilder<BottomNavCubit, BottomNavState>(
+              builder: (navContext, navState) {
+                return GestureDetector(
+                  onTap: () {
+                    var arguments = {
+                      "lockerSize": state.boxSize,
+                      "startDate": state.startDate,
+                      "endDate": state.endDate,
+                      "locker": locker,
+                    };
+                    Navigator.pushNamed(context, AppRouter.SubmitViewRoute,
+                        arguments: arguments).then((value) {
+                          if (value != null) {
+
+                            var curLockerCubit = curLockerContext.read<CurrentLockerCubit>();
+                            curLockerCubit.loadDataBackground();
+
+                            var navCubit = navContext.read<BottomNavCubit>();
+                            navCubit.changePage(0);
+                          }
+                    });
+                  },
+                  child: Card(
+                    margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: width * 0.6,
-                            child: Text(
-                              "${locker.streetName} ${locker.streetNumber}",
-                              style: TextStyle(
-                                fontSize: 18,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: width * 0.6,
+                                child: Text(
+                                  "${locker.streetName} ${locker.streetNumber}",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
                               ),
-                            ),
+                              IconButton(
+                                onPressed: () {
+                                  var rentLockerCubit = context.read<RentLockerCubit>();
+                                  var latLng =
+                                      LatLng(locker.latitude, locker.longitude);
+                                  rentLockerCubit.showLockerOnMap(latLng);
+                                },
+                                icon: Icon(
+                                  Icons.map,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            onPressed: () {
-                              var rentLockerCubit = context.read<RentLockerCubit>();
-                              var latLng =
-                                  LatLng(locker.latitude, locker.longitude);
-                              rentLockerCubit.showLockerOnMap(latLng);
-                            },
-                            icon: Icon(
-                              Icons.map,
-                              color: kPrimaryColor,
-                            ),
+                          SizedBox(
+                            height: 5,
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        "${locker.postcode} ${locker.city}",
-                        style: TextStyle(color: Colors.black54),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        children: [
                           Text(
-                            "Entfernung",
+                            "${locker.postcode} ${locker.city}",
                             style: TextStyle(color: Colors.black54),
                           ),
                           SizedBox(
-                            width: 5,
+                            height: 15,
                           ),
-                          Text("-- km"),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Freie Fächer",
-                            style: TextStyle(color: Colors.black54),
+                          Row(
+                            children: [
+                              Text(
+                                "Entfernung",
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text("-- km"),
+                            ],
                           ),
                           SizedBox(
-                            width: 7,
+                            height: 5,
                           ),
-                          locker.compartments.firstWhere(
-                                      (element) => element.size == "s",
-                                      orElse: () => null) ==
-                                  null
-                              ? Text("")
-                              : Text(" S "),
-                          locker.compartments.firstWhere(
-                                      (element) => element.size == "m",
-                                      orElse: () => null) ==
-                                  null
-                              ? Text("")
-                              : Text(" M "),
-                          locker.compartments.firstWhere(
-                                      (element) => element.size == "l",
-                                      orElse: () => null) ==
-                                  null
-                              ? Text("")
-                              : Text(" L "),
+                          Row(
+                            children: [
+                              Text(
+                                "Freie Fächer",
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              locker.compartments.firstWhere(
+                                          (element) => element.size == "s",
+                                          orElse: () => null) ==
+                                      null
+                                  ? Text("")
+                                  : Text(" S "),
+                              locker.compartments.firstWhere(
+                                          (element) => element.size == "m",
+                                          orElse: () => null) ==
+                                      null
+                                  ? Text("")
+                                  : Text(" M "),
+                              locker.compartments.firstWhere(
+                                          (element) => element.size == "l",
+                                          orElse: () => null) ==
+                                      null
+                                  ? Text("")
+                                  : Text(" L "),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }
             );
           }
         );

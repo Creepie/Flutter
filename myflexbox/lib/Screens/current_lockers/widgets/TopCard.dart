@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 
 class TopCard extends StatelessWidget{
@@ -105,7 +106,12 @@ class TopCard extends StatelessWidget{
   }
 
   String convertDate(String date) {
+    // var time = DateTime.parse(date);
+    // String formattedString = DateFormat('yyyy-MM-ddTKK:mm:00+02:00').format(time);
+    // return formattedString;
+
     var time = DateTime.parse(date);
+
     return time.day.toString() +
         "." +
         time.month.toString() +

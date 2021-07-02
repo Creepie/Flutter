@@ -245,7 +245,7 @@ class DatePickerModal extends StatelessWidget {
                     Navigator.pop(buildContext);
                   },
                   child: Text(
-                    "Erledigt",
+                    "Auswählen",
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: 16,
