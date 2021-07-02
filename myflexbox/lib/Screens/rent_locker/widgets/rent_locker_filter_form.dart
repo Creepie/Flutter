@@ -247,7 +247,7 @@ class DatePickerModal extends StatelessWidget {
                   child: Text(
                     "Auswählen",
                     style: TextStyle(
-                      color: Colors.red,
+                      color: kPrimaryColor,
                       fontSize: 16,
                     ),
                   )),
