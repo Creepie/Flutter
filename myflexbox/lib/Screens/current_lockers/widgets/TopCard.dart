@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:myflexbox/config/constants.dart';
 import 'package:myflexbox/repos/models/booking.dart';
 
 class TopCard extends StatelessWidget{
@@ -23,10 +24,10 @@ class TopCard extends StatelessWidget{
                 style: TextStyle(
                     fontSize: 18,
                     color: booking is BookingFrom
-                        ? Colors.lightGreen
+                        ? kPrimaryColor
                         : booking is BookingTo
-                        ? Colors.yellow
-                        : Colors.black87),
+                        ? kPrimaryColor
+                        : Colors.black),
               ),
               SizedBox(
                 height: 5,

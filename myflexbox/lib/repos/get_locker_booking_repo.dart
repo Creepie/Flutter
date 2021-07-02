@@ -55,6 +55,10 @@ class GetLockerBooking {
         return a.startTime.compareTo(b.startTime);
       });
 
+      sharedToUserBookings.sort((a,b) {
+        return a.state.compareTo(b.state);
+      });
+
       return sharedToUserBookings;
     } else {
       return [];

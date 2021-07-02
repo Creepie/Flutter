@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myflexbox/config/app_router.dart';
 import 'package:myflexbox/config/constants.dart';
+import 'package:myflexbox/cubits/bottom_nav/bottom_nav_cubit.dart';
+import 'package:myflexbox/cubits/bottom_nav/bottom_nav_state.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_cubit.dart';
+import 'package:myflexbox/cubits/current_locker/current_locker_state.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_cubit.dart';
 import 'package:myflexbox/cubits/rent_locker/rent_locker_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:myflexbox/repos/models/locker.dart';
+import 'dart:io';
 
 class RentLockerMapView extends StatefulWidget {
   @override
@@ -26,11 +31,19 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
 
   //Function for creating the Bitmaps for the markers
   void getMarker() async {
+    var iconSize = 2.5;
+    if (Platform.isAndroid) {
+      iconSize = 2.5;
+    } else if (Platform.isIOS) {
+      iconSize = 1.5;
+    }
     flexboxMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5),
+        ImageConfiguration(devicePixelRatio: iconSize),
         'assets/images/flexbox_marker.png');
     myLocationMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5),
+        ImageConfiguration(devicePixelRatio: iconSize, size: Size(
+          10,10
+        )),
         'assets/images/mylocation_marker.png');
     setState(() {});
   }
@@ -39,105 +52,122 @@ class _RentLockerMapViewState extends State<RentLockerMapView> {
   Widget build(BuildContext buildContext) {
     return BlocBuilder<RentLockerCubit, RentLockerState>(
         builder: (context, state) {
-      markers.clear();
-      circles.clear();
+      return BlocBuilder<CurrentLockerCubit, CurrentLockerState>(
+          builder: (curLockerContext, curLockerState) {
+        return BlocBuilder<BottomNavCubit, BottomNavState>(
+            builder: (navContext, navState) {
+          markers.clear();
+          circles.clear();
 
-      //Set my Location marker
-      if (state.myLocation.description != null) {
-        var newMarker = Marker(
-            markerId: MarkerId("myPosition"),
-            position: LatLng(state.myLocation.lat, state.myLocation.long),
-            draggable: false,
-            zIndex: 2,
-            flat: true,
-            anchor: Offset(0.5, 0.5),
-            icon: myLocationMarker != null
-                ? myLocationMarker
-                : BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueBlue));
-        markers.add(newMarker);
+          //Set my Location marker
+          if (state.myLocation.description != null) {
+            var newMarker = Marker(
+                markerId: MarkerId("myPosition"),
+                position: LatLng(state.myLocation.lat, state.myLocation.long),
+                draggable: false,
+                zIndex: 2,
+                flat: true,
+                anchor: Offset(0.5, 0.5),
+                icon: myLocationMarker != null
+                    ? myLocationMarker
+                    : BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueBlue));
+            markers.add(newMarker);
 
-        //Set chosen Location Marker
-        if (state.chosenLocation.isExactLocation &&
-            state.myLocation.description != state.chosenLocation.description) {
-          var newMarker = Marker(
-              markerId: MarkerId("chosenPosition"),
-              position:
-                  LatLng(state.chosenLocation.lat, state.chosenLocation.long),
-              draggable: false,
-              zIndex: 2,
-              flat: true,
-              anchor: Offset(0.5, 0.5),
-              icon: BitmapDescriptor.defaultMarker);
-          markers.add(newMarker);
-        }
-      }
+            //Set chosen Location Marker
+            if (state.chosenLocation.isExactLocation &&
+                state.myLocation.description !=
+                    state.chosenLocation.description) {
+              var newMarker = Marker(
+                  markerId: MarkerId("chosenPosition"),
+                  position: LatLng(
+                      state.chosenLocation.lat, state.chosenLocation.long),
+                  draggable: false,
+                  zIndex: 2,
+                  flat: true,
+                  anchor: Offset(0.5, 0.5),
+                  icon: BitmapDescriptor.defaultMarker);
+              markers.add(newMarker);
+            }
+          }
 
-      //Display markers for the Lockers
-      for (var i = 0; i < state.lockerList.length; i++) {
-        var locker = state.lockerList[i];
-        var newMarker = Marker(
-            markerId: MarkerId("locker $i"),
-            position: LatLng(locker.latitude, locker.longitude),
-            draggable: false,
-            zIndex: 2,
-            flat: true,
-            consumeTapEvents: true,
-            onTap: () {
-              showModalBottomSheet(
-                  context: buildContext,
-                  barrierColor: Colors.black.withOpacity(0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-                  ),
-                  builder: (BuildContext buildContext) {
-                    var rentLockerCubit = context.read<RentLockerCubit>();
-                    return BlocProvider.value(
-                      value: rentLockerCubit,
-                      child: LockerLocationModal(locker: locker, state: state),
-                    );
+          //Display markers for the Lockers
+          for (var i = 0; i < state.lockerList.length; i++) {
+            var locker = state.lockerList[i];
+            var newMarker = Marker(
+                markerId: MarkerId("locker $i"),
+                position: LatLng(locker.latitude, locker.longitude),
+                draggable: false,
+                zIndex: 2,
+                flat: true,
+                consumeTapEvents: true,
+                onTap: () {
+                  showModalBottomSheet(
+                      context: buildContext,
+                      barrierColor: Colors.black.withOpacity(0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15.0),
+                            topRight: Radius.circular(15.0)),
+                      ),
+                      builder: (BuildContext buildContext) {
+                        var rentLockerCubit = context.read<RentLockerCubit>();
+                        return BlocProvider.value(
+                          value: rentLockerCubit,
+                          child:
+                              LockerLocationModal(locker: locker, state: state),
+                        );
+                      }).then((value) {
+                    if (value != null && value == true) {
+                        var curLockerCubit = curLockerContext.read<CurrentLockerCubit>();
+                        curLockerCubit.loadDataBackground();
+
+                        var navCubit = navContext.read<BottomNavCubit>();
+                        navCubit.changePage(0);
+                    }
                   });
-            },
-            anchor: Offset(0.5, 0.5),
-            icon: flexboxMarker != null
-                ? flexboxMarker
-                : BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueBlue));
-        markers.add(newMarker);
-      }
+                },
+                anchor: Offset(0.5, 0.5),
+                icon: flexboxMarker != null
+                    ? flexboxMarker
+                    : BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueBlue));
+            markers.add(newMarker);
+          }
 
-      return Expanded(
-        child: Stack(
-          children: [
-            GoogleMap(
-              //normal, satellite, ...
-              mapType: MapType.normal,
-              //first Camera Position
-              initialCameraPosition: CameraPosition(
-                target: LatLng(
-                    state.chosenLocation.lat, state.chosenLocation.long),
-                zoom: 10.4746,
-              ),
-              //add all markers
-              //
-              //markers: _markers,
-              circles: circles,
-              markers: markers,
-              rotateGesturesEnabled: false,
-              onMapCreated: (GoogleMapController controller) async {
-                var rentLockerCubit = context.read<RentLockerCubit>();
-                rentLockerCubit.mapsController = controller;
-                //await Future.delayed(Duration(milliseconds: 700));
-                //rentLockerCubit.updateCameraLocation();
-              },
+          return Expanded(
+            child: Stack(
+              children: [
+                GoogleMap(
+                  //normal, satellite, ...
+                  mapType: MapType.normal,
+                  //first Camera Position
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(
+                        state.chosenLocation.lat, state.chosenLocation.long),
+                    zoom: 10.4746,
+                  ),
+                  //add all markers
+                  //
+                  //markers: _markers,
+                  circles: circles,
+                  markers: markers,
+                  rotateGesturesEnabled: false,
+                  onMapCreated: (GoogleMapController controller) async {
+                    var rentLockerCubit = context.read<RentLockerCubit>();
+                    rentLockerCubit.mapsController = controller;
+                    //await Future.delayed(Duration(milliseconds: 700));
+                    //rentLockerCubit.updateCameraLocation();
+                  },
+                ),
+                state is MapRentLockerLoadingState
+                    ? MapLoadingIndicator()
+                    : Container(),
+              ],
             ),
-            state is MapRentLockerLoadingState
-                ? MapLoadingIndicator()
-                : Container(),
-          ],
-        ),
-      );
+          );
+        });
+      });
     });
   }
 }
@@ -181,7 +211,12 @@ class LockerLocationModal extends StatelessWidget {
                       "locker": locker,
                     };
                     Navigator.pushNamed(context, AppRouter.SubmitViewRoute,
-                        arguments: arguments);
+                            arguments: arguments)
+                        .then((value) {
+                      if (value != null && value == true) {
+                        Navigator.pop(context, true);
+                      }
+                    });
                   },
                   child: Text(
                     "Buchen",
@@ -222,10 +257,9 @@ class LockerLocationModal extends StatelessWidget {
               ),
               Text("S:"),
               Icon(
-                locker.compartments.firstWhere(
-                        (element) => element.size == "s",
-                    orElse: () => null) ==
-                    null
+                locker.compartments.firstWhere((element) => element.size == "s",
+                            orElse: () => null) ==
+                        null
                     ? Icons.clear
                     : Icons.check,
                 size: 20,
@@ -235,10 +269,9 @@ class LockerLocationModal extends StatelessWidget {
               ),
               Text("M:"),
               Icon(
-                locker.compartments.firstWhere(
-                        (element) => element.size == "m",
-                    orElse: () => null) ==
-                    null
+                locker.compartments.firstWhere((element) => element.size == "m",
+                            orElse: () => null) ==
+                        null
                     ? Icons.clear
                     : Icons.check,
                 size: 20,
@@ -248,10 +281,9 @@ class LockerLocationModal extends StatelessWidget {
               ),
               Text("L:"),
               Icon(
-                locker.compartments.firstWhere(
-                        (element) => element.size == "l",
-                    orElse: () => null) ==
-                    null
+                locker.compartments.firstWhere((element) => element.size == "l",
+                            orElse: () => null) ==
+                        null
                     ? Icons.clear
                     : Icons.check,
                 size: 20,
