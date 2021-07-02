@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       // This method checks whether the user is already logged in or not.
       create: (context) => AuthCubit(UserRepository())..authenticate(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: kPrimaryColor
         ),
