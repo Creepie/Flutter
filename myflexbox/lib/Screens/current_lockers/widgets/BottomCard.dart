@@ -45,13 +45,12 @@ class BottomCard extends StatelessWidget{
   String getSharedName() {
 
     if (booking is BookingFrom) {
-      return (booking as BookingFrom).fromUser.name;
+      return "Mir";
     } else if(booking is BookingTo){
       return (booking as BookingTo).toUser.name;
     } else {
       return "";
     }
-
   }
 
   String getCreator(){
