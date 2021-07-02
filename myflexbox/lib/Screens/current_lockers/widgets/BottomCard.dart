@@ -47,7 +47,7 @@ class BottomCard extends StatelessWidget{
     if (booking is BookingFrom) {
       txt = (booking as BookingFrom).fromUser.name;
     }
-    if (txt.isNotEmpty) {
+    if (txt.isEmpty) {
       return "Mir";
     } else {
       return txt;
